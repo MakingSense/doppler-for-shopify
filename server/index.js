@@ -15,21 +15,30 @@ const config = require('../config/webpack.config.js');
 
 const ShopifyAPIClient = require('shopify-api-node');
 const ShopifyExpress = require('@shopify/shopify-express');
-const {MemoryStrategy} = require('@shopify/shopify-express/strategies');
+const { RedisStrategy } = require('@shopify/shopify-express/strategies');
 
 const {
   SHOPIFY_APP_KEY,
   SHOPIFY_APP_HOST,
   SHOPIFY_APP_SECRET,
   NODE_ENV,
+  REDIS_HOST,
+  REDIS_PASSWORD,
+  REDIS_PORT  
 } = process.env;
+
+const redisConfig = {
+  host: REDIS_HOST,
+  port: parseInt(REDIS_PORT),
+  password: REDIS_PASSWORD
+};
 
 const shopifyConfig = {
   host: SHOPIFY_APP_HOST,
   apiKey: SHOPIFY_APP_KEY,
   secret: SHOPIFY_APP_SECRET,
   scope: ['write_orders, write_products'],
-  shopStore: new MemoryStrategy(),
+  shopStore: new RedisStrategy(redisConfig),
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
 
@@ -59,7 +68,7 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(
   session({
-    store: isDevelopment ? undefined : new RedisStore(),
+    store: new RedisStore(redisConfig),
     secret: SHOPIFY_APP_SECRET,
     resave: true,
     saveUninitialized: false,

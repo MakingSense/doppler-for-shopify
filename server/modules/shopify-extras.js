@@ -1,3 +1,11 @@
+const ShopifyAPIClient = require('shopify-api-node');
+
+class ShopifyAPIClientFactory {
+  createClient(shopDomain, accessToken) {
+    return new ShopifyAPIClient({ shopName: shopDomain, accessToken: accessToken });
+  }
+}
+
 module.exports = {
  customerFields: [
       {
@@ -192,5 +200,7 @@ module.exports = {
         sample: 'Argentina',
         type: 'string'
       }
-  ]
+  ],
+  shopifyAPIClientFactory: ShopifyAPIClientFactory
 }
+

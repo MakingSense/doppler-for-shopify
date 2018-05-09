@@ -11,7 +11,7 @@
     "pretty": "prettier --single-quote --trailing-comma es5 --write {client,bin,config,server}{/*,/**/*}.js",
     "precommit": "yarn run pretty",
     "test": "npm run test-unit",
-    "test-unit": "cross-env NODE_ENV=test nyc --reporter=text mocha --require co-mocha './server/modules/*.spec.js'"
+    "test-unit": "cross-env NODE_ENV=test nyc --reporter=text mocha --require co-mocha './server/**/*.spec.js'"
   },
   "engines": {
     "node": ">= 8.1.0"
@@ -73,8 +73,9 @@
     "postcss-loader": "^2.0.6",
     "prettier": "^1.5.2",
     "react-hot-loader": "^3.0.0-beta.7",
-    "sinon": "^5.0.3",
+    "sinon": "^5.0.7",
     "sinon-chai": "^3.0.0",
+    "sinon-express-mock": "^2.0.0",
     "style-loader": "^0.18.2",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5"

@@ -1,5 +1,4 @@
 const querystring = require('querystring');
-const fetch = require('node-fetch');
 const shopify = require ('./shopify-extras');
 const baseUrl = 'https://restapi.fromdoppler.com';
 
@@ -13,32 +12,33 @@ const getCustomerFieldValue = function(customer, fieldPath) {
     return currentProperty;
 }
 
-class Doppler {
-    constructor(accountName, apiKey) {
-        this.accountName = querystring.escape(accountName);
-        this.apiKey = apiKey;
+const sendRequestAsync = async function(fetch, url, fetchOptions) {
+    const response = await fetch(url, fetchOptions);
+    const responseBody = await response.json();
+
+    if (response.status >= 400) {
+        const msg = responseBody && (responseBody.title || responseBody.detail)
+            ? `${responseBody.title ? `${responseBody.title}: ` : ''}${responseBody.detail ? responseBody.detail : ''}`
+            : 'Unexpected error';
+
+        throw new Error(msg);
     }
 
-    async sendRequestAsync(url, fetchOptions) {
-        const response = await fetch(url, fetchOptions);
-        const responseBody = await response.json();
+    return responseBody
+}
 
-        if (response.status >= 400) {
-            const msg = responseBody && (responseBody.title || responseBody.detail)
-                ? `${responseBody.title ? `${responseBody.title}: ` : ''}${responseBody.detail ? responseBody.detail : ''}`
-                : 'Unexpected error';
-    
-            throw new Error(msg);
-        }
-
-        return responseBody
+class Doppler {
+    constructor(fetch, accountName, apiKey) {
+        this.fetch = fetch;
+        this.accountName = querystring.escape(accountName);
+        this.apiKey = apiKey;
     }
 
     async AreCredentialsValidAsync() {
         const url = `${baseUrl}/accounts/${this.accountName}`;
         
         try {
-            await this.sendRequestAsync(url, { headers: { Authorization: `token ${this.apiKey }` } });
+            await sendRequestAsync(this.fetch, url, { headers: { Authorization: `token ${this.apiKey }` } });
             return true;
         } catch (error) {
             console.warn(`Error validating credentials: ${JSON.stringify(error)}`);
@@ -49,7 +49,7 @@ class Doppler {
     async getListsAsync() {
         const url = `${baseUrl}/accounts/${this.accountName}/lists?page=1&per_page=200&state=active`;
 
-        const responseBody = await this.sendRequestAsync(url, { headers: { Authorization: `token ${this.apiKey }` } });
+        const responseBody = await sendRequestAsync(this.fetch, url, { headers: { Authorization: `token ${this.apiKey }` } });
 
         return {
             items: responseBody.items.map(list => { return { listId: list.listId, name: list.name } }),
@@ -60,7 +60,7 @@ class Doppler {
     async createListAsync(listName) {
         const url = `${baseUrl}/accounts/${this.accountName}/lists`;
 
-        const responseBody = await this.sendRequestAsync(url,  { 
+        const responseBody = await sendRequestAsync(this.fetch, url,  { 
             method:'POST', 
             body: JSON.stringify({name: listName}),
             headers: { Authorization: `token ${this.apiKey }` }
@@ -72,7 +72,7 @@ class Doppler {
     async getFieldsAsync() {
         const url = `${baseUrl}/accounts/${this.accountName}/fields`;
 
-        const responseBody = await this.sendRequestAsync(url, { headers: { Authorization: `token ${this.apiKey }` } });
+        const responseBody = await sendRequestAsync(this.fetch, url, { headers: { Authorization: `token ${this.apiKey }` } });
 
         return responseBody.items.map(field => { 
             return { 
@@ -121,7 +121,7 @@ class Doppler {
             enableEmailNotification: true
         };
 
-        const responseBody = await this.sendRequestAsync(url,  { 
+        const responseBody = await sendRequestAsync(this.fetch, url,  { 
             method:'POST', 
             body: JSON.stringify(subscribers),
             headers: { Authorization: `token ${this.apiKey }` }
@@ -140,7 +140,7 @@ class Doppler {
             })
         };
 
-        await this.sendRequestAsync(url,  { 
+        await sendRequestAsync(this.fetch, url,  { 
             method:'POST', 
             body: JSON.stringify(subscriber),
             headers: { Authorization: `token ${this.apiKey }` }
@@ -150,10 +150,20 @@ class Doppler {
     async getImportTaskAsync(taskId) {
         const url = `${baseUrl}/accounts/${this.accountName}/tasks/${taskId}`;
 
-        const responseBody = await this.sendRequestAsync(url, { headers: { Authorization: `token ${this.apiKey }` } });
+        const responseBody = await sendRequestAsync(this.fetch, url, { headers: { Authorization: `token ${this.apiKey }` } });
         
         return responseBody.importDetails;
     }
 }
 
-module.exports = Doppler;
+class DopplerFactory {
+    constructor(fetch) {
+        this.fetch = fetch;
+    }
+
+    createClient(accountName, apiKey) {
+        return new Doppler(this.fetch, accountName, apiKey);
+    }
+}
+
+module.exports = (fetch) => { return new DopplerFactory(fetch); }

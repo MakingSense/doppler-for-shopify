@@ -1,8 +1,7 @@
 const { promisify } = require('util');
-const redis = require('redis');
 
 class Redis {
-    constructor() {
+    constructor(redis) {
         const options = {
             host: process.env.REDIS_HOST,
             port: parseInt(process.env.REDIS_PORT),
@@ -22,26 +21,24 @@ class Redis {
         }
     }
 
-    async storeShop(shopDomain, shop, closeConnection) {
+    async storeShopAsync(shopDomain, shop, closeConnection) {
         try {
             await this.client.hmsetAsync(shopDomain, shop);
         }
         catch (error) {
-            console.error(`Error storing shop ${shopDomain}: ${error.message}`);
-            throw error;
+            throw new Error(`Error storing shop ${shopDomain}. ${error.toString()}`);
         } finally {
             if (closeConnection)
                 await this.client.quitAsync();
         }
     }
 
-    async getShop(shopDomain, closeConnection) {
+    async getShopAsync(shopDomain, closeConnection) {
         try {
             return await this.client.hgetallAsync(shopDomain);
         }
         catch (error) {
-            console.error(`Error retrieving shop ${shopDomain}: ${error.message}`);
-            throw error;
+            throw new Error(`Error retrieving shop ${shopDomain}. ${error.toString()}`);
         } finally {
             if (closeConnection)
                 await this.client.quitAsync();
@@ -49,13 +46,12 @@ class Redis {
 
     }
 
-    async removeShop(shopDomain, closeConnection) {
+    async removeShopAsync(shopDomain, closeConnection) {
         try {
             await this.client.delAsync(shopDomain);
         }
         catch (error) {
-            console.error(`Error removing shop ${shopDomain}: ${error.message}`);
-            throw error;
+            throw new Error(`Error removing shop ${shopDomain}. ${error.toString()}`);
         } finally {
             if (closeConnection)
                 await this.client.quitAsync();
@@ -63,4 +59,15 @@ class Redis {
     }
 }
 
-module.exports = Redis
+class RedisFactory {
+    constructor(redis) {
+        this.redis = redis;
+    }
+
+    createClient() {
+        return new Redis(this.redis);
+    }
+}
+
+module.exports = (redis) => { return new RedisFactory(redis); }
+

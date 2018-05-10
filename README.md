@@ -23,6 +23,14 @@ This example app uses Node, Express, Webpack, React, Redux, and Shopify/polaris
 
 ## Running the project locally
 
+### Run easily with Docker without install dependencies
+
+1. Define `SHOPIFY_APP_SECRET` as environment variable with the right value.
+2. Run `./run-with-docker.sh`
+3. Open <http://localhost:3000>
+
+To try it inside Shopify, it will be necessary to create the tunnel and register the app as it is described in following sections.
+
 ### Install project dependencies
 
 - Install Node.js version 8.1.0 or higher. We recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions.

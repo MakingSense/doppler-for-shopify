@@ -2,6 +2,13 @@ const querystring = require('querystring');
 const shopify = require ('./shopify-extras');
 const baseUrl = 'https://restapi.fromdoppler.com';
 
+class DopplerApiError extends Error {
+    constructor (statusCode, message) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+}
+
 const getCustomerFieldValue = function(customer, fieldPath) {
     let currentProperty = customer;
     
@@ -13,6 +20,7 @@ const getCustomerFieldValue = function(customer, fieldPath) {
 }
 
 const sendRequestAsync = async function(fetch, url, fetchOptions) {
+
     const response = await fetch(url, fetchOptions);
     const responseBody = await response.json();
 
@@ -21,7 +29,7 @@ const sendRequestAsync = async function(fetch, url, fetchOptions) {
             ? `${responseBody.title ? `${responseBody.title}: ` : ''}${responseBody.detail ? responseBody.detail : ''}`
             : 'Unexpected error';
 
-        throw new Error(msg);
+        throw new DopplerApiError(response.status, msg);
     }
 
     return responseBody
@@ -41,15 +49,17 @@ class Doppler {
             await sendRequestAsync(this.fetch, url, { headers: { Authorization: `token ${this.apiKey }` } });
             return true;
         } catch (error) {
-            console.warn(`Error validating credentials: ${JSON.stringify(error)}`);
+            if (!error.statusCode) 
+                throw new Error('Unexpected error calling Doppler API');
+            if (error.statusCode === 500) 
+                throw error;
             return false;
         }
     }
 
     async getListsAsync() {
         const url = `${baseUrl}/accounts/${this.accountName}/lists?page=1&per_page=200&state=active`;
-
-        const responseBody = await sendRequestAsync(this.fetch, url, { headers: { Authorization: `token ${this.apiKey }` } });
+        const responseBody = await sendRequestAsync(this.fetch, url, { headers: { Authorization: `token ${this.apiKey}` } });
 
         return {
             items: responseBody.items.map(list => { return { listId: list.listId, name: list.name } }),
@@ -85,6 +95,7 @@ class Doppler {
         });
     }
 
+    // Maybe This method should not be here but in an external "fields-module" or "mapping-module"
     async createFieldsMapping(mapping) {
         const dopplerFields = await this.getFieldsAsync();
         
@@ -111,12 +122,16 @@ class Doppler {
             items: customers.map(customer => { 
                 return { 
                     email: customer.email,
-                    fields: fieldsMap.map(m => { 
+                    fields: fieldsMap.length > 0 
+                    ? fieldsMap.map(m => { 
                         return {...m, value: getCustomerFieldValue(customer, m.value)}; 
                     })
+                    : []
                 }
             }),
-            fields: fieldsMap.map(m => m.name),
+            fields: fieldsMap.length > 0 
+            ? fieldsMap.map(m => m.name)
+            : [],
             callback: `${process.env.SHOPIFY_APP_HOST}/hooks/doppler-import-completed?shop=${querystring.escape(shopDomain)}`,
             enableEmailNotification: true
         };

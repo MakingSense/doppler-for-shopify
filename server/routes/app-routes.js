@@ -10,11 +10,12 @@ class AppRoutes {
 
   async home(request, response) {
       const { session: { shop, accessToken } } = request;
-
+      
       const redis = this.redisClientFactory.createClient();
       const shopInstance = await redis.getShopAsync(shop, true);
-      
-      // TODO: should we move this to middleware in order to filter all requests?
+
+      // TODO: - should we move this to middleware in order to filter all requests? 
+      //       - No, we should destroy the session when uninstalling the app.
       if (shopInstance === null || shopInstance.accessToken !== accessToken) {
         response.redirect(`/shopify/auth?shop=${shop}`);
         return;
@@ -35,18 +36,18 @@ class AppRoutes {
     const validCredentials = await doppler.AreCredentialsValidAsync();
     
     if (!validCredentials) {
-      response.json({success: false, details: 'Invalid credentials'});
+      response.sendStatus(401);
       return;
     }
 
     const redis = this.redisClientFactory.createClient();
     await redis.storeShopAsync(shop, { dopplerAccountName, dopplerApiKey }, true);
-    response.json({success: true});
+    response.sendStatus(200);
   }
 
   async getDopplerLists(request, response) {
       const { session: { shop } } = request;
-      
+
       const redis = this.redisClientFactory.createClient();
       const shopInstance = await redis.getShopAsync(shop, true);
 
@@ -65,7 +66,7 @@ class AppRoutes {
     const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
     const lists = await doppler.createListAsync(name);
 
-    response.json({success:true});
+    response.sendStatus(201);
   }
 
   async setDopplerList(request, response) {
@@ -74,7 +75,7 @@ class AppRoutes {
     const redis = this.redisClientFactory.createClient();
     await redis.storeShopAsync(shop, { dopplerListId }, true);
 
-    response.json({success:true});
+    response.sendStatus(200);
   }
   
   async getFields(request, response) {
@@ -95,7 +96,7 @@ class AppRoutes {
     const redis = this.redisClientFactory.createClient();
     const shopInstance = await redis.storeShopAsync(shop, { fieldsMapping }, true);
 
-    response.json({ success: true });
+    response.sendStatus(200);
   }
 
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
@@ -110,7 +111,6 @@ class AppRoutes {
       address: `${process.env.SHOPIFY_APP_HOST}/hooks/customers/created`,
       format: 'json'
     });
-        
     const customers = await shopify.customer.list();
 
     const redis = this.redisClientFactory.createClient();
@@ -124,10 +124,10 @@ class AppRoutes {
       shop, 
       JSON.parse(shopInstance.fieldsMapping)
     );
-
+    
     await redis.storeShopAsync(shop, { importTaskId }, true);
 
-    response.json({success: true});
+    response.sendStatus(201);
   }
 }
 

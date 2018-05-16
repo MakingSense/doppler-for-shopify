@@ -25,7 +25,8 @@ describe('The hooks routes', function () {
     });
 
     it('appUninstalled should remove the data of the application', async function(){
-        const request = sinonMock.mockReq({ body: '{"domain":"store.myshopify.com"}' });
+        const request = sinonMock.mockReq({ webhook: { shopDomain: 'store.myshopify.com' } });
+
         this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
 
         const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
@@ -45,8 +46,8 @@ describe('The hooks routes', function () {
     });
 
     it('customerCreated create a subscriber in Doppler', async function(){
-        const request = sinonMock.mockReq({ body: '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}' });
-        request.get.returns('store.myshopify.com');
+        const request = sinonMock.mockReq({ webhook: { shopDomain: 'store.myshopify.com' }, body: '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}' });
+        
         this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
             .returns(Promise.resolve({
                 accessToken: 'ae768b8c78d68a54565434',
@@ -60,7 +61,6 @@ describe('The hooks routes', function () {
         const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
         await appRoutes.customerCreated(undefined, request);
         
-        expect(request.get).to.be.calledWithExactly('X-Shopify-Shop-Domain');
         expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly('store.myshopify.com', true);
         expect(modulesMocks.dopplerClient.createSubscriberAsync).to.be.calledWithExactly({
             default_address: { company: "Winterfell" },
@@ -84,8 +84,8 @@ describe('The hooks routes', function () {
     });
 
     it('customerCreated should not perform any operation when there is not a Doppler list set', async function(){
-        const request = sinonMock.mockReq({ body: '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}' });
-        request.get.returns('store.myshopify.com');
+        const request = sinonMock.mockReq({ webhook: { shopDomain: 'store.myshopify.com' }, body: '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}' });
+
         this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
             .returns(Promise.resolve({
                 accessToken: 'ae768b8c78d68a54565434',
@@ -99,14 +99,12 @@ describe('The hooks routes', function () {
         const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
         await appRoutes.customerCreated(undefined, request);
         
-        expect(request.get).to.be.calledWithExactly('X-Shopify-Shop-Domain');
         expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly('store.myshopify.com', true);
         expect(modulesMocks.dopplerClient.createSubscriberAsync).to.have.been.callCount(0);
     });
 
     it('customerCreated should not perform any operation when there is not a shop stored in Redis', async function(){
-        const request = sinonMock.mockReq({ body: '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}' });
-        request.get.returns('store.myshopify.com');
+        const request = sinonMock.mockReq({ webhook: { shopDomain: 'store.myshopify.com' }, body: '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}' });
         this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
             .returns(Promise.resolve(null));
         this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
@@ -114,7 +112,6 @@ describe('The hooks routes', function () {
         const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
         await appRoutes.customerCreated(undefined, request);
         
-        expect(request.get).to.be.calledWithExactly('X-Shopify-Shop-Domain');
         expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly('store.myshopify.com', true);
         expect(modulesMocks.dopplerClient.createSubscriberAsync).to.have.been.callCount(0);
     });

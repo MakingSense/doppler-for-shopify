@@ -88,7 +88,7 @@ describe('The app routes', function () {
 
         expect(modulesMocks.dopplerClient.AreCredentialsValidAsync).to.have.been.callCount(1);
         expect(modulesMocks.redisClient.storeShopAsync).to.be.called.calledWithExactly('store.myshopify.com', {dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A', dopplerAccountName: 'user@example.com'}, true);
-        expect(response.json).to.be.called.calledWithExactly({success: true});
+        expect(response.sendStatus).to.be.called.calledWithExactly(200);
     });
 
     it('connectToDoppler should return "Invalid credentials" when Doppler credentials are invalid', async function () {
@@ -107,7 +107,7 @@ describe('The app routes', function () {
 
         expect(modulesMocks.dopplerClient.AreCredentialsValidAsync).to.have.been.callCount(1);
         expect(modulesMocks.redisClient.storeShopAsync).to.have.been.callCount(0);
-        expect(response.json).to.be.called.calledWithExactly({success: false, details: 'Invalid credentials'});
+        expect(response.sendStatus).to.be.called.calledWithExactly(401);
     });
 
     it('getDopplerLists should return the lists from Doppler', async function () {
@@ -166,7 +166,7 @@ describe('The app routes', function () {
 
         expect(modulesMocks.dopplerClient.createListAsync).to.be.called.calledWithExactly('Fresh list');
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
-        expect(response.json).to.be.called.calledWithExactly({success: true});
+        expect(response.sendStatus).to.be.called.calledWithExactly(201);
     });
 
     it('setDopplerList should store the doppler list id in Redis', async function () {
@@ -182,7 +182,7 @@ describe('The app routes', function () {
         await appRoutes.setDopplerList(request, response);
 
         expect(modulesMocks.redisClient.storeShopAsync).to.be.called.calledWithExactly('store.myshopify.com', { dopplerListId: 15457 }, true);
-        expect(response.json).to.be.called.calledWithExactly({success: true});
+        expect(response.sendStatus).to.be.called.calledWithExactly(200);
     });
 
     it('getFields should return Shopify and Doppler fields', async function () {
@@ -241,7 +241,7 @@ describe('The app routes', function () {
                 { shopify: 'last_name', doppler: 'LASTNAME' }
             ]
         }, true);
-        expect(response.json).to.be.called.calledWithExactly({success: true});
+        expect(response.sendStatus).to.be.called.calledWithExactly(200);
     });
 
     it('synchronizeCustomers should perform the synchronization process', async function() {
@@ -322,6 +322,6 @@ describe('The app routes', function () {
             [{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]
         );
         expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456' }, true);
-        expect(response.json).to.be.calledWithExactly({ success:true });
+        expect(response.sendStatus).to.be.called.calledWithExactly(201);
     });
 });

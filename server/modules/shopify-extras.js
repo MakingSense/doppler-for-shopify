@@ -201,6 +201,6 @@ module.exports = {
         type: 'string'
       }
   ],
-  shopifyAPIClientFactory: ShopifyAPIClientFactory
+  shopifyAPIClientFactory: new ShopifyAPIClientFactory()
 }
 

@@ -4,6 +4,8 @@ const sinon = require('sinon');
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const throwsAsync = require('../../test-utilities/chai-throws-async');
+const dopplerApiResponses = require('../../test-utilities/doppler-api-responses');
+const dopplerApiPayloads = require('../../test-utilities/doppler-api-payloads');
 const expect = chai.expect;
 
 var fetchStub = sinon.stub();
@@ -13,20 +15,13 @@ describe('The doppler-client module', function () {
 
   before(function () {
     chai.use(sinonChai);
-
-    // Redirect the standard errors to a file in order to not mess the output up.
-    const access = fs.createWriteStream('test_stderr.log');
-    process.stderr.write = access.write.bind(access);
   })
  
   it('AreCredentialsValidAsync should return true when valid credentials are provided', async function () {
     fetchStub.returns(Promise.resolve({
       status: 200,
       json: async function() {
-        return { 
-          message: 'Welcome to Email Marketing Hypermedia API user@example.com, please follow the links.',
-          _links: []
-        };
+        return dopplerApiResponses.HOME_200;
       }
     }));
     
@@ -45,14 +40,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 401,
       json: async function() {
-        return { 
-          title: 'Invalid token',
-          detail: 'Authentication Token is not valid',
-          errorCode: 1,
-          status: 401,
-          type: '/docs/errors/401.1-invalid-token',
-          _links: []
-        };
+        return dopplerApiResponses.INVALID_TOKEN_401;
       }
     }));
 
@@ -66,14 +54,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 403,
       json: async function() {
-        return { 
-          status: 403,
-          title: 'Forbidden, wrong account',
-          detail: 'Your user otheruser@example.com does not have access to account user@example.com',
-          errorCode: 1,
-          type: '/docs/errors/403.1-forbidden-wrong-account',
-          _links: [] 
-        };
+        return dopplerApiResponses.FORBIDDEN_WRONG_ACCOUNT_403;
       }
     }));
 
@@ -87,14 +68,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 401,
       json: async function() {
-        return { 
-          title: 'Invalid token',
-          detail: 'Authentication Token is not valid',
-          errorCode: 1,
-          status: 401,
-          type: '/docs/errors/401.1-invalid-token',
-          _links: []
-        };
+        return dopplerApiResponses.INVALID_TOKEN_401;
       }
     }));
 
@@ -104,36 +78,32 @@ describe('The doppler-client module', function () {
     expect(result).to.be.false;
   });
 
+  it('AreCredentialsValidAsync should throw new when Doppler API calls throws an expected error', async function () {
+    fetchStub.throws(new Error('Forced Error'));
+
+    const doppler = Doppler.createClient('user@example.com', 'C22CADA13759DB9BBDF93B9D87C14D5A');
+
+    await throwsAsync(async () => { await doppler.AreCredentialsValidAsync() }, 'Unexpected error calling Doppler API');
+  });
+
+  it('AreCredentialsValidAsync should raise exception when Doppler returns Internal Server Error', async function () {
+    fetchStub.returns(Promise.resolve({
+      status: 500,
+      json: async function() {
+        return { detail: 'Doppler API throws 500' }
+      }
+    }));
+
+    const doppler = Doppler.createClient('user@example.com', 'C22CADA13759DB9BBDF93B9D87C14D5A');
+
+    await throwsAsync(async () => { await doppler.AreCredentialsValidAsync() }, 'Doppler API throws 500');
+  });
+
   it('getListsAsync should return the array of lists', async function () {
     fetchStub.returns(Promise.resolve({
       status: 200,
       json: async function() {
-        return { 
-          items:
-             [ { listId: 1459381,
-               name: 'shopify',
-               currentStatus: 'ready',
-               subscribersCount: 9,
-               creationDate: '2018-04-30T23:29:08.067Z',
-               _links: [] },
-             { listId: 1222381,
-               name: 'marketing',
-               currentStatus: 'ready',
-               subscribersCount: 4,
-               creationDate: '2018-03-22T11:47:33.497Z',
-               _links: [] },
-             { listId: 1170501,
-               name: 'development',
-               currentStatus: 'ready',
-               subscribersCount: 4,
-               creationDate: '2017-12-22T21:01:26.08Z',
-               _links: [] }],
-            pageSize: 200,
-            itemsCount: 3,
-            currentPage: 1,
-            pagesCount: 1,
-            _links: []
-        };
+        return dopplerApiResponses.LISTS_PAGE_RESULT_200;
       }
     }));
 
@@ -172,35 +142,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 200,
       json: async function() {
-        return { 
-          importDetails:
-          { listId: 776396,
-            contentType: 'application/json',
-            deleteCustomFieldsData: false,
-            status: 'completed',
-            numberOfAttempts: 0,
-            dateLastImported: '2015-12-23T01:28:31.14',
-            processed: 99,
-            invalidEmails: 0,
-            softBounceds: 0,
-            hardBounceds: 0,
-            subscriberBounceds: 0,
-            amountHeadersAndFieldsDontMatch: 0,
-            neverOpenBounceds: 0,
-            updated: 0,
-            newSubscribers: 99,
-            duplicated: 0,
-            unsubscribedByUser: 0,
-            usersInBlackList: 0,
-            duplicatedField: 0 },
-           taskType: 'import',
-           taskId: 'import-222031',
-           itemsProcessed: 99,
-           status: 'completed',
-           startDate: '2015-12-23T01:28:49.337Z',
-           finishDate: '2015-12-23T01:28:31.157Z',
-           _links: []
-         };
+        return dopplerApiResponses.IMPORT_TASK_RESULT_200;
       }
     }));
 
@@ -240,15 +182,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 404,
       json: async function() {
-        return {
-          title: "Entity Not Found",
-          detail: "Task `id:import-123456` does not exist for User `id:92651`. - Resolving `/accounts/user@example.com/tasks/import-123456`",
-          status: 404,
-          errorCode: 1,
-          resourceNotFoundPath: "/accounts/user@example.com/tasks/import-123456",
-          type: "/docs/errors/404.1-entity-not-found",
-          _links: []
-        };
+        return dopplerApiResponses.TASK_NOT_FOUND_404;
       }
     }));
 
@@ -261,11 +195,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 201,
       json: async function() {
-        return {
-          createdResourceId: "1462409",
-          message: "List successfully created",
-          _links: []
-          };
+        return dopplerApiResponses.LIST_CREATED_201;
       }
     }));
 
@@ -282,14 +212,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 400,
       json: async function() {
-        return {
-          title: "Duplicated list name",
-          status: 400,
-          errorCode: 2,
-          detail: "You've already named another List the same way (`Fresh List`).",
-          type: "/docs/errors/400.2-duplicated-list-name",
-          _links: []
-          };
+        return dopplerApiResponses.DUPLICATED_LIST_NAME_400;
       }
     }));
 
@@ -302,56 +225,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
       status: 200,
       json: async function() {
-        return {
-			items: [
-				{
-				  name: "presupuesto",
-				  predefined: false,
-				  private: true,
-				  readonly: false,
-				  type: "number",
-				  sample: "",
-				  _links: []
-				},
-				{
-				  name: "NroCliente",
-				  predefined: false,
-				  private: true,
-				  readonly: false,
-				  type: "string",
-				  sample: "",
-				  _links: []
-				},
-				{
-				  name: "FIRSTNAME",
-				  predefined: true,
-				  private: false,
-				  readonly: false,
-				  type: "string",
-				  sample: "FIRST_NAME",
-				  _links: []
-				},
-				{
-				  name: "LASTNAME",
-				  predefined: true,
-				  private: false,
-				  readonly: false,
-				  type: "string",
-				  sample: "LAST_NAME",
-				  _links: []
-				},
-				{
-				  name: "EMAIL",
-				  predefined: true,
-				  private: false,
-				  readonly: true,
-				  type: "email",
-				  sample: "EMAIL",
-				  _links: []
-				}
-			  ],
-			_links: []
-          };
+        return dopplerApiResponses.FIELDS_RESULT_200;
       }
     }));
 
@@ -419,63 +293,14 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
         status: 200,
         json: async function() {
-          return {
-              items: [
-                  {
-                    name: "presupuesto",
-                    predefined: false,
-                    private: true,
-                    readonly: false,
-                    type: "number",
-                    sample: "",
-                    _links: []
-                  },
-                  {
-                    name: "Empresa",
-                    predefined: false,
-                    private: true,
-                    readonly: false,
-                    type: "string",
-                    sample: "",
-                    _links: []
-                  },
-                  {
-                    name: "FIRSTNAME",
-                    predefined: true,
-                    private: false,
-                    readonly: false,
-                    type: "string",
-                    sample: "FIRST_NAME",
-                    _links: []
-                  },
-                  {
-                    name: "LASTNAME",
-                    predefined: true,
-                    private: false,
-                    readonly: false,
-                    type: "string",
-                    sample: "LAST_NAME",
-                    _links: []
-                  },
-                  {
-                    name: "EMAIL",
-                    predefined: true,
-                    private: false,
-                    readonly: true,
-                    type: "email",
-                    sample: "EMAIL",
-                    _links: []
-                  }
-                ],
-              _links: []
-            };
+          return dopplerApiResponses.FIELDS_RESULT_200;
         }
       }));
   
       const mapping = [
         { shopify: 'first_name', doppler: 'FIRSTNAME' },
         { shopify: 'last_name', doppler: 'LASTNAME' },
-        { shopify: 'default_address.company', doppler: 'Empresa' }
+        { shopify: 'default_address.company', doppler: 'NroCliente' }
       ];
       
       const doppler = Doppler.createClient('user@example.com', 'C22CADA13759DB9BBDF93B9D87C14D5A');
@@ -500,7 +325,7 @@ describe('The doppler-client module', function () {
             value: 'last_name'
           },
           {
-            name: "Empresa",
+            name: "NroCliente",
             predefined: false,
             private: true,
             readonly: false,
@@ -514,20 +339,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
         status: 200,
         json: async function() {
-          return {
-              items: [
-                  {
-                    name: "presupuesto",
-                    predefined: false,
-                    private: true,
-                    readonly: false,
-                    type: "number",
-                    sample: "",
-                    _links: []
-                  }
-                ],
-              _links: []
-            };
+          return dopplerApiResponses.FIELDS_RESULT_200;
         }
       }));
   
@@ -544,50 +356,24 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
         status: 200,
         json: async function() {
-          return {
-              items: [
-                  {
-                    name: "presupuesto",
-                    predefined: false,
-                    private: true,
-                    readonly: false,
-                    type: "number",
-                    sample: "",
-                    _links: []
-                  }
-                ],
-              _links: []
-            };
+          return dopplerApiResponses.FIELDS_RESULT_200;;
         }
       }));
   
       const mapping = [
-        { shopify: 'first_name', doppler: 'FIRSTNAME' }
+        { shopify: 'first_name', doppler: 'PRIMER_NOMBRE' }
       ];
       
       const doppler = Doppler.createClient('user@example.com', 'C22CADA13759DB9BBDF93B9D87C14D5A');
 
-      await throwsAsync(async () => { await doppler.createFieldsMapping(mapping);}, 'Error when mapping Shopify field "first_name": Doppler field "FIRSTNAME" does not exist.');
+      await throwsAsync(async () => { await doppler.createFieldsMapping(mapping);}, 'Error when mapping Shopify field "first_name": Doppler field "PRIMER_NOMBRE" does not exist.');
   });
 
   it('createFieldsMapping should throw an error when attempting to map inexisting Shopify field', async function() {
     fetchStub.returns(Promise.resolve({
         status: 200,
         json: async function() {
-          return {
-              items: [
-                  {
-                    name: "FIRSTNAME",
-                    predefined: false,
-                    private: true,
-                    readonly: false,
-                    type: "string",
-                    sample: "",
-                    _links: []
-                  }
-                ],
-              _links: []
-            };
+          return dopplerApiResponses.FIELDS_RESULT_200;
         }
       }));
   
@@ -604,11 +390,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
         status: 202,
         json: async function() {
-          return {
-                createdResourceId: "import-99562376",
-                message: "Import task successfully created",
-                _links: []
-            };
+          return dopplerApiResponses.IMPORT_TASK_CREATED_202;
         }
     }));
 
@@ -662,77 +444,9 @@ describe('The doppler-client module', function () {
         }
     ];
 
-    const result = await doppler.importSubscribersAsync(customers, 178945, 'my-store.myshopify.com', fieldsMap);
+    const result = await doppler.importSubscribersAsync(customers, 178945, 'store.myshopify.com', fieldsMap);
     
-    const expectedRequestBody = JSON.stringify(
-        {
-            items: [
-              {
-                email: "jonsnow@example.com",
-                fields: [
-                 {
-                    name: "FIRSTNAME",
-                    predefined: true,
-                    private: false,
-                    readonly: false,
-                    type: "string",
-                    value: 'Jon'
-                  },
-                  {
-                    name: "LASTNAME",
-                    predefined: true,
-                    private: false,
-                    readonly: false,
-                    type: "string",
-                    value: 'Snow'
-                  },
-                  {
-                    name: "Empresa",
-                    predefined: false,
-                    private: true,
-                    readonly: false,
-                    type: "string",
-                    value: 'Winterfell'
-                  }
-                ]
-              },
-              {
-                email: "nickrivers@example.com",
-                fields: [
-                 {
-                    name: "FIRSTNAME",
-                    predefined: true,
-                    private: false,
-                    readonly: false,
-                    type: "string",
-                    value: 'Nick'
-                  },
-                  {
-                    name: "LASTNAME",
-                    predefined: true,
-                    private: false,
-                    readonly: false,
-                    type: "string",
-                    value: 'Rivers'
-                  },
-                  {
-                    name: "Empresa",
-                    predefined: false,
-                    private: true,
-                    readonly: false,
-                    type: "string",
-                    value: 'Top Secret'
-                  }
-                ]
-              }
-            ],
-            fields: [
-              "FIRSTNAME", "LASTNAME", "Empresa"
-            ],
-            callback: "https://shopify.fromdoppler.com/hooks/doppler-import-completed?shop=my-store.myshopify.com",
-            enableEmailNotification: true
-          }
-    );
+    const expectedRequestBody = JSON.stringify(dopplerApiPayloads.IMPORT_SUBSCRIBERS_PAYLOAD);
 
     expect('import-99562376').to.be.eqls(result);
     expect(fetchStub).to.be.calledWithExactly('https://restapi.fromdoppler.com/accounts/user%40example.com/lists/178945/subscribers/import',
@@ -743,10 +457,7 @@ describe('The doppler-client module', function () {
     fetchStub.returns(Promise.resolve({
         status: 200,
         json: async function() {
-          return {
-            message: "Subscriber successfully added to List",
-            _links: []
-          };
+          return dopplerApiResponses.SUBSCRIBER_ADDED_TO_LIST_200;
         }
     }));
 

@@ -1,21 +1,30 @@
 require('isomorphic-fetch');
 require('dotenv').config();
 
+const fetch = require('node-fetch');
+const redis = require('redis');
 const fs = require('fs');
+
 const express = require('express');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const path = require('path');
 const logger = require('morgan');
+const bodyParser = require('body-parser');
 
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('../config/webpack.config.js');
 
-const ShopifyAPIClient = require('shopify-api-node');
 const ShopifyExpress = require('@shopify/shopify-express');
 const { RedisStrategy } = require('@shopify/shopify-express/strategies');
+
+const shopifyClientFactory = require('./modules/shopify-extras');
+const dopplerClientFactory = require('./modules/doppler-client')(fetch);
+const redisClientFactory = require('./modules/redis-client')(redis);
+const AppRoutes = require('./routes/app-routes');
+const HooksRoutes = require('./routes/hooks-routes');
 
 const {
   SHOPIFY_APP_KEY,
@@ -42,33 +51,29 @@ const shopifyConfig = {
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
 
-    registerWebhook(shop, accessToken, {
-      topic: 'orders/create',
-      address: `${SHOPIFY_APP_HOST}/order-create`,
-      format: 'json'
-    });
+    const shopifyClient = shopifyClientFactory.shopifyAPIClientFactory.createClient(shop, accessToken);
 
-    return response.redirect('/');
+    shopifyClient.webhook.create({
+      topic: 'app/uninstalled',
+      address: `${SHOPIFY_APP_HOST}/hooks/app/uninstalled`,
+      format: 'json'
+    })
+    .then(() => {})
+    .catch(err => console.error(err));
+    
+    response.redirect('/');
   },
 };
 
-const registerWebhook = function(shopDomain, accessToken, webhook) {
-  const shopify = new ShopifyAPIClient({ shopName: shopDomain, accessToken: accessToken });
-  shopify.webhook.create(webhook).then(
-    response => console.log(`webhook '${webhook.topic}' created`),
-    err => console.log(`Error creating webhook '${webhook.topic}'. ${JSON.stringify(err.response.body)}`)
-  );
-}
-
 const app = express();
-const isDevelopment = NODE_ENV !== 'production';
+const isDevelopment = NODE_ENV !== 'production' && NODE_ENV !== 'test';
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(
   session({
-    store: new RedisStore(redisConfig),
+    store: RedisStore ? new RedisStore(redisConfig) : undefined,
     secret: SHOPIFY_APP_SECRET,
     resave: true,
     saveUninitialized: false,
@@ -112,26 +117,66 @@ const {withShop, withWebhook} = middleware;
 
 app.use('/shopify', routes);
 
-// Client
-app.get('/', withShop({authBaseUrl: '/shopify'}), function(request, response) {
-  const { session: { shop, accessToken } } = request;
-  response.render('app', {
-    title: 'Shopify Node App',
-    apiKey: shopifyConfig.apiKey,
-    shop: shop,
-  });
-});
+// App routes
+const appRoutes = new AppRoutes(redisClientFactory, dopplerClientFactory, shopifyClientFactory.shopifyAPIClientFactory);
 
-app.post('/order-create', withWebhook((error, request) => {
-  if (error) {
-    console.error(error);
-    return;
-  }
+function wrapAsync(fn) {
+  return function(req, res, next) {
+    // Make sure to `.catch()` any errors and pass them along to the `next()`
+    // middleware in the chain, in this case the error handler.
+    fn(req, res, next).catch(next);
+  };
+}
 
-  console.log('We got a webhook!');
-  console.log('Details: ', request.webhook);
-  console.log('Body:', request.body);
+app.get('/', 
+  withShop({authBaseUrl: '/shopify'}),
+  wrapAsync((req, res) => appRoutes.home(req, res)));
+
+app.post('/connect-to-doppler', 
+  withShop({authBaseUrl: '/shopify'}), 
+  bodyParser.json(),
+  wrapAsync((req, res) => appRoutes.connectToDoppler(req, res)));
+
+app.get('/doppler-lists', 
+  withShop({authBaseUrl: '/shopify'}),
+  wrapAsync((req, res) => appRoutes.getDopplerLists(req, res)));
+
+app.post('/create-doppler-list', 
+  withShop({authBaseUrl: '/shopify'}), 
+  bodyParser.json(),
+  wrapAsync((req, res) => appRoutes.createDopplerList(req, res)));
+
+app.post('/doppler-list', 
+  withShop({authBaseUrl: '/shopify'}), 
+  bodyParser.json(),
+  wrapAsync((req, res) => appRoutes.setDopplerList(req, res)));
+
+app.get('/fields', 
+  withShop({authBaseUrl: '/shopify'}), 
+  wrapAsync((req, res) => appRoutes.getFields(req, res)));
+
+app.post('/fields-mapping', 
+  withShop({authBaseUrl: '/shopify'}), 
+  bodyParser.json(),
+  wrapAsync((req, res) => appRoutes.setFieldsMapping(req, res)));
+
+app.post('/synchronize-customers', 
+  withShop({authBaseUrl: '/shopify'}), 
+  wrapAsync((req, res) => appRoutes.synchronizeCustomers(req, res)));
+
+// Hooks routes
+const hooksRoutes = new HooksRoutes(redisClientFactory, dopplerClientFactory, shopifyClientFactory.shopifyAPIClientFactory);
+
+app.post('/hooks/app/uninstalled',  withWebhook(async (error, request) => {
+    await hooksRoutes.appUninstalled(error, request);
 }));
+
+app.post('/hooks/customers/created', withWebhook(async (error, request) => {
+  await hooksRoutes.customerCreated(error, request);
+}));
+
+app.post('/hooks/doppler-import-completed', 
+  wrapAsync((req, res) => hooksRoutes.dopplerImportTaskCompleted(req, res)));
 
 // Error Handlers
 app.use(function(req, res, next) {
@@ -141,6 +186,7 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(error, request, response, next) {
+
   response.locals.message = error.message;
   response.locals.error = request.app.get('env') === 'development' ? error : {};
 

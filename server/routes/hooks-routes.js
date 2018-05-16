@@ -8,23 +8,22 @@ class HooksRoutes {
 
     async appUninstalled(error, request) {
         if (error) {
-            console.error(error);
             return;
         }
-        const jsonPayload = JSON.parse(request.body);
+        
+        const shopDomain = request.webhook.shopDomain;
+
         const redis = this.redisClientFactory.createClient();
-        await redis.removeShopAsync(jsonPayload.domain, true);
+        await redis.removeShopAsync(shopDomain, true);
     }
 
     async customerCreated(error, request) {
         if (error) {
-            console.error(error);
             return;
         }
 
         const redis = this.redisClientFactory.createClient();
-        const shopDomain = request.get('X-Shopify-Shop-Domain');
-        const shopInstance = await redis.getShopAsync(shopDomain, true);
+        const shopInstance = await redis.getShopAsync(request.webhook.shopDomain, true);
         
         if (shopInstance == null || shopInstance.dopplerListId == null) return;
 

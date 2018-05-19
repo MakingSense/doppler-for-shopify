@@ -178,6 +178,10 @@ app.post('/hooks/customers/created', withWebhook(async (error, request) => {
 app.post('/hooks/doppler-import-completed', 
   wrapAsync((req, res) => hooksRoutes.dopplerImportTaskCompleted(req, res)));
 
+app.get('/*', (req, res) => {
+  res.redirect('/');
+});
+
 // Error Handlers
 app.use(function(req, res, next) {
   const err = new Error('Not Found');
@@ -191,7 +195,7 @@ app.use(function(error, request, response, next) {
   response.locals.error = request.app.get('env') === 'development' ? error : {};
 
   response.status(error.status || 500);
-  response.render('error');
+  response.send(error.message);
 });
 
 module.exports = app;

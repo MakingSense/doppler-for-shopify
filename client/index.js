@@ -1,16 +1,22 @@
-import * as React from 'react';
-import 'isomorphic-fetch';
+
+import React from 'react';import 'isomorphic-fetch';
+import { Router, browserHistory } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';
+import routes from './routes';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { AppContainer } from 'react-hot-loader';
-import store from '../client/store';
-import App from './App';
+import configureStore from './store/configureStore';
+
+const store = configureStore();
+
+const history = syncHistoryWithStore(browserHistory, store);
 
 function renderApp() {
   render(
     <AppContainer>
       <Provider store={store}>
-        <App />
+        <Router history={history} routes={routes} />
       </Provider>
     </AppContainer>,
     document.getElementById('root')

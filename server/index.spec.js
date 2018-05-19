@@ -83,11 +83,11 @@ describe('Server integration tests', function() {
         this.sandbox.restore();
     });
 
-    it('Should return 404 status code for invalid URL', async function(){
+    it('Should return 302 status code for invalid URL', async function(){
         await request(app)
                 .get(`/foo/bar`)
                 .expect(function(res) {
-                    expect(404).to.be.eql(res.statusCode);
+                    expect(302).to.be.eql(res.statusCode);
                 });
     })
 

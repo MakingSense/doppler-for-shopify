@@ -1,8 +1,9 @@
 import React, { Component} from 'react';
+import { connect } from 'react-redux';
 import { Page } from '@shopify/polaris';
 import { EmbeddedApp } from '@shopify/polaris/embedded';
-
-import ApiConsole from './components/ApiConsole'
+import ErrorBanner from './error_banner/ErrorBanner';
+import Icon from '../../dist/images/doppler-icon.png'
 
 class App extends Component {
   render() {
@@ -10,16 +11,13 @@ class App extends Component {
 
     return (
       <EmbeddedApp shopOrigin={shopOrigin} apiKey={apiKey}>
-        <Page
-          title="My application"
-          breadcrumbs={[{ content: 'Home', url: '/foo' }]}
-          primaryAction={{ content: 'Add something' }}
-        >
-          <ApiConsole />
+        <Page icon={Icon}>
+          <ErrorBanner />
+          {this.props.children}
         </Page>
       </EmbeddedApp>
     );
   }
 }
 
-export default App;
+export default connect()(App);

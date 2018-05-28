@@ -293,8 +293,10 @@ describe('Server integration tests', function() {
                 .send({ name: 'Fresh List' })
                 .set('cookie', cookie)
                 .expect(function(res) {
+                    console.debug(res.body);
+                    expect(res.body).to.be.eql({ listId: '1462409' });
                     expect(201).to.be.eql(res.statusCode);
-            });
+                });
         });
         
         it ('Should return 500 status code when there is not a Doppler API key', async function() {

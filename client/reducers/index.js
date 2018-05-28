@@ -7,12 +7,16 @@ import {
 import {
     connectingToDoppler
   } from './connectToDopplerReducer';
+import {
+    setupDopplerList
+} from './setupDopplerListReducer';
 import { combineReducers } from 'redux';
 
 const rootReducer = combineReducers({
     appSetup,
     errorHandling,
-    connectingToDoppler
+    connectingToDoppler,
+    setupDopplerList
 });
 
 export default rootReducer;

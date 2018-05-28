@@ -25,7 +25,8 @@ class AppRoutes {
         title: 'Doppler for Shopify',
         apiKey: process.env.SHOPIFY_APP_KEY,
         shop: shop,
-        dopplerAccountName: shopInstance.dopplerAccountName
+        dopplerAccountName: shopInstance.dopplerAccountName,
+        dopplerListId: shopInstance.dopplerListId
       });
   }
 
@@ -64,9 +65,16 @@ class AppRoutes {
     const shopInstance = await redis.getShopAsync(shop, true);
 
     const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
-    const lists = await doppler.createListAsync(name);
 
-    response.sendStatus(201);
+    try {
+      const listId = await doppler.createListAsync(name);
+      response.status(201).send({ listId });
+    } catch (error) {
+      if (error.errorCode === 2 && error.statusCode === 400)
+        response.sendStatus(400);
+      else
+        throw error;
+    }
   }
 
   async setDopplerList(request, response) {

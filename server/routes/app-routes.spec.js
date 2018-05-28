@@ -29,7 +29,8 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
             .returns(Promise.resolve({ 
                 accessToken: 'fb5d67a5bd67ab5d67ab5d',
-                dopplerAccountName: 'user@example.com'
+                dopplerAccountName: 'user@example.com',
+                dopplerListId: 46273
             }));
 
         const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
@@ -39,7 +40,8 @@ describe('The app routes', function () {
             title: 'Doppler for Shopify',
             apiKey: '1234567890',
             shop: 'store.myshopify.com',
-            dopplerAccountName: 'user@example.com'
+            dopplerAccountName: 'user@example.com',
+            dopplerListId: 46273
         });
 
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
@@ -159,14 +161,41 @@ describe('The app routes', function () {
                 dopplerAccountName: 'user@example.com'
             }));
 
-        this.sandbox.stub(modulesMocks.dopplerClient, 'createListAsync');
+        this.sandbox.stub(modulesMocks.dopplerClient, 'createListAsync')
+            .returns(Promise.resolve(458712));
 
         const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
         await appRoutes.createDopplerList(request, response);
 
         expect(modulesMocks.dopplerClient.createListAsync).to.be.called.calledWithExactly('Fresh list');
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
-        expect(response.sendStatus).to.be.called.calledWithExactly(201);
+        expect(response.status).to.be.called.calledWithExactly(201);
+        expect(response.send).to.be.called.calledWithExactly({listId:458712});
+    });
+
+    it('createDopplerList should 400 status code when duplicated list name', async function () {
+        const request = sinonMock.mockReq(
+            {
+                session: { shop: 'store.myshopify.com' },
+                body: { name: 'Fresh list' }
+            });
+        const response = sinonMock.mockRes();
+        this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
+            .returns(Promise.resolve({ 
+                accessToken: 'ae768b8c78d68a54565434',
+                dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A', 
+                dopplerAccountName: 'user@example.com'
+            }));
+
+        this.sandbox.stub(modulesMocks.dopplerClient, 'createListAsync')
+            .throws({statusCode:400, errorCode:2});
+
+        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appRoutes.createDopplerList(request, response);
+
+        expect(modulesMocks.dopplerClient.createListAsync).to.be.called.calledWithExactly('Fresh list');
+        expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
+        expect(response.sendStatus).to.be.called.calledWithExactly(400);
     });
 
     it('setDopplerList should store the doppler list id in Redis', async function () {

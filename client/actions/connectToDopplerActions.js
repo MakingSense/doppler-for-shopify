@@ -23,7 +23,7 @@ export function connectToDoppler({dopplerAccountName, dopplerApiKey}) {
         .then(success => {
           dispatch(connectingToDoppler(false));
           if (success)
-            dispatch(push('/'));// TODO: actually should push to the next view.
+            dispatch(push('/app/setup-doppler-list'));
           else
             dispatch(changeDopplerCredentialValiationStatus(false));
         })

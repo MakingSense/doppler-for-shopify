@@ -3,9 +3,10 @@ const shopify = require ('./shopify-extras');
 const baseUrl = 'https://restapi.fromdoppler.com';
 
 class DopplerApiError extends Error {
-    constructor (statusCode, message) {
+    constructor (statusCode, errorCode, message) {
         super(message);
         this.statusCode = statusCode;
+        this.errorCode = errorCode;
     }
 }
 
@@ -29,7 +30,8 @@ const sendRequestAsync = async function(fetch, url, fetchOptions) {
             ? `${responseBody.title ? `${responseBody.title}: ` : ''}${responseBody.detail ? responseBody.detail : ''}`
             : 'Unexpected error';
 
-        throw new DopplerApiError(response.status, msg);
+        const errorCode = responseBody ? responseBody.errorCode : null;
+        throw new DopplerApiError(response.status, errorCode, msg);
     }
 
     return responseBody
@@ -69,7 +71,7 @@ class Doppler {
 
     async createListAsync(listName) {
         const url = `${baseUrl}/accounts/${this.accountName}/lists`;
-
+        
         const responseBody = await sendRequestAsync(this.fetch, url,  { 
             method:'POST', 
             body: JSON.stringify({name: listName}),

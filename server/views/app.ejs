@@ -12,8 +12,8 @@
       window.apiKey = "<%= apiKey %>";
       window.shopOrigin = "https://<%= shop %>";
       window.dopplerAccountName = "<%= dopplerAccountName %>";
-      window.dopplerListId = <%= dopplerListId %>;
-      window.fieldsMapping = <%- fieldsMapping %>;
+      window.dopplerListId = <%- dopplerListId ? dopplerListId : 'null' %>;
+      window.fieldsMapping = <%- fieldsMapping ? fieldsMapping : 'null' %>;
 
       const shopifyAppConfig = {
         apiKey: window.apiKey,

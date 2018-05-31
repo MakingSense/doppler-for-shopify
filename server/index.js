@@ -46,7 +46,7 @@ const shopifyConfig = {
   host: SHOPIFY_APP_HOST,
   apiKey: SHOPIFY_APP_KEY,
   secret: SHOPIFY_APP_SECRET,
-  scope: ['write_orders, write_products'],
+  scope: ['read_customers', 'write_customers'],
   shopStore: new RedisStrategy(redisConfig),
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;

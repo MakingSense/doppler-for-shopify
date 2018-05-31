@@ -28,7 +28,7 @@ class AppRoutes {
         shop: shop,
         dopplerAccountName: shopInstance.dopplerAccountName,
         dopplerListId: shopInstance.dopplerListId,
-        fieldsMapping: shopInstance.fieldsMapping ? shopInstance.fieldsMapping : null
+        fieldsMapping: shopInstance.fieldsMapping
       });
   }
 

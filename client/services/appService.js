@@ -37,8 +37,6 @@ class AppService {
         .then(response =>  {
             if (response.status === 200)  
                 return response.json();
-            else if (response.status === 401)
-                return false;
             
             throw response.text();
         });
@@ -66,7 +64,6 @@ class AppService {
         });
     }
 
-
     static setDopplerList(dopplerListId) {
         const request = new Request('/doppler-list', {
             method: 'POST',
@@ -76,6 +73,45 @@ class AppService {
             },
             credentials: 'include',
             body: JSON.stringify({ dopplerListId })
+        });
+    
+        return fetch(request)
+        .then(response =>  {
+            if (response.status === 200)
+                return 1;
+            
+            throw response.text();
+        });
+    }
+
+    static getFields() {
+        const request = new Request('/fields', {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
+    
+        return fetch(request)
+        .then(response =>  {
+            if (response.status === 200)  
+                return response.json();
+            
+            throw response.text();
+        });
+    }
+
+    static setFieldsMapping(fieldsMapping) {
+        const request = new Request('/fields-mapping', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ fieldsMapping })
         });
     
         return fetch(request)

@@ -35,7 +35,7 @@ class CreateListModal extends Component {
   }
 
   render() {
-    return<div style={{minWidth: "50rem"}}>  
+    return <div style={{minWidth: "50rem"}}>  
             <Layout>
                 <Layout.Section>
                   <Card primaryFooterAction={{

@@ -10,13 +10,18 @@ import {
 import {
     setupDopplerList
 } from './setupDopplerListReducer';
+import {
+    fieldsMapping
+} from './fieldsMappingReducer';
+
 import { combineReducers } from 'redux';
 
 const rootReducer = combineReducers({
     appSetup,
     errorHandling,
     connectingToDoppler,
-    setupDopplerList
+    setupDopplerList,
+    fieldsMapping
 });
 
 export default rootReducer;

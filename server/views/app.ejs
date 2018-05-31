@@ -9,10 +9,11 @@
     <script src="https://cdn.shopify.com/s/assets/external/app.js"></script>
 
     <script>
-      window.apiKey = "<%= apiKey %>"
-      window.shopOrigin = "https://<%= shop %>"
-      window.dopplerAccountName = "<%= dopplerAccountName %>"
-      window.dopplerListId = <%= dopplerListId %>
+      window.apiKey = "<%= apiKey %>";
+      window.shopOrigin = "https://<%= shop %>";
+      window.dopplerAccountName = "<%= dopplerAccountName %>";
+      window.dopplerListId = <%= dopplerListId %>;
+      window.fieldsMapping = <%- fieldsMapping %>;
 
       const shopifyAppConfig = {
         apiKey: window.apiKey,

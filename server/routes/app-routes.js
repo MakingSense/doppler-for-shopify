@@ -12,6 +12,7 @@ class AppRoutes {
       const { session: { shop, accessToken } } = request;
       
       const redis = this.redisClientFactory.createClient();
+
       const shopInstance = await redis.getShopAsync(shop, true);
 
       // TODO: - should we move this to middleware in order to filter all requests? 
@@ -26,7 +27,8 @@ class AppRoutes {
         apiKey: process.env.SHOPIFY_APP_KEY,
         shop: shop,
         dopplerAccountName: shopInstance.dopplerAccountName,
-        dopplerListId: shopInstance.dopplerListId
+        dopplerListId: shopInstance.dopplerListId,
+        fieldsMapping: shopInstance.fieldsMapping ? shopInstance.fieldsMapping : null
       });
   }
 
@@ -102,7 +104,8 @@ class AppRoutes {
     const { session: { shop }, body: { fieldsMapping } } = request;
     
     const redis = this.redisClientFactory.createClient();
-    const shopInstance = await redis.storeShopAsync(shop, { fieldsMapping }, true);
+    
+    await redis.storeShopAsync(shop, { fieldsMapping: JSON.stringify(fieldsMapping) }, true);
 
     response.sendStatus(200);
   }

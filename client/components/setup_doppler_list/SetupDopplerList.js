@@ -7,7 +7,7 @@ import {
     Heading,
     TextContainer,
     Select } from '@shopify/polaris';
-import Modal from 'react-responsive-modal';    
+import Modal from 'react-responsive-modal';
 import CreateListModal from './CreateListModal';
 import * as setupDopplerListActions from '../../actions/SetupDopplerListActions';
 
@@ -53,8 +53,7 @@ class SetupDopplerList extends Component {
               <TextContainer spacing="loose">
                   <Heading>Sync your store to a Doppler list</Heading>
                   <p>Your Doppler account is connected to MS. Increase sales by automations such as abandoned carts, product retargeting and order notification emails powered by Doppler.</p>
-                  <p>Select a list to sync to your store.
-                  </p>
+                  <p>Select a list to sync to your store.</p>
                   <Select options={this.props.dopplerLists}
                           value={this.props.selectedListId} 
                           onChange={this.handleSelectedListChange}
@@ -88,7 +87,7 @@ function mapStatesToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({...setupDopplerListActions}, dispatch, dispatch)
+    actions: bindActionCreators({...setupDopplerListActions}, dispatch)
   };
 }
 

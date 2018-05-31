@@ -30,7 +30,8 @@ describe('The app routes', function () {
             .returns(Promise.resolve({ 
                 accessToken: 'fb5d67a5bd67ab5d67ab5d',
                 dopplerAccountName: 'user@example.com',
-                dopplerListId: 46273
+                dopplerListId: 46273,
+                fieldsMapping: '[{"s1":"d1"}]'
             }));
 
         const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
@@ -41,7 +42,8 @@ describe('The app routes', function () {
             apiKey: '1234567890',
             shop: 'store.myshopify.com',
             dopplerAccountName: 'user@example.com',
-            dopplerListId: 46273
+            dopplerListId: 46273,
+            fieldsMapping: '[{"s1":"d1"}]'
         });
 
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
@@ -265,11 +267,7 @@ describe('The app routes', function () {
         await appRoutes.setFieldsMapping(request, response)
 
         expect(modulesMocks.redisClient.storeShopAsync).to.be.called.calledWithExactly('store.myshopify.com',{
-            fieldsMapping: [
-                { shopify: 'first_name', doppler: 'FIRSTNAME' },
-                { shopify: 'last_name', doppler: 'LASTNAME' }
-            ]
-        }, true);
+            fieldsMapping: '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]'}, true);
         expect(response.sendStatus).to.be.called.calledWithExactly(200);
     });
 

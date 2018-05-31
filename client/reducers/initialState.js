@@ -1,4 +1,4 @@
-const { dopplerAccountName } = window;
+const { dopplerAccountName, dopplerListId, fieldsMapping } = window;
 
 export default {
     connectingToDoppler: {
@@ -14,13 +14,29 @@ export default {
         creatingList: false,
         duplicatedListName: false,
     },
+    fieldsMapping: {
+        settingFieldsMapping: false,
+        retrievingFields: false,
+        requestingFieldMappingUpsert: false,
+        requestingRemoveMappedField: false,
+        mappedFieldToRemove: null,
+        shopifyFields: [],
+        dopplerFields: [],
+        fieldsMapping: fieldsMapping 
+        ? fieldsMapping
+        : [
+            { shopify: 'first_name', doppler: 'FIRSTNAME' },
+            { shopify: 'last_name', doppler: 'LASTNAME' }
+          ]
+    },
     errorHandling: {
         showErrorBanner: false,
         errorMessage: ''
     },
     appSetup: {
         appName: 'Doppler for Shopify',
-        dopplerAccountName
+        dopplerAccountName,
+        dopplerListId
     }
 }
   

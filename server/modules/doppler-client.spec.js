@@ -239,6 +239,7 @@ describe('The doppler-client module', function () {
         predefined: false,
         private: true,
         readonly: false,
+        sample: "",
         type: "number"
       },
       {
@@ -246,6 +247,7 @@ describe('The doppler-client module', function () {
         predefined: false,
         private: true,
         readonly: false,
+        sample: "",
         type: "string"
       },
       {
@@ -253,6 +255,7 @@ describe('The doppler-client module', function () {
         predefined: true,
         private: false,
         readonly: false,
+        sample: "FIRST_NAME",
         type: "string"
       },
       {
@@ -260,6 +263,7 @@ describe('The doppler-client module', function () {
         predefined: true,
         private: false,
         readonly: false,
+        sample: "LAST_NAME",
         type: "string"
       },
       {
@@ -267,6 +271,7 @@ describe('The doppler-client module', function () {
         predefined: true,
         private: false,
         readonly: true,
+        sample: "EMAIL",
         type: "email"
       }]);
 
@@ -314,6 +319,7 @@ describe('The doppler-client module', function () {
             private: false,
             readonly: false,
             type: "string",
+            sample: "FIRST_NAME",
             value: 'first_name'
           },
           {
@@ -322,6 +328,7 @@ describe('The doppler-client module', function () {
             private: false,
             readonly: false,
             type: "string",
+            sample: "LAST_NAME",
             value: 'last_name'
           },
           {
@@ -330,6 +337,7 @@ describe('The doppler-client module', function () {
             private: true,
             readonly: false,
             type: "string",
+            sample: "",
             value: 'default_address.company'
           }
       ]);

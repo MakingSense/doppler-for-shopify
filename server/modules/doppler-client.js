@@ -92,6 +92,7 @@ class Doppler {
                 name: field.name,
                 readonly: field.readonly,
                 type: field.type,
+                sample: field.sample,
                 private: field.private
             } 
         });

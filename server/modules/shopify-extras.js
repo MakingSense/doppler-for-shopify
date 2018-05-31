@@ -24,13 +24,13 @@ module.exports = {
         name: 'Created At',
         path: 'created_at', 
         sample: '2018-04-27T15:15:25-04:00',
-        type: 'string'
+        type: 'date'
       },
       {
         name: 'Updated At',
         path: 'updated_at', 
         sample: '2018-04-27T15:15:25-04:00',
-        type: 'string'
+        type: 'date'
       },
       {
         name: 'First Name',
@@ -189,7 +189,7 @@ module.exports = {
         type: 'string'
       },
       {
-        name: 'Country Name',
+        name: 'Country Code',
         path: 'default_address.country_code',
         sample: 'AR',
         type: 'country'

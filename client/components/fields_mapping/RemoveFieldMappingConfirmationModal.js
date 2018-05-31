@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Layout, Card } from '@shopify/polaris';
+import { Layout, Card, Heading, Stack, ButtonGroup, Button, Icon } from '@shopify/polaris';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
 
 class RemoveFieldMappingConfirmationModal extends Component {
@@ -23,11 +23,20 @@ class RemoveFieldMappingConfirmationModal extends Component {
     return <div>  
     <Layout>
         <Layout.Section>
-          <Card primaryFooterAction={{ content: "Yes", onAction: this.handleYesButtonClick}}
-                secondaryFooterAction={{ content: "No", onAction: this.handleNoButtonClick}}>
+          <Card>
             <div style={{margin: "2rem"}}>
-                <p>You're about to remove the mapped field <strong>{this.props.mappedFieldToRemove}</strong></p>
+                <Heading>Delete confirmation</Heading>
+                <br/>
+                <p>You're about to delete the mapped field <strong>{this.props.mappedFieldToRemove}</strong></p>
                 <p>Do you want to continue?</p>
+            </div>
+            <div style={{margin: "0 2rem 2rem 0"}}>
+              <Stack alignment="center" distribution="trailing">
+                <ButtonGroup>
+                  <Button onClick={this.handleYesButtonClick} destructive>Yes</Button>
+                  <Button onClick={this.handleNoButtonClick}>No</Button>
+                </ButtonGroup>
+              </Stack>
             </div>
           </Card>
         </Layout.Section>

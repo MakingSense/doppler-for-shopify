@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Layout, Card, TextContainer, Heading, DataTable, Link, Icon } from '@shopify/polaris';
+import { Layout, Card, TextContainer, Heading, DataTable, Button, PageActions } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
 import UpsertFieldMappingModal from './UpsertFieldMappingModal';
@@ -52,7 +52,7 @@ class FieldsMapping extends Component {
         .map(m => {
             const dopplerField = this.props.dopplerFields.find(df => df.name === m.doppler);
             const shopifyField = this.props.shopifyFields.find(cf => cf.path === m.shopify);
-            return [shopifyField.name, dopplerField.name, shopifyField.type,<Link url="#" onClick={this.handleOpenRemoveModal(shopifyField.path)}><Icon source="delete" /></Link>]
+            return [shopifyField.name, dopplerField.name, shopifyField.type,<Button onClick={this.handleOpenRemoveModal(shopifyField.path)} icon="delete" size="slim"/>]
         });
     ret.unshift([<strong>Email</strong>, <strong>EMAIL</strong>, 'string', '']);
     return ret;
@@ -66,16 +66,15 @@ class FieldsMapping extends Component {
     return <div>
     <Layout>
     <Layout.Section>
-      <Card primaryFooterAction={{content: "Next", loading: this.props.retrievingFields || this.props.settingFieldsMapping, onAction: this.handleSetFieldsMappingClick}}
-        secondaryFooterAction={{content: "Map A New Field", onAction: this.handleOpenModal, disabled: this.props.retrievingFields || this.props.settingFieldsMapping}}>
+      <Card>
         <div style={{margin: "2rem"}}>
           <TextContainer spacing="loose">
               <Heading>Map your Shopify customer fields to your Doppler subscriber fields</Heading>
-              <p>Your Doppler account is connected to MS. Increase sales by automations such as abandoned carts, product retargeting and order notification emails powered by Doppler.</p>
+              <p>Map one-to-one the data of your Shopify customers to your Doppler subscriber fields. For each new customer a new subscriber will be created based on this mapping.</p>
           </TextContainer>
         </div>
         <div style={{margin: "0 2rem 2rem 2rem"}}>
-        <DataTable
+          <DataTable
             columnContentTypes={[
               'text',
               'text',
@@ -89,6 +88,21 @@ class FieldsMapping extends Component {
               ''
             ]}
             rows={this.createDataTableRows()}
+          />
+          <PageActions
+            primaryAction={{
+              content: 'Save',
+              loading: this.props.retrievingFields || this.props.settingFieldsMapping, 
+              onAction: this.handleSetFieldsMappingClick
+            }}
+            secondaryActions={[
+              {
+                icon: 'add',
+                content: 'New Field', 
+                onAction: this.handleOpenModal, 
+                disabled: this.props.retrievingFields || this.props.settingFieldsMapping
+              }
+            ]}
           />
         </div>
       </Card>

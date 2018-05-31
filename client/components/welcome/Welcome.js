@@ -1,6 +1,6 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { push } from 'react-router-redux';
 import { Layout, ButtonGroup, Button, TextContainer, DisplayText, TextStyle, Image } from '@shopify/polaris';
 
 import ConnectedImage from '../../../dist/images/connected.svg';
@@ -8,6 +8,11 @@ import ConnectedImage from '../../../dist/images/connected.svg';
 class Welcome extends Component {
   constructor(props) {
     super(props);
+    this.handleConnectButtonClick = this.handleConnectButtonClick.bind(this);
+  }
+
+  handleConnectButtonClick() {
+    this.props.dispatch(push("/app/connect-to-doppler"));
   }
 
   render() {
@@ -16,15 +21,17 @@ class Welcome extends Component {
         <div style={{ marginTop: "2rem" }}>
           <TextContainer spacing="loose">
             <DisplayText size="large">Connect your Doppler account</DisplayText>
+            <br/>
             <TextStyle variation="subdued">
-              <DisplayText size="small" >Streamline your workflow, sync customer data,
-              generate more revenue, and grow your business.</DisplayText>
+              <DisplayText size="small" >Follow a few steps to set up your account and 
+               sync customer data, generate more revenue,
+               and grow your business.</DisplayText>
             </TextStyle>
           </TextContainer>
         </div>
         <div style={{ marginTop: "2rem" }}>
           <ButtonGroup>
-            <Link to="/app/connect-to-doppler"><Button primary>Connect to Doppler</Button></Link>
+            <Button primary onClick={this.handleConnectButtonClick}>Connect to Doppler</Button>
             <Button external url="https://app2.fromdoppler.com/Registration/Register/StartRegistration/">Create new account</Button>
           </ButtonGroup>
         </div>

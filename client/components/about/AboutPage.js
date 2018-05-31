@@ -5,18 +5,11 @@ class AboutPage extends React.Component {
     return (
       <div>
         <h1>About</h1>
-        <p>This application uses Node, React, Redux, React Router and a variety of other helpful libraries</p>
+        <p>This application belongs to Making Sense LLC</p>
         <h2>Details</h2>
-        <h3>Backend Stack</h3>
-        <ul>
-          <li>NodeJS</li>
-        </ul>
-        <h3>Frontend Stack</h3>
-        <ul>
-          <li>React</li>
-          <li>Redux</li>
-        </ul>
-
+        <p>Based on the <a href="https://github.com/Shopify/shopify-node-app">Shopify Node App</a> and the brilliant ideas from the <a href="https://github.com/MakingSense/mern-seed/">MERN seed</a></p>
+        <a href="https://www.fromdoppler.com/">Doppler</a>
+        <a href="https://makingsense.com/">Making Sense LLC</a>
       </div>
     );
   }

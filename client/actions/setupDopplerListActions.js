@@ -106,7 +106,7 @@ export function setDopplerList(selectedListId) {
     return appService.setDopplerList(selectedListId)
       .then(response => {
         dispatch(settingDopplerList(false));
-        // dispatch(push('/app/welcome'));
+        dispatch(push('/app/fields-mapping'));
       })
       .catch(errorPromise => {
         dispatch(settingDopplerList(false));

@@ -6,7 +6,8 @@ import {
     Card,
     Heading,
     TextContainer,
-    Select } from '@shopify/polaris';
+    Select,
+    PageActions } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import CreateListModal from './CreateListModal';
 import * as setupDopplerListActions from '../../actions/SetupDopplerListActions';
@@ -47,18 +48,33 @@ class SetupDopplerList extends Component {
     return <div>
       <Layout>
         <Layout.Section>
-          <Card secondaryFooterAction={{content: "Create a New Doppler List", onAction: this.handleOpenModal, disabled: this.props.retrievingDopplerLists || this.props.settingDopplerList }}
-            primaryFooterAction={{content: "Next", onAction: this.handleSetListButtonClick, disabled: !this.props.selectedListId, loading: this.props.retrievingDopplerLists || this.props.settingDopplerList}}>
+          <Card>
             <div style={{margin: "2rem"}}>
               <TextContainer spacing="loose">
                   <Heading>Sync your store to a Doppler list</Heading>
-                  <p>Your Doppler account is connected to MS. Increase sales by automations such as abandoned carts, product retargeting and order notification emails powered by Doppler.</p>
+                  <p>Your Doppler account is now connected. Increase sales by automations such as abandoned carts, product retargeting and order notification emails powered by Doppler.</p>
                   <p>Select a list to sync to your store.</p>
                   <Select options={this.props.dopplerLists}
                           value={this.props.selectedListId} 
                           onChange={this.handleSelectedListChange}
                           disabled={!this.props.dopplerLists.length || this.props.retrievingDopplerLists || this.props.settingList }/>
               </TextContainer>
+              <PageActions
+                primaryAction={{
+                  content: 'Save',
+                  disabled: !this.props.selectedListId,
+                  loading: this.props.retrievingDopplerLists || this.props.settingDopplerList,
+                  onAction: this.handleSetListButtonClick
+                }}
+                secondaryActions={[
+                  {
+                    icon: 'add',
+                    content: 'New List', 
+                    onAction: this.handleOpenModal, 
+                    disabled: this.props.retrievingDopplerLists || this.props.settingDopplerList
+                  }
+                ]}
+              />
             </div>
           </Card>
         </Layout.Section>

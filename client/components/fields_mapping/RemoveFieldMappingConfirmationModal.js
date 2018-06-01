@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Layout, Card, Heading, Stack, ButtonGroup, Button, Icon } from '@shopify/polaris';
+import { Layout, Card, Stack, ButtonGroup, Button } from '@shopify/polaris';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
 
 class RemoveFieldMappingConfirmationModal extends Component {
@@ -20,28 +20,20 @@ class RemoveFieldMappingConfirmationModal extends Component {
  }
  
   render() {
-    return <div>  
-    <Layout>
+    return <Layout>
         <Layout.Section>
-          <Card>
-            <div style={{margin: "2rem"}}>
-                <Heading>Delete confirmation</Heading>
-                <br/>
-                <p>You're about to delete the mapped field <strong>{this.props.mappedFieldToRemove}</strong></p>
-                <p>Do you want to continue?</p>
-            </div>
-            <div style={{margin: "0 2rem 2rem 0"}}>
-              <Stack alignment="center" distribution="trailing">
-                <ButtonGroup>
-                  <Button onClick={this.handleYesButtonClick} destructive>Yes</Button>
-                  <Button onClick={this.handleNoButtonClick}>No</Button>
-                </ButtonGroup>
-              </Stack>
-            </div>
+          <Card title="Delete confirmation" sectioned>
+            <p>You're about to delete the mapped field <strong>{this.props.mappedFieldToRemove}</strong></p>
+            <p>Do you want to continue?</p><br/>
+            <Stack alignment="center" distribution="trailing">
+              <ButtonGroup>
+                <Button onClick={this.handleYesButtonClick} destructive>Yes</Button>
+                <Button onClick={this.handleNoButtonClick}>No</Button>
+              </ButtonGroup>
+            </Stack>
           </Card>
         </Layout.Section>
-      </Layout>
-      </div>;
+      </Layout>;
   }
 }
 

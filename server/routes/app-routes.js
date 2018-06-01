@@ -10,7 +10,7 @@ class AppRoutes {
 
   async home(request, response) {
       const { session: { shop, accessToken } } = request;
-      
+
       const redis = this.redisClientFactory.createClient();
 
       const shopInstance = await redis.getShopAsync(shop, true);
@@ -28,7 +28,8 @@ class AppRoutes {
         shop: shop,
         dopplerAccountName: shopInstance.dopplerAccountName,
         dopplerListId: shopInstance.dopplerListId,
-        fieldsMapping: shopInstance.fieldsMapping
+        fieldsMapping: shopInstance.fieldsMapping,
+        setupCompleted: shopInstance.dopplerListId && shopInstance.fieldsMapping ? true : false
       });
   }
 

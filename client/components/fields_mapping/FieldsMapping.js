@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Layout, Card, TextContainer, Heading, DataTable, Button, PageActions } from '@shopify/polaris';
+import { Layout, Card, DataTable, Button, Stack, ButtonGroup, FooterHelp, Link } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
 import UpsertFieldMappingModal from './UpsertFieldMappingModal';
@@ -17,6 +17,8 @@ class FieldsMapping extends Component {
     this.handleOpenRemoveModal = this.handleOpenRemoveModal.bind(this);
     this.handleCloseRemoveModal = this.handleCloseRemoveModal.bind(this);
     this.handleSetFieldsMappingClick = this.handleSetFieldsMappingClick.bind(this);
+    this.handleCancelButtonClick = this.handleCancelButtonClick.bind(this);
+    this.getCancelAction = this.getCancelAction.bind(this);
   }
 
   componentDidMount() {
@@ -62,52 +64,68 @@ class FieldsMapping extends Component {
     this.props.actions.setFieldsMapping(this.props.fieldsMapping);
   }
 
+  handleCancelButtonClick() {
+    this.props.actions.gotoAppSetup();
+  }
+
+  getCancelAction() {
+    return this.props.setupCompleted ? (
+      <Button onClick={this.handleCancelButtonClick}
+        disabled={this.props.settingFieldsMapping}>
+        Cancel
+      </Button>
+    ) : null;
+  }
+
   render() {
     return <div>
     <Layout>
     <Layout.Section>
-      <Card>
-        <div style={{margin: "2rem"}}>
-          <TextContainer spacing="loose">
-              <Heading>Map your Shopify customer fields to your Doppler subscriber fields</Heading>
-              <p>Map one-to-one the data of your Shopify customers to your Doppler subscriber fields. For each new customer a new subscriber will be created based on this mapping.</p>
-          </TextContainer>
-        </div>
-        <div style={{margin: "0 2rem 2rem 2rem"}}>
-          <DataTable
-            columnContentTypes={[
-              'text',
-              'text',
-              'text',
-              'text'
-            ]}
-            headings={[
-              'Shopify Customer',
-              'Doppler Subscriber',
-              'Field Type',
-              ''
-            ]}
-            rows={this.createDataTableRows()}
-          />
-          <PageActions
-            primaryAction={{
-              content: 'Save',
-              loading: this.props.retrievingFields || this.props.settingFieldsMapping, 
-              onAction: this.handleSetFieldsMappingClick
-            }}
-            secondaryActions={[
-              {
-                icon: 'add',
-                content: 'New Field', 
-                onAction: this.handleOpenModal, 
-                disabled: this.props.retrievingFields || this.props.settingFieldsMapping
-              }
-            ]}
-          />
-        </div>
+      <Card sectioned title="Map your Shopify customer fields to your Doppler subscriber fields">
+        <p>Map one-to-one the data of your Shopify customers to your Doppler subscriber fields. For each new customer a new subscriber will be created based on this mapping.</p>
+        <br/>
+        <DataTable
+          columnContentTypes={[
+            'text',
+            'text',
+            'text',
+            'text'
+          ]}
+          headings={[
+            'Shopify Customer',
+            'Doppler Subscriber',
+            'Field Type',
+            ''
+          ]}
+          rows={this.createDataTableRows()}
+        />
       </Card>
     </Layout.Section>
   </Layout>
+  <div style={{marginTop: "2rem"}}>
+    <Stack>
+      <Stack.Item fill>
+        <Button 
+          icon='add'
+          onClick={this.handleOpenModal}
+          disabled={this.props.retrievingFields || this.props.settingFieldsMapping}>
+          New Field
+        </Button>
+      </Stack.Item>
+      <ButtonGroup>
+        {this.getCancelAction()}
+        <Button 
+            loading={this.props.retrievingFields || this.props.settingFieldsMapping} 
+            onClick={this.handleSetFieldsMappingClick}
+            primary>
+          Save
+        </Button>
+      </ButtonGroup>
+    </Stack>
+  </div>
+  <FooterHelp>
+    Need some help with the <Link external={true} url="https://help.fromdoppler.com/en/?s=custom+fields">Doppler fields</Link>?
+  </FooterHelp>
   <Modal 
     open={this.props.requestingFieldMappingUpsert} 
     onClose={this.handleCloseModal} 
@@ -136,14 +154,15 @@ function mapStatesToProps(state, ownProps) {
       fieldsMapping: state.reducers.fieldsMapping.fieldsMapping,
       shopifyFields: state.reducers.fieldsMapping.shopifyFields,
       dopplerFields: state.reducers.fieldsMapping.dopplerFields,
-      settingFieldsMapping: state.reducers.fieldsMapping.settingFieldsMapping
+      settingFieldsMapping: state.reducers.fieldsMapping.settingFieldsMapping,
+      setupCompleted: state.reducers.appSetup.setupCompleted
     };
   }
   
-  function mapDispatchToProps(dispatch) {
-    return {
-      actions: bindActionCreators({...fieldsMappingActions}, dispatch)
-    };
-  }
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({...fieldsMappingActions}, dispatch)
+  };
+}
 
 export default connect(mapStatesToProps, mapDispatchToProps)(FieldsMapping);

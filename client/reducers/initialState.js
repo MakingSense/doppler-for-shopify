@@ -1,4 +1,4 @@
-const { dopplerAccountName, dopplerListId, fieldsMapping } = window;
+const { dopplerAccountName, dopplerListId, fieldsMapping, setupCompleted } = window;
 
 export default {
     connectingToDoppler: {
@@ -8,7 +8,7 @@ export default {
     setupDopplerList: {
         dopplerLists: [],
         retrievingDopplerLists: false,
-        selectedListId: null,
+        selectedListId: dopplerListId,
         settingDopplerList: false,
         requestingListCreation: false,
         creatingList: false,
@@ -36,7 +36,8 @@ export default {
     appSetup: {
         appName: 'Doppler for Shopify',
         dopplerAccountName,
-        dopplerListId
+        dopplerListId,
+        setupCompleted
     }
 }
   

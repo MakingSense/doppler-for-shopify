@@ -171,7 +171,7 @@ module.exports = {
         type: 'string'
       },
       {
-        name: 'Phone',
+        name: 'Address Phone',
         path: 'default_address.phone',
         sample: '1234567890',
         type: 'string'

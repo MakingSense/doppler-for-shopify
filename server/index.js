@@ -167,7 +167,7 @@ app.post('/synchronize-customers',
 // Hooks routes
 const hooksRoutes = new HooksRoutes(redisClientFactory, dopplerClientFactory, shopifyClientFactory.shopifyAPIClientFactory);
 
-app.post('/hooks/app/uninstalled',  withWebhook(async (error, request) => {
+app.post('/hooks/app/uninstalled', withWebhook(async (error, request) => {
     await hooksRoutes.appUninstalled(error, request);
 }));
 

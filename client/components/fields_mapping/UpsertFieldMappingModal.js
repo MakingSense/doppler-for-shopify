@@ -99,15 +99,13 @@ class UpsertFieldMappingModal extends Component {
     return <div style={{minWidth: "50rem"}}>  
     <Layout>
         <Layout.Section>
-          <Card primaryFooterAction={{
+          <Card sectioned title="New Field"
+                primaryFooterAction={{
                     content: "Save", 
                     disabled: this.state.dopplerFieldValue === null || this.state.shopifyFieldValue === null,
                     onAction: this.handleSaveButtonClick}}>
-            <div style={{margin: "2rem"}}>
-                <div style={{marginBottom: "4rem"}}>
-                    <Heading>Map your fields</Heading>
-                    <p>Choose a Shopify filed to be mapped with your Doppler field. Only fields of the same type can be mapped.</p>
-                </div>
+                <p>Choose a Shopify filed to be mapped with your Doppler field. Only fields of the same type can be mapped.</p>
+                <br/>
                 <FormLayout>
                 <Select
                     label="Shopify Customer Field"
@@ -126,8 +124,6 @@ class UpsertFieldMappingModal extends Component {
                     onChange={this.handleDopplerFieldChange}
                 />
                 </FormLayout>
-                
-            </div>
           </Card>
         </Layout.Section>
       </Layout>

@@ -59,6 +59,12 @@ export function settingDopplerList(settingDopplerList = true) {
   }
 }
 
+export function gotoAppSetup() {
+  return (dispatch, getState) => {
+    dispatch(push("/app/setup"));
+  };
+}
+
 export function getDopplerLists() {
     return (dispatch, getState) => {
       dispatch(retrievingDopplerLists(true));
@@ -100,13 +106,16 @@ export function createDopplerList(name) {
   };
 }
 
-export function setDopplerList(selectedListId) {
+export function setDopplerList(selectedListId, setupCompleted) {
   return (dispatch, getState) => {
     dispatch(settingDopplerList(true));
     return appService.setDopplerList(selectedListId)
       .then(response => {
         dispatch(settingDopplerList(false));
-        dispatch(push('/app/fields-mapping'));
+        if (setupCompleted)
+          dispatch(push('/app/setup'));
+        else
+          dispatch(push('/app/fields-mapping'));
       })
       .catch(errorPromise => {
         dispatch(settingDopplerList(false));

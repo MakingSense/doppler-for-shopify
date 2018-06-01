@@ -5,7 +5,6 @@ import {
   Layout,
   Card,
   TextContainer,
-  Heading,
   TextField
 } from '@shopify/polaris';
 import * as setupDopplerListActions from '../../actions/SetupDopplerListActions';
@@ -38,14 +37,15 @@ class CreateListModal extends Component {
     return <div style={{minWidth: "50rem"}}>  
             <Layout>
                 <Layout.Section>
-                  <Card primaryFooterAction={{
+                  <Card 
+                    title="Create A New Doppler List"
+                    primaryFooterAction={{
                       content: "Create", 
                       disabled: !this.validateCurrentState(),
                       onAction: this.handleCreateButtonClick,
                       loading: this.props.creatingDopplerList}}>
                     <div style={{margin: "2rem"}}>
                       <TextContainer spacing="loose">
-                          <Heading>Create A New Doppler List</Heading>
                           <p>You can create a new Doppler list from here, no need to open your Doppler accout.</p>
                           <TextField
                             label="List Name"

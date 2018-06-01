@@ -54,6 +54,19 @@ export function settingFieldsMapping(settingFieldsMapping = true) {
   };
 }
 
+export function setupCompleted(setupCompleted = true) {
+  return {
+    type: types.SETUP_COMPLETED,
+    setupCompleted
+  };
+}
+
+export function gotoAppSetup() {
+  return (dispatch, getState) => {
+    dispatch(push("/app/setup"));
+  };
+}
+
 export function removeMappedField(shopifyField) {
   return (dispatch, getState) => {
     dispatch(mappedFieldRemoved(shopifyField))
@@ -91,6 +104,8 @@ export function setFieldsMapping(fieldsMapping) {
     return appService.setFieldsMapping(fieldsMapping)
       .then(response => {
         dispatch(settingFieldsMapping(false));
+        dispatch(setupCompleted(true));
+        dispatch(push("/app/setup"));
       })
       .catch(errorPromise => {
         dispatch(settingFieldsMapping(false));

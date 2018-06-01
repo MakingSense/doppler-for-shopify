@@ -11,13 +11,16 @@ import Welcome from "./components/welcome/Welcome";
 import ConnectToDoppler from "./components/connect_to_doppler/ConnectToDoppler";
 import SetupDopplerList from "./components/setup_doppler_list/SetupDopplerList";
 import FieldsMapping from "./components/fields_mapping/FieldsMapping";
+import AppSetup from "./components/app_setup/AppSetup";
 import AboutPage from "./components/about/AboutPage";
 import NotFound from "./components/not_found/NotFound";
 
 const getIndexRouteComponent = function() {
-    if (initialState.appSetup.dopplerListId)
+    if (window.fieldsMapping)
+        return AppSetup;
+    if (window.dopplerListId)
         return FieldsMapping;
-    if (initialState.appSetup.dopplerAccountName != '')
+    if (window.dopplerAccountName != '')
         return SetupDopplerList;
     return Welcome;
 }
@@ -30,6 +33,7 @@ export default (
       <Route path="/app/connect-to-doppler" component={ConnectToDoppler}/>
       <Route path="/app/setup-doppler-list" component={SetupDopplerList}/>
       <Route path="/app/fields-mapping" component={FieldsMapping}/>
+      <Route path="/app/setup" component={AppSetup}/>
       <Route path="/app/about" component={AboutPage}/>
       <Route path="*" component={NotFound}/>
     </Route>

@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Layout, Card, Button, Tooltip, Banner, Link } from '@shopify/polaris';
+import { Layout, Card, Button, Tooltip, Banner, Link, FooterHelp } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import SynchronizeCustomersConfirmationModal from './SynchronizeCustomersConfirmationModal';
 import * as appSetupActions from '../../actions/appSetupActions';
@@ -108,6 +108,9 @@ class AppSetup extends Component {
         </Card>
       </Layout.Section>
     </Layout>
+    <FooterHelp>
+      Doubts? Questions? <Link external={true} url="https://www.fromdoppler.com/en/contact">Contact</Link> us!
+    </FooterHelp>
     <Modal
       open={this.props.requestingSynchronization} 
       onClose={this.handleCloseModal} 

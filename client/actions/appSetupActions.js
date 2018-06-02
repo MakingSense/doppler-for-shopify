@@ -10,7 +10,7 @@ export function requestingSynchronization(requestingSynchronization = true) {
     };
 }
 
-export function synchronizationInProgress(synchronizationInProgress = null) {
+export function synchronizationInProgress(synchronizationInProgress = true) {
     return {
         type: types.SYNCHRONIZATION_IN_PROGRESS,
         synchronizationInProgress

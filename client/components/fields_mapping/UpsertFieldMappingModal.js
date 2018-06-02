@@ -6,7 +6,11 @@ import {
     Card,
     Select,
     Heading,
-    FormLayout } from '@shopify/polaris';
+    FormLayout,
+    Stack,
+    ButtonGroup,
+    Button
+} from '@shopify/polaris';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
 
 class UpsertFieldMappingModal extends Component {
@@ -28,6 +32,7 @@ class UpsertFieldMappingModal extends Component {
     this.getDopplerFieldHelpText = this.getDopplerFieldHelpText.bind(this);
     this.handleSaveButtonClick = this.handleSaveButtonClick.bind(this)
     this.handleDopplerFieldChange = this.handleDopplerFieldChange.bind(this)
+    this.handleCloseModal = this.handleCloseModal.bind(this)
   }
 
   componentDidMount() {
@@ -95,35 +100,46 @@ class UpsertFieldMappingModal extends Component {
     });
   }
 
+  handleCloseModal() { 
+    this.props.actions.requestFieldMappingUpsert(false);
+  }
+
   render() {
     return <div style={{minWidth: "50rem"}}>  
     <Layout>
         <Layout.Section>
-          <Card sectioned title="New Field"
-                primaryFooterAction={{
-                    content: "Save", 
-                    disabled: this.state.dopplerFieldValue === null || this.state.shopifyFieldValue === null,
-                    onAction: this.handleSaveButtonClick}}>
-                <p>Choose a Shopify filed to be mapped with your Doppler field. Only fields of the same type can be mapped.</p>
-                <br/>
-                <FormLayout>
-                <Select
-                    label="Shopify Customer Field"
-                    helpText={this.state.shopifyFieldHelpText}
-                    options={this.state.shopifyFieldsOptions}
-                    onChange={this.handleShopifyFieldChange}
-                    value={this.state.shopifyFieldValue}
-                    disabled={this.state.shopifyFieldValue === null}
-                />
-                <Select
-                    label="Doppler Subscriber Field"
-                    helpText={this.state.dopplerFieldHelpText}
-                    options={this.state.dopplerFieldsOptions}
-                    value={this.state.dopplerFieldValue}
-                    disabled={this.state.dopplerFieldValue === null}
-                    onChange={this.handleDopplerFieldChange}
-                />
-                </FormLayout>
+          <Card sectioned title="New Field">
+            <p>Choose a Shopify filed to be mapped with your Doppler field.</p>
+            <p>Only fields of the same type can be mapped.</p>
+            <br/>
+            <FormLayout>
+            <Select
+                label="Shopify Customer Field"
+                helpText={this.state.shopifyFieldHelpText}
+                options={this.state.shopifyFieldsOptions}
+                onChange={this.handleShopifyFieldChange}
+                value={this.state.shopifyFieldValue}
+                disabled={this.state.shopifyFieldValue === null}
+            />
+            <Select
+                label="Doppler Subscriber Field"
+                helpText={this.state.dopplerFieldHelpText}
+                options={this.state.dopplerFieldsOptions}
+                value={this.state.dopplerFieldValue}
+                disabled={this.state.dopplerFieldValue === null}
+                onChange={this.handleDopplerFieldChange}
+            />
+            <Stack alignment="center" distribution="trailing">
+              <ButtonGroup>
+                <Button onClick={this.handleCloseModal}>Cancel</Button>
+                <Button primary
+                  onClick={this.handleSaveButtonClick}
+                  disabled={this.state.dopplerFieldValue === null || this.state.shopifyFieldValue === null}>
+                    Save
+                </Button>
+              </ButtonGroup>
+            </Stack>
+            </FormLayout>
           </Card>
         </Layout.Section>
       </Layout>

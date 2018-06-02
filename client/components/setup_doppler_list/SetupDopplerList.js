@@ -8,7 +8,12 @@ import {
     Select,
     Stack,
     Button,
-    ButtonGroup } from '@shopify/polaris';
+    ButtonGroup,
+    FooterHelp,
+    Link,
+    SkeletonPage,
+    SkeletonBodyText
+} from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import CreateListModal from './CreateListModal';
 import * as setupDopplerListActions from '../../actions/SetupDopplerListActions';
@@ -63,7 +68,17 @@ class SetupDopplerList extends Component {
   }
 
   render() {
-    return <div>
+    return this.props.retrievingDopplerLists 
+    ? <SkeletonPage>
+        <Layout>
+          <Layout.Section>
+            <Card sectioned>
+              <SkeletonBodyText />
+            </Card>
+        </Layout.Section>
+        </Layout>
+      </SkeletonPage>
+    : <div>
       <Layout>
         <Layout.Section>
           <Card sectioned title="Sync your store to a Doppler list">
@@ -100,6 +115,9 @@ class SetupDopplerList extends Component {
           </div>
         </Layout.Section>
       </Layout>
+      <FooterHelp>
+          Check <Link external={true} url="https://help.fromdoppler.com/en/guide-to-managing-your-subscribers-lists/">these</Link> tips for managing your lists
+      </FooterHelp>
       <Modal 
         open={this.props.requestingListCreation} 
         onClose={this.handleCloseModal} 

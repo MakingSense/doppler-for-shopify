@@ -8,7 +8,8 @@ import {
     Card, 
     TextContainer, 
     TextStyle, 
-    FormLayout, 
+    FormLayout,
+    Form,
     TextField, 
     FooterHelp, 
     Link,
@@ -66,31 +67,35 @@ class ConnectToDoppler extends Component {
                     </TextContainer>
                     <div style={{minWidth: "40rem", marginTop: "2rem", marginBottom:"2rem"}}>
                         <FormLayout>
-                            <TextField
-                                autoFocus
-                                label="Account Name" 
-                                placeholder="It's your email"
-                                type="email" 
-                                value={this.state.dopplerAccountName} 
-                                onChange={this.handleAccountNameChange}
-                                disabled={this.props.connectingToDoppler}
-                                error={this.props.invalidDopplerCredentials ? 'Invalid Credentials' : null}/>
-                            <TextField 
-                                label="API Key"
-                                placeholder="e.g.: C22CADA13759DB9BBDF93B9D87C14D5A"
-                                value={this.state.dopplerApiKey}
-                                disabled={this.props.connectingToDoppler}
-                                error={this.props.invalidDopplerCredentials ? 'Invalid Credentials' : null}
-                                onChange={this.handleApiKeyChange} />
-                            <Stack distribution="fill" alignment="fill">
-                                <Button 
-                                    primary
-                                    onClick={this.handleClickConnect}
-                                    loading={this.props.connectingToDoppler}
-                                    disabled={!this.validateCurrentState()}
-                                    submit>
-                                    Connect</Button>
-                            </Stack>
+                            <Form>
+                                <TextField
+                                    autoFocus
+                                    label="Account Name" 
+                                    placeholder="It's your email"
+                                    type="email" 
+                                    value={this.state.dopplerAccountName} 
+                                    onChange={this.handleAccountNameChange}
+                                    disabled={this.props.connectingToDoppler}
+                                    error={this.props.invalidDopplerCredentials ? 'Invalid Credentials' : null}/>
+                                <br/>
+                                <TextField 
+                                    label="API Key"
+                                    placeholder="e.g.: C22CADA13759DB9BBDF93B9D87C14D5A"
+                                    value={this.state.dopplerApiKey}
+                                    disabled={this.props.connectingToDoppler}
+                                    error={this.props.invalidDopplerCredentials ? 'Invalid Credentials' : null}
+                                    onChange={this.handleApiKeyChange} />
+                                <br/>
+                                <Stack distribution="trailing" alignment="fill">
+                                    <Button 
+                                        primary
+                                        onClick={this.handleClickConnect}
+                                        loading={this.props.connectingToDoppler}
+                                        disabled={!this.validateCurrentState()}
+                                        submit>
+                                        Connect</Button>
+                                </Stack>
+                            </Form>
                         </FormLayout>
                     </div>
                 </Stack>

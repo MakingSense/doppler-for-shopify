@@ -1,7 +1,17 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Layout, Card, DataTable, Button, Stack, ButtonGroup, FooterHelp, Link } from '@shopify/polaris';
+import { Layout, 
+  Card, 
+  DataTable, 
+  Button, 
+  Stack, 
+  ButtonGroup, 
+  FooterHelp, 
+  Link,
+  SkeletonPage,
+  SkeletonBodyText
+} from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
 import UpsertFieldMappingModal from './UpsertFieldMappingModal';
@@ -78,7 +88,18 @@ class FieldsMapping extends Component {
   }
 
   render() {
-    return <div>
+    return this.props.retrievingFields
+    ? <SkeletonPage>
+        <Layout>
+          <Layout.Section>
+            <Card sectioned>
+              <SkeletonBodyText />
+            </Card>
+        </Layout.Section>
+        </Layout>
+      </SkeletonPage>
+    :
+    <div>
     <Layout>
     <Layout.Section>
       <Card sectioned title="Map your Shopify customer fields to your Doppler subscriber fields">

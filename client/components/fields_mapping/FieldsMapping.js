@@ -17,6 +17,7 @@ import Modal from 'react-responsive-modal';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
 import UpsertFieldMappingModal from './UpsertFieldMappingModal';
 import RemoveFieldMappingConfirmationModal from './RemoveFieldMappingConfirmationModal';
+import LoadingSkeleton from '../loading_skeleton/LoadingSkeleton';
 
 class FieldsMapping extends Component {
   constructor(props) {
@@ -109,15 +110,7 @@ class FieldsMapping extends Component {
 
   render() {
     return this.props.retrievingFields ? (
-      <SkeletonPage>
-        <Layout>
-          <Layout.Section>
-            <Card sectioned>
-              <SkeletonBodyText />
-            </Card>
-          </Layout.Section>
-        </Layout>
-      </SkeletonPage>
+      <LoadingSkeleton />
     ) : (
       <div>
         <Layout>

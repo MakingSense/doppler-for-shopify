@@ -1,99 +1,117 @@
-const shopifyFields = require ('../modules/shopify-extras').customerFields;
+const shopifyFields = require('../modules/shopify-extras').customerFields;
 
 class AppController {
-
-  constructor(redisClientFactory, dopplerClientFactory, shopifyClientFactory){
+  constructor(redisClientFactory, dopplerClientFactory, shopifyClientFactory) {
     this.redisClientFactory = redisClientFactory;
     this.dopplerClientFactory = dopplerClientFactory;
     this.shopifyClientFactory = shopifyClientFactory;
   }
 
   afterAuth(request, response) {
-      const { session: { accessToken, shop } } = request;
-      const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
-      
-      shopify.webhook.create({
+    const { session: { accessToken, shop } } = request;
+    const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
+
+    shopify.webhook
+      .create({
         topic: 'app/uninstalled',
         address: `${process.env.SHOPIFY_APP_HOST}/hooks/app/uninstalled`,
-        format: 'json'
-      })
-      .then(() => {})
-      .catch(err => console.error(err));
-      
-      shopify.webhook.create({
-        topic: 'customers/create',
-        address: `${process.env.SHOPIFY_APP_HOST}/hooks/customers/created`,
-        format: 'json'
+        format: 'json',
       })
       .then(() => {})
       .catch(err => console.error(err));
 
-      response.redirect('/');
+    shopify.webhook
+      .create({
+        topic: 'customers/create',
+        address: `${process.env.SHOPIFY_APP_HOST}/hooks/customers/created`,
+        format: 'json',
+      })
+      .then(() => {})
+      .catch(err => console.error(err));
+
+    response.redirect('/');
   }
 
   async home(request, response) {
-      const { session: { shop, accessToken } } = request;
+    const { session: { shop, accessToken } } = request;
 
-      const redis = this.redisClientFactory.createClient();
+    const redis = this.redisClientFactory.createClient();
 
-      const shopInstance = await redis.getShopAsync(shop, true);
+    const shopInstance = await redis.getShopAsync(shop, true);
 
-      // TODO: - should we move this to middleware in order to filter all requests? 
-      //       - No, we should destroy the session when uninstalling the app.
-      if (shopInstance === null || shopInstance.accessToken !== accessToken) {
-        response.redirect(`/shopify/auth?shop=${shop}`);
-        return;
-      }
+    if (shopInstance === null || shopInstance.accessToken !== accessToken) {
+      response.redirect(`/shopify/auth?shop=${shop}`);
+      return;
+    }
 
-      response.render('app', {
-        title: 'Doppler for Shopify',
-        apiKey: process.env.SHOPIFY_APP_KEY,
-        shop: shop,
-        dopplerAccountName: shopInstance.dopplerAccountName,
-        dopplerListId: shopInstance.dopplerListId,
-        dopplerListName: shopInstance.dopplerListName,
-        fieldsMapping: shopInstance.fieldsMapping,
-        setupCompleted: shopInstance.dopplerListId && shopInstance.fieldsMapping ? true : false,
-        synchronizationInProgress: shopInstance.synchronizationInProgress ? false : shopInstance.synchronizationInProgress,
-        lastSynchronizationDate: shopInstance.lastSynchronizationDate
-      });
+    response.render('app', {
+      title: 'Doppler for Shopify',
+      apiKey: process.env.SHOPIFY_APP_KEY,
+      shop: shop,
+      dopplerAccountName: shopInstance.dopplerAccountName,
+      dopplerListId: shopInstance.dopplerListId,
+      dopplerListName: shopInstance.dopplerListName,
+      fieldsMapping: shopInstance.fieldsMapping,
+      setupCompleted:
+        shopInstance.dopplerListId && shopInstance.fieldsMapping ? true : false,
+      synchronizationInProgress: shopInstance.synchronizationInProgress
+        ? false
+        : shopInstance.synchronizationInProgress,
+      lastSynchronizationDate: shopInstance.lastSynchronizationDate,
+    });
   }
 
   async connectToDoppler(request, response) {
-    const { session: { shop }, body: { dopplerAccountName, dopplerApiKey } } = request;
-    
-    const doppler = this.dopplerClientFactory.createClient(dopplerAccountName, dopplerApiKey);
+    const {
+      session: { shop },
+      body: { dopplerAccountName, dopplerApiKey },
+    } = request;
+
+    const doppler = this.dopplerClientFactory.createClient(
+      dopplerAccountName,
+      dopplerApiKey
+    );
     const validCredentials = await doppler.AreCredentialsValidAsync();
-    
+
     if (!validCredentials) {
       response.sendStatus(401);
       return;
     }
 
     const redis = this.redisClientFactory.createClient();
-    await redis.storeShopAsync(shop, { dopplerAccountName, dopplerApiKey }, true);
+    await redis.storeShopAsync(
+      shop,
+      { dopplerAccountName, dopplerApiKey },
+      true
+    );
     response.sendStatus(200);
   }
 
   async getDopplerLists(request, response) {
-      const { session: { shop } } = request;
+    const { session: { shop } } = request;
 
-      const redis = this.redisClientFactory.createClient();
-      const shopInstance = await redis.getShopAsync(shop, true);
+    const redis = this.redisClientFactory.createClient();
+    const shopInstance = await redis.getShopAsync(shop, true);
 
-      const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
-      const lists = await doppler.getListsAsync();
+    const doppler = this.dopplerClientFactory.createClient(
+      shopInstance.dopplerAccountName,
+      shopInstance.dopplerApiKey
+    );
+    const lists = await doppler.getListsAsync();
 
-      response.json(lists);
+    response.json(lists);
   }
 
   async createDopplerList(request, response) {
     const { session: { shop }, body: { name } } = request;
-    
+
     const redis = this.redisClientFactory.createClient();
     const shopInstance = await redis.getShopAsync(shop, true);
 
-    const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
+    const doppler = this.dopplerClientFactory.createClient(
+      shopInstance.dopplerAccountName,
+      shopInstance.dopplerApiKey
+    );
 
     try {
       const listId = await doppler.createListAsync(name);
@@ -101,27 +119,32 @@ class AppController {
     } catch (error) {
       if (error.errorCode === 2 && error.statusCode === 400)
         response.sendStatus(400);
-      else
-        throw error;
+      else throw error;
     }
   }
 
   async setDopplerList(request, response) {
-    const { session: { shop }, body: { dopplerListId, dopplerListName } } = request;
-    
+    const {
+      session: { shop },
+      body: { dopplerListId, dopplerListName },
+    } = request;
+
     const redis = this.redisClientFactory.createClient();
     await redis.storeShopAsync(shop, { dopplerListId, dopplerListName }, true);
 
     response.sendStatus(200);
   }
-  
+
   async getFields(request, response) {
     const { session: { shop } } = request;
-    
+
     const redis = this.redisClientFactory.createClient();
     const shopInstance = await redis.getShopAsync(shop, true);
 
-    const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
+    const doppler = this.dopplerClientFactory.createClient(
+      shopInstance.dopplerAccountName,
+      shopInstance.dopplerApiKey
+    );
     const dopplerFields = await doppler.getFieldsAsync();
 
     response.json({ shopifyFields, dopplerFields });
@@ -129,18 +152,22 @@ class AppController {
 
   async setFieldsMapping(request, response) {
     const { session: { shop }, body: { fieldsMapping } } = request;
-    
+
     const redis = this.redisClientFactory.createClient();
-    
-    await redis.storeShopAsync(shop, { fieldsMapping: JSON.stringify(fieldsMapping) }, true);
+
+    await redis.storeShopAsync(
+      shop,
+      { fieldsMapping: JSON.stringify(fieldsMapping) },
+      true
+    );
 
     response.sendStatus(200);
   }
 
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
-  async synchronizeCustomers(request, response) { 
+  async synchronizeCustomers(request, response) {
     const { session: { shop, accessToken } } = request;
-    
+
     const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
 
     const customers = await shopify.customer.list();
@@ -148,19 +175,27 @@ class AppController {
     const redis = this.redisClientFactory.createClient();
     const shopInstance = await redis.getShopAsync(shop);
 
-    const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
-    
+    const doppler = this.dopplerClientFactory.createClient(
+      shopInstance.dopplerAccountName,
+      shopInstance.dopplerApiKey
+    );
+
     const importTaskId = await doppler.importSubscribersAsync(
-      customers, 
+      customers,
       shopInstance.dopplerListId,
-      shop, 
+      shop,
       JSON.parse(shopInstance.fieldsMapping)
     );
-    
-    await redis.storeShopAsync(shop, { importTaskId, 
-      synchronizationInProgress: true,
-      lastSynchronizationDate: (new Date()).toISOString()
-    }, true);
+
+    await redis.storeShopAsync(
+      shop,
+      {
+        importTaskId,
+        synchronizationInProgress: true,
+        lastSynchronizationDate: new Date().toISOString(),
+      },
+      true
+    );
 
     response.sendStatus(201);
   }

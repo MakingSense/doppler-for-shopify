@@ -1,9 +1,9 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Page, AppProvider } from '@shopify/polaris';
 // import { EmbeddedApp } from '@shopify/polaris/embedded';
 import ErrorBanner from './error_banner/ErrorBanner';
-import Icon from '../../dist/images/doppler-icon.png'
+import Icon from '../../dist/images/doppler-icon.png';
 
 class App extends Component {
   render() {

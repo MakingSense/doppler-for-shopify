@@ -16,31 +16,40 @@ class ErrorBanner extends Component {
   }
 
   getErrorDetails() {
-    return this.props.errorMessage && this.props.errorMessage != '' ? ` Details: ${this.props.errorMessage}. ` : ' ';
+    return this.props.errorMessage && this.props.errorMessage != ''
+      ? ` Details: ${this.props.errorMessage}. `
+      : ' ';
   }
 
   render() {
-    return this.props.showErrorBanner ?
-    <div style={{ marginBottom:"2rem"}}>
+    return this.props.showErrorBanner ? (
+      <div style={{ marginBottom: '2rem' }}>
         <Banner onDismiss={this.handleBannerDismiss} status="critical">
-            <p><strong>An unexpected error occurred.</strong>{this.getErrorDetails()}<Link url="mailto:support@fromdoppler.com">Let us know about this.</Link></p>
+          <p>
+            <strong>An unexpected error occurred.</strong>
+            {this.getErrorDetails()}
+            <Link url="mailto:support@fromdoppler.com">
+              Let us know about this.
+            </Link>
+          </p>
         </Banner>
-    </div> : null;
+      </div>
+    ) : null;
   }
 }
 
 function mapStatesToProps(state, ownProps) {
-    return {
-      state: state.reducers,
-      showErrorBanner: state.reducers.errorHandling.showErrorBanner,
-      errorMessage: state.reducers.errorHandling.errorMessage
-    };
+  return {
+    state: state.reducers,
+    showErrorBanner: state.reducers.errorHandling.showErrorBanner,
+    errorMessage: state.reducers.errorHandling.errorMessage,
+  };
 }
 
 function mapDispatchToProps(dispatch) {
-    return {
-       actions: bindActionCreators({...errorBannerActions}, dispatch)
-    };
+  return {
+    actions: bindActionCreators({ ...errorBannerActions }, dispatch),
+  };
 }
 
 export default connect(mapStatesToProps, mapDispatchToProps)(ErrorBanner);

@@ -1,5 +1,5 @@
-const routes = require("./routes.js");
+const routes = require('./routes.js');
 
-module.exports =function (app, withWebhook, hooksController) {
-    app.use(routes(withWebhook, hooksController));
-}
+module.exports = function(app, withWebhook, hooksController) {
+  app.use(routes(withWebhook, hooksController));
+};

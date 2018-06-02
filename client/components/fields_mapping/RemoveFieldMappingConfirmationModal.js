@@ -1,4 +1,4 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Layout, Card, Stack, ButtonGroup, Button } from '@shopify/polaris';
@@ -12,42 +12,52 @@ class RemoveFieldMappingConfirmationModal extends Component {
   }
 
   handleYesButtonClick() {
-    this.props.actions.removeMappedField(this.props.mappedFieldToRemove)
+    this.props.actions.removeMappedField(this.props.mappedFieldToRemove);
   }
 
   handleNoButtonClick() {
     this.props.actions.requestRemoveMappedField(false);
- }
- 
+  }
+
   render() {
-    return <Layout>
+    return (
+      <Layout>
         <Layout.Section>
           <Card title="Delete confirmation" sectioned>
-            <p>You're about to delete the mapped field <strong>{this.props.mappedFieldToRemove}</strong></p>
-            <p>Do you want to continue?</p><br/>
+            <p>
+              You're about to delete the mapped field{' '}
+              <strong>{this.props.mappedFieldToRemove}</strong>
+            </p>
+            <p>Do you want to continue?</p>
+            <br />
             <Stack alignment="center" distribution="trailing">
               <ButtonGroup>
-                <Button onClick={this.handleYesButtonClick} destructive>Yes</Button>
+                <Button onClick={this.handleYesButtonClick} destructive>
+                  Yes
+                </Button>
                 <Button onClick={this.handleNoButtonClick}>No</Button>
               </ButtonGroup>
             </Stack>
           </Card>
         </Layout.Section>
-      </Layout>;
+      </Layout>
+    );
   }
 }
 
 function mapStatesToProps(state, ownProps) {
-    return {
-      state: state.reducers,
-      mappedFieldToRemove: state.reducers.fieldsMapping.mappedFieldToRemove
-    };
+  return {
+    state: state.reducers,
+    mappedFieldToRemove: state.reducers.fieldsMapping.mappedFieldToRemove,
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({...fieldsMappingActions}, dispatch)
+    actions: bindActionCreators({ ...fieldsMappingActions }, dispatch),
   };
 }
 
-export default connect(mapStatesToProps, mapDispatchToProps)(RemoveFieldMappingConfirmationModal);
+export default connect(mapStatesToProps, mapDispatchToProps)(
+  RemoveFieldMappingConfirmationModal
+);

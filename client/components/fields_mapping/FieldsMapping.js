@@ -1,16 +1,17 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Layout, 
-  Card, 
-  DataTable, 
-  Button, 
-  Stack, 
-  ButtonGroup, 
-  FooterHelp, 
+import {
+  Layout,
+  Card,
+  DataTable,
+  Button,
+  Stack,
+  ButtonGroup,
+  FooterHelp,
   Link,
   SkeletonPage,
-  SkeletonBodyText
+  SkeletonBodyText,
 } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import * as fieldsMappingActions from '../../actions/fieldsMappingActions';
@@ -26,7 +27,9 @@ class FieldsMapping extends Component {
     this.componentDidMount = this.componentDidMount.bind(this);
     this.handleOpenRemoveModal = this.handleOpenRemoveModal.bind(this);
     this.handleCloseRemoveModal = this.handleCloseRemoveModal.bind(this);
-    this.handleSetFieldsMappingClick = this.handleSetFieldsMappingClick.bind(this);
+    this.handleSetFieldsMappingClick = this.handleSetFieldsMappingClick.bind(
+      this
+    );
     this.handleCancelButtonClick = this.handleCancelButtonClick.bind(this);
     this.getCancelAction = this.getCancelAction.bind(this);
   }
@@ -39,7 +42,7 @@ class FieldsMapping extends Component {
     this.props.actions.requestFieldMappingUpsert(true);
   }
 
-  handleCloseModal() { 
+  handleCloseModal() {
     this.props.actions.requestFieldMappingUpsert(false);
   }
 
@@ -48,24 +51,39 @@ class FieldsMapping extends Component {
     return function() {
       if (!ref.props.retrievingFields && !ref.props.settingFieldsMapping)
         ref.props.actions.requestRemoveMappedField(true, shopifyField);
-    }
+    };
   }
 
   handleCloseRemoveModal() {
     this.props.actions.requestRemoveMappedField(false);
   }
-  
-  createDataTableRows() {
-    if (this.props.retrievingFields 
-      || this.props.dopplerFields.length === 0 
-      || this.props.shopifyFields.length === 0) return [];
 
-    const ret = this.props.fieldsMapping
-        .map(m => {
-            const dopplerField = this.props.dopplerFields.find(df => df.name === m.doppler);
-            const shopifyField = this.props.shopifyFields.find(cf => cf.path === m.shopify);
-            return [shopifyField.name, dopplerField.name, shopifyField.type,<Button onClick={this.handleOpenRemoveModal(shopifyField.path)} icon="delete" size="slim"/>]
-        });
+  createDataTableRows() {
+    if (
+      this.props.retrievingFields ||
+      this.props.dopplerFields.length === 0 ||
+      this.props.shopifyFields.length === 0
+    )
+      return [];
+
+    const ret = this.props.fieldsMapping.map(m => {
+      const dopplerField = this.props.dopplerFields.find(
+        df => df.name === m.doppler
+      );
+      const shopifyField = this.props.shopifyFields.find(
+        cf => cf.path === m.shopify
+      );
+      return [
+        shopifyField.name,
+        dopplerField.name,
+        shopifyField.type,
+        <Button
+          onClick={this.handleOpenRemoveModal(shopifyField.path)}
+          icon="delete"
+          size="slim"
+        />,
+      ];
+    });
     ret.unshift([<strong>Email</strong>, <strong>EMAIL</strong>, 'string', '']);
     return ret;
   }
@@ -80,109 +98,128 @@ class FieldsMapping extends Component {
 
   getCancelAction() {
     return this.props.setupCompleted ? (
-      <Button onClick={this.handleCancelButtonClick}
-        disabled={this.props.settingFieldsMapping}>
+      <Button
+        onClick={this.handleCancelButtonClick}
+        disabled={this.props.settingFieldsMapping}
+      >
         Cancel
       </Button>
     ) : null;
   }
 
   render() {
-    return this.props.retrievingFields
-    ? <SkeletonPage>
+    return this.props.retrievingFields ? (
+      <SkeletonPage>
         <Layout>
           <Layout.Section>
             <Card sectioned>
               <SkeletonBodyText />
             </Card>
-        </Layout.Section>
+          </Layout.Section>
         </Layout>
       </SkeletonPage>
-    :
-    <div>
-    <Layout>
-    <Layout.Section>
-      <Card sectioned title="Map your Shopify customer fields to your Doppler subscriber fields">
-        <p>Map one-to-one the data of your Shopify customers to your Doppler subscriber fields. For each new customer a new subscriber will be created based on this mapping.</p>
-        <br/>
-        <DataTable
-          columnContentTypes={[
-            'text',
-            'text',
-            'text',
-            'text'
-          ]}
-          headings={[
-            'Shopify Customer',
-            'Doppler Subscriber',
-            'Field Type',
-            ''
-          ]}
-          rows={this.createDataTableRows()}
-        />
-      </Card>
-    </Layout.Section>
-  </Layout>
-  <div style={{marginTop: "2rem"}}>
-    <Stack>
-      <Stack.Item fill>
-        <Button 
-          icon='add'
-          onClick={this.handleOpenModal}
-          disabled={this.props.retrievingFields || this.props.settingFieldsMapping}>
-          New Field
-        </Button>
-      </Stack.Item>
-      <ButtonGroup>
-        {this.getCancelAction()}
-        <Button 
-            loading={this.props.retrievingFields || this.props.settingFieldsMapping} 
-            onClick={this.handleSetFieldsMappingClick}
-            primary>
-          Save
-        </Button>
-      </ButtonGroup>
-    </Stack>
-  </div>
-  <FooterHelp>
-    Need some help with the <Link external={true} url="https://help.fromdoppler.com/en/?s=custom+fields">Doppler fields</Link>?
-  </FooterHelp>
-  <Modal 
-    open={this.props.requestingFieldMappingUpsert} 
-    onClose={this.handleCloseModal} 
-    center
-    closeIconSize={16}>
-        <UpsertFieldMappingModal/>
-  </Modal>
-  <Modal
-    open={this.props.requestingRemoveMappedField} 
-    onClose={this.handleCloseRemoveModal} 
-    center
-    animationDuration={0}
-    showCloseIcon={false}>
-        <RemoveFieldMappingConfirmationModal/>
-  </Modal>
-  </div>;
+    ) : (
+      <div>
+        <Layout>
+          <Layout.Section>
+            <Card
+              sectioned
+              title="Map your Shopify customer fields to your Doppler subscriber fields"
+            >
+              <p>
+                Map one-to-one the data of your Shopify customers to your
+                Doppler subscriber fields. For each new customer a new
+                subscriber will be created based on this mapping.
+              </p>
+              <br />
+              <DataTable
+                columnContentTypes={['text', 'text', 'text', 'text']}
+                headings={[
+                  'Shopify Customer',
+                  'Doppler Subscriber',
+                  'Field Type',
+                  '',
+                ]}
+                rows={this.createDataTableRows()}
+              />
+            </Card>
+          </Layout.Section>
+        </Layout>
+        <div style={{ marginTop: '2rem' }}>
+          <Stack>
+            <Stack.Item fill>
+              <Button
+                icon="add"
+                onClick={this.handleOpenModal}
+                disabled={
+                  this.props.retrievingFields || this.props.settingFieldsMapping
+                }
+              >
+                New Field
+              </Button>
+            </Stack.Item>
+            <ButtonGroup>
+              {this.getCancelAction()}
+              <Button
+                loading={
+                  this.props.retrievingFields || this.props.settingFieldsMapping
+                }
+                onClick={this.handleSetFieldsMappingClick}
+                primary
+              >
+                Save
+              </Button>
+            </ButtonGroup>
+          </Stack>
+        </div>
+        <FooterHelp>
+          Need some help with the{' '}
+          <Link
+            external={true}
+            url="https://help.fromdoppler.com/en/?s=custom+fields"
+          >
+            Doppler fields
+          </Link>?
+        </FooterHelp>
+        <Modal
+          open={this.props.requestingFieldMappingUpsert}
+          onClose={this.handleCloseModal}
+          center
+          closeIconSize={16}
+        >
+          <UpsertFieldMappingModal />
+        </Modal>
+        <Modal
+          open={this.props.requestingRemoveMappedField}
+          onClose={this.handleCloseRemoveModal}
+          center
+          animationDuration={0}
+          showCloseIcon={false}
+        >
+          <RemoveFieldMappingConfirmationModal />
+        </Modal>
+      </div>
+    );
   }
 }
 
 function mapStatesToProps(state, ownProps) {
-    return {
-      state: state.reducers,
-      requestingFieldMappingUpsert: state.reducers.fieldsMapping.requestingFieldMappingUpsert,
-      requestingRemoveMappedField: state.reducers.fieldsMapping.requestingRemoveMappedField,
-      retrievingFields: state.reducers.fieldsMapping.retrievingFields,
-      fieldsMapping: state.reducers.fieldsMapping.fieldsMapping,
-      shopifyFields: state.reducers.fieldsMapping.shopifyFields,
-      dopplerFields: state.reducers.fieldsMapping.dopplerFields,
-      settingFieldsMapping: state.reducers.fieldsMapping.settingFieldsMapping,
-      setupCompleted: state.reducers.appSetup.setupCompleted
-    };
-  }
-  
+  return {
+    state: state.reducers,
+    requestingFieldMappingUpsert: state.reducers.fieldsMapping.requestingFieldMappingUpsert,
+    requestingRemoveMappedField: state.reducers.fieldsMapping.requestingRemoveMappedField,
+    retrievingFields: state.reducers.fieldsMapping.retrievingFields,
+    fieldsMapping: state.reducers.fieldsMapping.fieldsMapping,
+    shopifyFields: state.reducers.fieldsMapping.shopifyFields,
+    dopplerFields: state.reducers.fieldsMapping.dopplerFields,
+    settingFieldsMapping: state.reducers.fieldsMapping.settingFieldsMapping,
+    setupCompleted: state.reducers.appSetup.setupCompleted,
+  };
+}
+
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({...fieldsMappingActions}, dispatch)
+    actions: bindActionCreators({ ...fieldsMappingActions }, dispatch),
   };
 }
 

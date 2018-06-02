@@ -13,8 +13,11 @@
       window.shopOrigin = "https://<%= shop %>";
       window.dopplerAccountName = "<%= dopplerAccountName %>";
       window.dopplerListId = <%- dopplerListId ? dopplerListId : 'null' %>;
+      window.dopplerListName = "<%- dopplerListName ? dopplerListName : '' %>";
       window.fieldsMapping = <%- fieldsMapping ? fieldsMapping : 'null' %>;
       window.setupCompleted = <%- setupCompleted %>;
+      window.synchronizationInProgress = <%- synchronizationInProgress ? synchronizationInProgress : false %>;
+      window.lastSynchronizationDate = "<%- lastSynchronizationDate ? lastSynchronizationDate : '' %>";
 
       const shopifyAppConfig = {
         apiKey: window.apiKey,

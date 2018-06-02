@@ -6,26 +6,14 @@ module.exports = {
             fields: [
              {
                 name: "FIRSTNAME",
-                predefined: true,
-                private: false,
-                readonly: false,
-                type: "string",
                 value: 'Jon'
               },
               {
                 name: "LASTNAME",
-                predefined: true,
-                private: false,
-                readonly: false,
-                type: "string",
                 value: 'Snow'
               },
               {
                 name: "Empresa",
-                predefined: false,
-                private: true,
-                readonly: false,
-                type: "string",
                 value: 'Winterfell'
               }
             ]
@@ -35,26 +23,14 @@ module.exports = {
             fields: [
              {
                 name: "FIRSTNAME",
-                predefined: true,
-                private: false,
-                readonly: false,
-                type: "string",
                 value: 'Nick'
               },
               {
                 name: "LASTNAME",
-                predefined: true,
-                private: false,
-                readonly: false,
-                type: "string",
                 value: 'Rivers'
               },
               {
                 name: "Empresa",
-                predefined: false,
-                private: true,
-                readonly: false,
-                type: "string",
                 value: 'Top Secret'
               }
             ]

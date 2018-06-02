@@ -31,8 +31,10 @@ class SetupDopplerList extends Component {
   }
   
   handleSetListButtonClick() {
-    if (this.props.selectedListId != null)
-      this.props.actions.setDopplerList(this.props.selectedListId, this.props.setupCompleted)
+    if (this.props.selectedListId != null) {
+      dopplerListName = this.props.dopplerLists.find(l => l.value === this.props.selectedListId).label;
+      this.props.actions.setDopplerList(this.props.selectedListId, dopplerListName, this.props.setupCompleted)
+    }
   }
 
   handleSelectedListChange(newValue) {

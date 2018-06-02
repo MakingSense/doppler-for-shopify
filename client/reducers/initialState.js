@@ -1,4 +1,11 @@
-const { dopplerAccountName, dopplerListId, fieldsMapping, setupCompleted } = window;
+const { dopplerAccountName, 
+    dopplerListId, 
+    dopplerListName,
+    fieldsMapping, 
+    setupCompleted,
+    synchronizationInProgress,
+    lastSynchronizationDate
+} = window;
 
 export default {
     connectingToDoppler: {
@@ -37,7 +44,11 @@ export default {
         appName: 'Doppler for Shopify',
         dopplerAccountName,
         dopplerListId,
-        setupCompleted
+        dopplerListName,
+        setupCompleted,
+        synchronizationInProgress,
+        lastSynchronizationDate,
+        requestingSynchronization: false
     }
 }
   

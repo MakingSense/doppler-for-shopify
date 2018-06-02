@@ -64,7 +64,7 @@ class AppService {
         });
     }
 
-    static setDopplerList(dopplerListId) {
+    static setDopplerList(dopplerListId, dopplerListName) {
         const request = new Request('/doppler-list', {
             method: 'POST',
             headers: {
@@ -72,13 +72,13 @@ class AppService {
               'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({ dopplerListId })
+            body: JSON.stringify({ dopplerListId, dopplerListName })
         });
     
         return fetch(request)
         .then(response =>  {
             if (response.status === 200)
-                return 1;
+                return;
             
             throw response.text();
         });
@@ -117,7 +117,26 @@ class AppService {
         return fetch(request)
         .then(response =>  {
             if (response.status === 200)
-                return 1;
+                return;
+            
+            throw response.text();
+        });
+    }
+
+    static synchronizeCustomers() {
+        const request = new Request('/synchronize-customers', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
+    
+        return fetch(request)
+        .then(response =>  {
+            if (response.status === 201)
+                return;
             
             throw response.text();
         });

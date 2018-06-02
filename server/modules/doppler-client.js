@@ -127,13 +127,16 @@ class Doppler {
                     email: customer.email,
                     fields: fieldsMap.length > 0 
                     ? fieldsMap.map(m => { 
-                        return {...m, value: getCustomerFieldValue(customer, m.value)}; 
+                        return {
+                            name: m.doppler,
+                            value: getCustomerFieldValue(customer, m.shopify)
+                        }; 
                     })
                     : []
                 }
             }),
             fields: fieldsMap.length > 0 
-            ? fieldsMap.map(m => m.name)
+            ? fieldsMap.map(m => m.doppler)
             : [],
             callback: `${process.env.SHOPIFY_APP_HOST}/hooks/doppler-import-completed?shop=${querystring.escape(shopDomain)}`,
             enableEmailNotification: true
@@ -142,7 +145,7 @@ class Doppler {
         const responseBody = await sendRequestAsync(this.fetch, url,  { 
             method:'POST', 
             body: JSON.stringify(subscribers),
-            headers: { Authorization: `token ${this.apiKey }` }
+            headers: { Authorization: `token ${this.apiKey}` }
         });
 
         return responseBody.createdResourceId;
@@ -153,15 +156,20 @@ class Doppler {
         
         const subscriber = { 
             email: customer.email,
-            fields: fieldsMap.map(m => { 
-                return {...m, value: getCustomerFieldValue(customer, m.value)}; 
-            })
+            fields: fieldsMap.length > 0 
+                    ? fieldsMap.map(m => { 
+                        return {
+                            name: m.doppler,
+                            value: getCustomerFieldValue(customer, m.shopify)
+                        }; 
+                    })
+                    : []
         };
 
         await sendRequestAsync(this.fetch, url,  { 
             method:'POST', 
             body: JSON.stringify(subscriber),
-            headers: { Authorization: `token ${this.apiKey }` }
+            headers: { Authorization: `token ${this.apiKey}` }
         });
     }
 

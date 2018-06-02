@@ -17,28 +17,16 @@ const dopplerApiKey = 'C22CADA13759DB9BBDF93B9D87C14D5A';
 const dopplerListId = 17465;
 const fieldsMapping = JSON.stringify([
     {
-      name: "FIRSTNAME",
-      predefined: true,
-      private: false,
-      readonly: false,
-      type: "string",
-      value: 'first_name'
+      doppler: "FIRSTNAME",
+      shopify: 'first_name'
     },
     {
-      name: "LASTNAME",
-      predefined: true,
-      private: false,
-      readonly: false,
-      type: "string",
-      value: 'last_name'
+     doppler: "LASTNAME",
+     shopify: 'last_name'
     },
     {
-      name: "Empresa",
-      predefined: false,
-      private: true,
-      readonly: false,
-      type: "string",
-      value: 'default_address.company'
+     doppler: "Empresa",
+     shopify: 'default_address.company'
     }
 ]);
 

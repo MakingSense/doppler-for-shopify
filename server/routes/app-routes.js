@@ -28,8 +28,11 @@ class AppRoutes {
         shop: shop,
         dopplerAccountName: shopInstance.dopplerAccountName,
         dopplerListId: shopInstance.dopplerListId,
+        dopplerListName: shopInstance.dopplerListName,
         fieldsMapping: shopInstance.fieldsMapping,
-        setupCompleted: shopInstance.dopplerListId && shopInstance.fieldsMapping ? true : false
+        setupCompleted: shopInstance.dopplerListId && shopInstance.fieldsMapping ? true : false,
+        synchronizationInProgress: shopInstance.synchronizationInProgress ? false : shopInstance.synchronizationInProgress,
+        lastSynchronizationDate: shopInstance.lastSynchronizationDate
       });
   }
 
@@ -81,10 +84,10 @@ class AppRoutes {
   }
 
   async setDopplerList(request, response) {
-    const { session: { shop }, body: { dopplerListId } } = request;
+    const { session: { shop }, body: { dopplerListId, dopplerListName } } = request;
     
     const redis = this.redisClientFactory.createClient();
-    await redis.storeShopAsync(shop, { dopplerListId }, true);
+    await redis.storeShopAsync(shop, { dopplerListId, dopplerListName }, true);
 
     response.sendStatus(200);
   }
@@ -114,15 +117,9 @@ class AppRoutes {
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
   async synchronizeCustomers(request, response) { 
     const { session: { shop, accessToken } } = request;
-
-    const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
     
-    // TODO: if webhook creation fails, should we continue with the synchronization?
-    await shopify.webhook.create({
-      topic: 'customers/create',
-      address: `${process.env.SHOPIFY_APP_HOST}/hooks/customers/created`,
-      format: 'json'
-    });
+    const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
+
     const customers = await shopify.customer.list();
 
     const redis = this.redisClientFactory.createClient();
@@ -137,7 +134,10 @@ class AppRoutes {
       JSON.parse(shopInstance.fieldsMapping)
     );
     
-    await redis.storeShopAsync(shop, { importTaskId }, true);
+    await redis.storeShopAsync(shop, { importTaskId, 
+      synchronizationInProgress: true,
+      lastSynchronizationDate: (new Date()).toISOString()
+    }, true);
 
     response.sendStatus(201);
   }

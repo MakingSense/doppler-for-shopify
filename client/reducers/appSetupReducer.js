@@ -9,6 +9,26 @@ export const appSetup = (state = initialState.appSetup, action) => {
           setupCompleted: action.setupCompleted
         };
 
+        case types.SYNCHRONIZATION_IN_PROGRESS:
+        return {
+          ...state,
+          synchronizationInProgress: action.synchronizationInProgress,
+          lastSynchronizationDate: action.synchronizationInProgress ? (new Date()).toISOString() : state.lastSynchronizationDate
+        };
+
+        case types.REQUESTING_SYNCHRONIZATION:
+        return {
+          ...state,
+          requestingSynchronization: action.requestingSynchronization
+        };
+
+        case types.LIST_SET:
+        return {
+          ...state,
+          dopplerListId: action.dopplerListId,
+          dopplerListName: action.dopplerListName
+        };
+
         default:
             return state;
     }

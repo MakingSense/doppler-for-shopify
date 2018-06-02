@@ -32,7 +32,7 @@ class Welcome extends Component {
         <div style={{ marginTop: "2rem" }}>
           <ButtonGroup>
             <Button primary onClick={this.handleConnectButtonClick}>Connect to Doppler</Button>
-            <Button external url="https://app2.fromdoppler.com/Registration/Register/StartRegistration/">Create new account</Button>
+            <Button external url="https://app2.fromdoppler.com/Registration/Register/StartRegistration?origin=shopify">Create new account</Button>
           </ButtonGroup>
         </div>
       </Layout.Section>

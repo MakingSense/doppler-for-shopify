@@ -427,28 +427,16 @@ describe('The doppler-client module', function () {
     ];
     const fieldsMap = [
         {
-          name: "FIRSTNAME",
-          predefined: true,
-          private: false,
-          readonly: false,
-          type: "string",
-          value: 'first_name'
+          doppler: "FIRSTNAME",
+          shopify: 'first_name'
         },
         {
-          name: "LASTNAME",
-          predefined: true,
-          private: false,
-          readonly: false,
-          type: "string",
-          value: 'last_name'
+          doppler: "LASTNAME",
+          shopify: 'last_name'
         },
         {
-          name: "Empresa",
-          predefined: false,
-          private: true,
-          readonly: false,
-          type: "string",
-          value: 'default_address.company'
+          doppler: "Empresa",
+          shopify: 'default_address.company'
         }
     ];
 
@@ -482,28 +470,16 @@ describe('The doppler-client module', function () {
         };
     const fieldsMap = [
         {
-          name: "FIRSTNAME",
-          predefined: true,
-          private: false,
-          readonly: false,
-          type: "string",
-          value: 'first_name'
+          doppler: "FIRSTNAME",
+          shopify: 'first_name'
         },
         {
-          name: "LASTNAME",
-          predefined: true,
-          private: false,
-          readonly: false,
-          type: "string",
-          value: 'last_name'
+          doppler: "LASTNAME",
+          shopify: 'last_name'
         },
         {
-          name: "Empresa",
-          predefined: false,
-          private: true,
-          readonly: false,
-          type: "string",
-          value: 'default_address.company'
+          doppler: "Empresa",
+          shopify: 'default_address.company'
         }
     ];
 
@@ -515,26 +491,14 @@ describe('The doppler-client module', function () {
           fields: [
             {
                 name: "FIRSTNAME",
-                predefined: true,
-                private: false,
-                readonly: false,
-                type: "string",
                 value: 'Jon'
             },
             {
                 name: "LASTNAME",
-                predefined: true,
-                private: false,
-                readonly: false,
-                type: "string",
                 value: 'Snow'
             },
             {
                 name: "Empresa",
-                predefined: false,
-                private: true,
-                readonly: false,
-                type: "string",
                 value: 'Winterfell'
             }
           ]

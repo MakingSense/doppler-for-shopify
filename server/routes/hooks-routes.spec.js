@@ -124,6 +124,6 @@ describe('The hooks routes', function () {
         const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
         await appRoutes.dopplerImportTaskCompleted(request, response);
         
-        expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { synchronizationCompleted: true}, true);
+        expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { synchronizationInProgress: false }, true);
     });
 });

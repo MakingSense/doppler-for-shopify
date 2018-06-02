@@ -48,7 +48,7 @@ const shopifyConfig = {
   secret: SHOPIFY_APP_SECRET,
   scope: ['read_customers', 'write_customers'],
   shopStore: new RedisStrategy(redisConfig),
-  afterAuth(request, response) {
+  afterAuth(request, response) { // TODO: move this to a controller
     const { session: { accessToken, shop } } = request;
 
     const shopifyClient = shopifyClientFactory.shopifyAPIClientFactory.createClient(shop, accessToken);
@@ -61,6 +61,14 @@ const shopifyConfig = {
     .then(() => {})
     .catch(err => console.error(err));
     
+    shopifyClient.webhook.create({
+      topic: 'customers/create',
+      address: `${process.env.SHOPIFY_APP_HOST}/hooks/customers/created`,
+      format: 'json'
+    })
+    .then(() => {})
+    .catch(err => console.error(err));
+
     response.redirect('/');
   },
 };

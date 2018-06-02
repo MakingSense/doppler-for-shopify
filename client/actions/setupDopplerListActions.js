@@ -52,6 +52,14 @@ export function changeCurrentSelectedList(selectedListId = null) {
   }
 }
 
+export function listSet(dopplerListId = null, dopplerListName = '') {
+  return {
+    type: types.LIST_SET,
+    dopplerListId,
+    dopplerListName
+  }
+}
+
 export function settingDopplerList(settingDopplerList = true) {
   return {
     type: types.SETTING_DOPPLER_LIST,
@@ -106,11 +114,12 @@ export function createDopplerList(name) {
   };
 }
 
-export function setDopplerList(selectedListId, setupCompleted) {
+export function setDopplerList(selectedListId, dopplerListName, setupCompleted) {
   return (dispatch, getState) => {
     dispatch(settingDopplerList(true));
-    return appService.setDopplerList(selectedListId)
+    return appService.setDopplerList(selectedListId, dopplerListName)
       .then(response => {
+        dispatch(listSet(selectedListId, dopplerListName));
         dispatch(settingDopplerList(false));
         if (setupCompleted)
           dispatch(push('/app/setup'));

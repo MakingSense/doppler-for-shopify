@@ -37,7 +37,6 @@ export function synchronizeCustomers() {
       .synchronizeCustomers()
       .then()
       .catch(errorPromise => {
-        dispatch(synchronizationInProgress(false));
         errorPromise
           .then(msg => dispatch(showErrorBanner(true, msg)))
           .catch(err => dispatch(showErrorBanner()));

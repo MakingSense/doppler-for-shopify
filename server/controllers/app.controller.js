@@ -1,11 +1,34 @@
 const shopifyFields = require ('../modules/shopify-extras').customerFields;
 
-class AppRoutes {
+class AppController {
 
   constructor(redisClientFactory, dopplerClientFactory, shopifyClientFactory){
     this.redisClientFactory = redisClientFactory;
     this.dopplerClientFactory = dopplerClientFactory;
     this.shopifyClientFactory = shopifyClientFactory;
+  }
+
+  afterAuth(request, response) {
+      const { session: { accessToken, shop } } = request;
+      const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
+      
+      shopify.webhook.create({
+        topic: 'app/uninstalled',
+        address: `${process.env.SHOPIFY_APP_HOST}/hooks/app/uninstalled`,
+        format: 'json'
+      })
+      .then(() => {})
+      .catch(err => console.error(err));
+      
+      shopify.webhook.create({
+        topic: 'customers/create',
+        address: `${process.env.SHOPIFY_APP_HOST}/hooks/customers/created`,
+        format: 'json'
+      })
+      .then(() => {})
+      .catch(err => console.error(err));
+
+      response.redirect('/');
   }
 
   async home(request, response) {
@@ -143,4 +166,4 @@ class AppRoutes {
   }
 }
 
-module.exports = AppRoutes;
+module.exports = AppController;

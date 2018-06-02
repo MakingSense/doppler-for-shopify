@@ -1,7 +1,7 @@
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const sinon = require('sinon');
-const HookRoutes = require('./hooks-routes');
+const HookController = require('./hooks.controller');
 const sinonMock = require('sinon-express-mock');
 const modulesMocks = require('../../test-utilities/modules-mock');
 const expect = chai.expect;
@@ -10,7 +10,7 @@ const redisClientFactoryStub = { createClient: () => { return modulesMocks.redis
 const dopplerClientFactoryStub = { createClient: () => { return modulesMocks.dopplerClient; }};
 const shopifyClientFactoryStub = { createClient: () => { return modulesMocks.shopifyClient; }};
 
-describe('The hooks routes', function () {
+describe('The hooks controller', function () {
 
     before(function () {
         chai.use(sinonChai);
@@ -29,8 +29,8 @@ describe('The hooks routes', function () {
 
         this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
 
-        const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.appUninstalled(undefined, request);
+        const hooksController = new HookController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await hooksController.appUninstalled(undefined, request);
         
         expect(modulesMocks.redisClient.removeShopAsync).to.be.calledWithExactly('store.myshopify.com', true);
     });
@@ -39,8 +39,8 @@ describe('The hooks routes', function () {
         const request = sinonMock.mockReq();
         this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
 
-        const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.appUninstalled(new Error('Forced Error'), request);
+        const hooksController = new HookController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await hooksController.appUninstalled(new Error('Forced Error'), request);
         
         expect(modulesMocks.redisClient.removeShopAsync).to.have.been.callCount(0);
     });
@@ -58,8 +58,8 @@ describe('The hooks routes', function () {
             }));
         this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
 
-        const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.customerCreated(undefined, request);
+        const hooksController = new HookController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await hooksController.customerCreated(undefined, request);
         
         expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly('store.myshopify.com', true);
         expect(modulesMocks.dopplerClient.createSubscriberAsync).to.be.calledWithExactly({
@@ -76,8 +76,8 @@ describe('The hooks routes', function () {
         this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
         this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
 
-        const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.customerCreated(new Error('Forced Error'), request);
+        const hooksController = new HookController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await hooksController.customerCreated(new Error('Forced Error'), request);
         
         expect(modulesMocks.redisClient.getShopAsync).have.been.callCount(0);
         expect(modulesMocks.dopplerClient.createSubscriberAsync).have.been.callCount(0);
@@ -96,8 +96,8 @@ describe('The hooks routes', function () {
             }));
         this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
 
-        const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.customerCreated(undefined, request);
+        const hooksController = new HookController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await hooksController.customerCreated(undefined, request);
         
         expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly('store.myshopify.com', true);
         expect(modulesMocks.dopplerClient.createSubscriberAsync).to.have.been.callCount(0);
@@ -109,8 +109,8 @@ describe('The hooks routes', function () {
             .returns(Promise.resolve(null));
         this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
 
-        const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.customerCreated(undefined, request);
+        const hooksController = new HookController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await hooksController.customerCreated(undefined, request);
         
         expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly('store.myshopify.com', true);
         expect(modulesMocks.dopplerClient.createSubscriberAsync).to.have.been.callCount(0);
@@ -121,8 +121,8 @@ describe('The hooks routes', function () {
         const response = sinonMock.mockRes();
         this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
 
-        const appRoutes = new HookRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.dopplerImportTaskCompleted(request, response);
+        const hooksController = new HookController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await hooksController.dopplerImportTaskCompleted(request, response);
         
         expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { synchronizationInProgress: false }, true);
     });

@@ -1,4 +1,4 @@
-class HooksRoutes {
+class HooksController {
 
     constructor(redisClientFactory, dopplerClientFactory, shopifyClientFactory) {
       this.redisClientFactory = redisClientFactory;
@@ -42,4 +42,4 @@ class HooksRoutes {
     }
 }
 
-module.exports = HooksRoutes;
+module.exports = HooksController;

@@ -1,14 +1,18 @@
 import fetch from 'isomorphic-fetch';
 
+const commonRequestHeaders = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
+};
+
 class AppService {
     static connectToDoppler({ dopplerApiKey, dopplerAccountName }) {
         const request = new Request('/connect-to-doppler', {
+            ...commonRequestHeaders,
             method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            credentials: 'include',
             body: JSON.stringify({ dopplerApiKey, dopplerAccountName })
         });
     
@@ -25,12 +29,8 @@ class AppService {
 
     static getDopplerLists() {
         const request = new Request('/doppler-lists', {
+            ...commonRequestHeaders,
             method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            credentials: 'include'
         });
     
         return fetch(request)
@@ -44,12 +44,8 @@ class AppService {
 
     static createDopplerList(name) {
         const request = new Request('/create-doppler-list', {
+            ...commonRequestHeaders,
             method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            credentials: 'include',
             body: JSON.stringify({ name })
         });
     
@@ -66,12 +62,8 @@ class AppService {
 
     static setDopplerList(dopplerListId, dopplerListName) {
         const request = new Request('/doppler-list', {
+            ...commonRequestHeaders,
             method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            credentials: 'include',
             body: JSON.stringify({ dopplerListId, dopplerListName })
         });
     
@@ -86,12 +78,8 @@ class AppService {
 
     static getFields() {
         const request = new Request('/fields', {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            credentials: 'include'
+            ...commonRequestHeaders,
+            method: 'GET'
         });
     
         return fetch(request)
@@ -105,12 +93,8 @@ class AppService {
 
     static setFieldsMapping(fieldsMapping) {
         const request = new Request('/fields-mapping', {
+            ...commonRequestHeaders,
             method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            credentials: 'include',
             body: JSON.stringify({ fieldsMapping })
         });
     
@@ -125,12 +109,8 @@ class AppService {
 
     static synchronizeCustomers() {
         const request = new Request('/synchronize-customers', {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            credentials: 'include'
+            ...commonRequestHeaders,
+            method: 'POST'
         });
     
         return fetch(request)

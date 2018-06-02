@@ -1,7 +1,7 @@
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const sinon = require('sinon');
-const AppRoutes = require('./app-routes');
+const AppController = require('./app.controller');
 const sinonMock = require('sinon-express-mock');
 const modulesMocks = require('../../test-utilities/modules-mock');
 const expect = chai.expect;
@@ -10,7 +10,7 @@ const redisClientFactoryStub = { createClient: () => { return modulesMocks.redis
 const dopplerClientFactoryStub = { createClient: () => { return modulesMocks.dopplerClient; }};
 const shopifyClientFactoryStub = { createClient: () => { return modulesMocks.shopifyClient; }};
 
-describe('The app routes', function () {
+describe('The app controller', function () {
     before(function () {
         chai.use(sinonChai);
     });
@@ -38,8 +38,8 @@ describe('The app routes', function () {
                 lastSynchronizationDate: '2015-06-01T23:22:23.694Z'
             }));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.home(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.home(request, response);
 
         expect(response.render).to.be.called.calledWithExactly('app', {
             title: 'Doppler for Shopify',
@@ -63,8 +63,8 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
             .returns(Promise.resolve(null));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.home(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.home(request, response);
 
         expect(response.redirect).to.be.called.calledWithExactly("/shopify/auth?shop=store.myshopify.com")
         expect(response.render).to.have.been.callCount(0);
@@ -77,8 +77,8 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
             .returns(Promise.resolve({ accessToken: 'ae768b8c78d68a54565434' }));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.home(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.home(request, response);
 
         expect(response.redirect).to.be.called.calledWithExactly("/shopify/auth?shop=store.myshopify.com")
         expect(response.render).to.have.been.callCount(0);
@@ -95,8 +95,8 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
             .returns(Promise.resolve(true));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.connectToDoppler(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.connectToDoppler(request, response);
 
         expect(modulesMocks.dopplerClient.AreCredentialsValidAsync).to.have.been.callCount(1);
         expect(modulesMocks.redisClient.storeShopAsync).to.be.called.calledWithExactly('store.myshopify.com', {dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A', dopplerAccountName: 'user@example.com'}, true);
@@ -114,8 +114,8 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
             .returns(Promise.resolve(false));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.connectToDoppler(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.connectToDoppler(request, response);
 
         expect(modulesMocks.dopplerClient.AreCredentialsValidAsync).to.have.been.callCount(1);
         expect(modulesMocks.redisClient.storeShopAsync).to.have.been.callCount(0);
@@ -142,8 +142,8 @@ describe('The app routes', function () {
                 itemsCount: 3
                 }));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.getDopplerLists(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.getDopplerLists(request, response);
 
         expect(modulesMocks.dopplerClient.getListsAsync).to.have.been.callCount(1);
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
@@ -174,8 +174,8 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.dopplerClient, 'createListAsync')
             .returns(Promise.resolve(458712));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.createDopplerList(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.createDopplerList(request, response);
 
         expect(modulesMocks.dopplerClient.createListAsync).to.be.called.calledWithExactly('Fresh list');
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
@@ -200,8 +200,8 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.dopplerClient, 'createListAsync')
             .throws({statusCode:400, errorCode:2});
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.createDopplerList(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.createDopplerList(request, response);
 
         expect(modulesMocks.dopplerClient.createListAsync).to.be.called.calledWithExactly('Fresh list');
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
@@ -217,8 +217,8 @@ describe('The app routes', function () {
         const response = sinonMock.mockRes();
         this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.setDopplerList(request, response);
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.setDopplerList(request, response);
 
         expect(modulesMocks.redisClient.storeShopAsync).to.be.called.calledWithExactly('store.myshopify.com', { dopplerListId: 15457, dopplerListName: 'customers' }, true);
         expect(response.sendStatus).to.be.called.calledWithExactly(200);
@@ -250,8 +250,8 @@ describe('The app routes', function () {
                     type: "string"
                 }]));
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.getFields(request, response)
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.getFields(request, response)
 
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com', true);
         expect(response.json.args[0][0].shopifyFields.length).to.be.eqls(32);
@@ -271,8 +271,8 @@ describe('The app routes', function () {
         const response = sinonMock.mockRes();
         this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
 
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.setFieldsMapping(request, response)
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.setFieldsMapping(request, response)
 
         expect(modulesMocks.redisClient.storeShopAsync).to.be.called.calledWithExactly('store.myshopify.com',{
             fieldsMapping: '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]'}, true);
@@ -282,7 +282,6 @@ describe('The app routes', function () {
     it('synchronizeCustomers should perform the synchronization process', async function() {
         const request = sinonMock.mockReq({ session: { accessToken: 'fb5d67a5bd67ab5d67ab5d', shop: 'store.myshopify.com' } });
         const response = sinonMock.mockRes();
-        // this.sandbox.stub(modulesMocks.shopifyClient.webhook, 'create');
         this.sandbox.stub(modulesMocks.shopifyClient.customer, 'list')
             .returns(Promise.resolve([
                 { 	
@@ -319,14 +318,9 @@ describe('The app routes', function () {
         this.sandbox.stub(modulesMocks.dopplerClient, 'importSubscribersAsync')
             .returns(Promise.resolve('importTask-123456'));
         
-        const appRoutes = new AppRoutes(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
-        await appRoutes.synchronizeCustomers(request, response)
+        const appController = new AppController(redisClientFactoryStub, dopplerClientFactoryStub, shopifyClientFactoryStub);
+        await appController.synchronizeCustomers(request, response)
 
-        // expect(modulesMocks.shopifyClient.webhook.create).to.be.called.calledWithExactly({
-        //     topic: 'customers/create',
-        //     address: 'https://shopify.fromdoppler.com/hooks/customers/created',
-        //     format: 'json'
-        //   });
         expect(modulesMocks.shopifyClient.customer.list).to.have.been.callCount(1);
         expect(modulesMocks.redisClient.getShopAsync).to.be.called.calledWithExactly('store.myshopify.com');
         expect(modulesMocks.dopplerClient.importSubscribersAsync).to.be.called.calledWithExactly(

@@ -13,19 +13,22 @@ import {
 import Modal from 'react-responsive-modal';
 import SynchronizeCustomersConfirmationModal from './SynchronizeCustomersConfirmationModal';
 import * as appSetupActions from '../../actions/appSetupActions';
+import LoadingSkeleton from '../loading_skeleton/LoadingSkeleton';
 
 class AppSetup extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      reloading: false
+    };
 
     this.handleSetupFieldsMapping = this.handleSetupFieldsMapping.bind(this);
     this.handleSetupDopplerList = this.handleSetupDopplerList.bind(this);
-    this.handleRunSynchronizeCustomers = this.handleRunSynchronizeCustomers.bind(
-      this
-    );
+    this.handleRunSynchronizeCustomers = this.handleRunSynchronizeCustomers.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.getButton = this.getButton.bind(this);
     this.getSynchronizationStatus = this.getSynchronizationStatus.bind(this);
+    this.handleReloadLink = this.handleReloadLink.bind(this);
   }
 
   handleSetupDopplerList() {
@@ -42,6 +45,10 @@ class AppSetup extends Component {
 
   handleCloseModal() {
     this.props.actions.requestingSynchronization(false);
+  }
+
+  handleReloadLink() {
+    this.setState({reloading:true});
   }
 
   getButton({ onClick, label }) {
@@ -73,7 +80,7 @@ class AppSetup extends Component {
           <Banner icon="horizontalDots" status="warning">
             <p>
               Synchronization process status: <strong>IN PROGRESS </strong>
-              (Click <Link url=".">here</Link> to refresh)
+              (Click <Link onClick={this.handleReloadLink} url=".">here</Link> to refresh)
             </p>
             <p>
               Requested on:{' '}
@@ -105,7 +112,10 @@ class AppSetup extends Component {
   }
 
   render() {
-    return (
+    debugger;
+    return this.state.reloading ? (
+      <LoadingSkeleton />
+    ) : (
       <div>
         <Layout>
           <Layout.Section>

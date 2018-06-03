@@ -14,6 +14,7 @@ import Modal from 'react-responsive-modal';
 import SynchronizeCustomersConfirmationModal from './SynchronizeCustomersConfirmationModal';
 import * as appSetupActions from '../../actions/appSetupActions';
 import LoadingSkeleton from '../loading_skeleton/LoadingSkeleton';
+import SynchronizationStatus from './SynchronizationStatus';
 
 class AppSetup extends Component {
   constructor(props) {
@@ -27,7 +28,6 @@ class AppSetup extends Component {
     this.handleRunSynchronizeCustomers = this.handleRunSynchronizeCustomers.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.getButton = this.getButton.bind(this);
-    this.getSynchronizationStatus = this.getSynchronizationStatus.bind(this);
     this.handleReloadLink = this.handleReloadLink.bind(this);
   }
 
@@ -67,52 +67,7 @@ class AppSetup extends Component {
     );
   }
 
-  getSynchronizationStatus() {
-    if (
-      !this.props.lastSynchronizationDate ||
-      this.props.lastSynchronizationDate === ''
-    )
-      return null;
-
-    if (this.props.synchronizationInProgress)
-      return (
-        <div>
-          <Banner icon="horizontalDots" status="warning">
-            <p>
-              Synchronization process status: <strong>IN PROGRESS </strong>
-              (Click <Link onClick={this.handleReloadLink} url=".">here</Link> to refresh)
-            </p>
-            <p>
-              Requested on:{' '}
-              <strong>
-                {new Date(this.props.lastSynchronizationDate).toLocaleString()}
-              </strong>
-            </p>
-          </Banner>
-          <br />
-        </div>
-      );
-
-    return (
-      <div>
-        <Banner icon="checkmark" status="info">
-          <p>
-            Synchronization process status: <strong>COMPLETED</strong>
-          </p>
-          <p>
-            Requested on:{' '}
-            <strong>
-              {new Date(this.props.lastSynchronizationDate).toLocaleString()}
-            </strong>
-          </p>
-        </Banner>
-        <br />
-      </div>
-    );
-  }
-
   render() {
-    debugger;
     return this.state.reloading ? (
       <LoadingSkeleton />
     ) : (
@@ -129,7 +84,11 @@ class AppSetup extends Component {
                 synchronization process.
               </p>
               <br />
-              {this.getSynchronizationStatus()}
+              <SynchronizationStatus
+                lastSynchronizationDate={this.props.lastSynchronizationDate}
+                handleReloadLink={this.handleReloadLink}
+                synchronizationInProgress={this.props.synchronizationInProgress}
+              /> 
               {this.getButton({
                 onClick: this.handleRunSynchronizeCustomers,
                 label: 'Synchronize',
@@ -191,12 +150,10 @@ class AppSetup extends Component {
 function mapStatesToProps(state, ownProps) {
   return {
     state: state.reducers,
-    requestingSynchronization:
-      state.reducers.appSetup.requestingSynchronization,
+    requestingSynchronization: state.reducers.appSetup.requestingSynchronization,
     dopplerAccountName: state.reducers.appSetup.dopplerAccountName,
     dopplerListName: state.reducers.appSetup.dopplerListName,
-    synchronizationInProgress:
-      state.reducers.appSetup.synchronizationInProgress,
+    synchronizationInProgress: state.reducers.appSetup.synchronizationInProgress,
     lastSynchronizationDate: state.reducers.appSetup.lastSynchronizationDate,
   };
 }

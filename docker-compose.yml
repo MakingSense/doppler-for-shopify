@@ -13,13 +13,13 @@ services:
     working_dir: /work
     command: >
       /bin/sh -c "
-      yarn install 
-      && yarn run dev;
+      yarn install --force
+      && yarn run prod;
       "
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - RHOST=redis
-      - SHOPIFY_APP_HOST=https://532d486e.ngrok.io
+      - SHOPIFY_APP_HOST=https://shopify.fromdoppler.com
       - SHOPIFY_APP_KEY=ab60395f0cef794b959ac302f52f28e2
       - SHOPIFY_APP_SECRET # Define this as an environment variable in Docker in host
       - SHOPIFY_APP_PORT=3000

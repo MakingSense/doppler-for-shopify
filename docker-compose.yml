@@ -27,6 +27,9 @@ services:
       - REDIS_HOST=redis
       - REDIS_PASSWORD=
       - REDIS_PORT=6379
+      - ENABLE_HTTPS=false
+      - SSL_PRIVATE_KEY_PATH=/sslcert/server.key
+      - SSL_CERTIFICATE_KEY_PATH=/sslcert/server.crt
     ports:
       - 3000:3000
     networks:

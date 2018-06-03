@@ -9,15 +9,26 @@ class ErrorBanner extends Component {
     super(props);
     this.handleBannerDismiss = this.handleBannerDismiss.bind(this);
     this.getErrorDetails = this.getErrorDetails.bind(this);
+    this.formatErroMessage = this.formatErroMessage.bind(this);
   }
 
   handleBannerDismiss() {
     this.props.actions.showErrorBanner(false);
   }
 
+  formatErroMessage() {
+    try {
+      const doc = new DOMParser().parseFromString(this.props.errorMessage, "text/html");
+      if (Array.from(doc.body.childNodes).some(node => node.nodeType === 1))
+        return doc.body.innerText;
+    } catch (error) {}
+    
+    return this.props.errorMessage
+  }
+
   getErrorDetails() {
     return this.props.errorMessage && this.props.errorMessage != ''
-      ? ` Details: ${this.props.errorMessage}. `
+      ? ` Details: ${this.formatErroMessage()}. `
       : ' ';
   }
 
@@ -28,7 +39,7 @@ class ErrorBanner extends Component {
           <p>
             <strong>An unexpected error occurred.</strong>
             {this.getErrorDetails()}
-            <Link url="mailto:support@fromdoppler.com">
+            <Link url="https://www.fromdoppler.com/en/contact" external={true}>
               Let us know about this.
             </Link>
           </p>

@@ -151,6 +151,9 @@ class SetupDopplerList extends Component {
           tips for managing your lists
         </FooterHelp>
         <Modal
+          closeOnOverlayClick={false}
+          closeOnEsc={false}
+          showCloseIcon={false}
           open={this.props.requestingListCreation}
           onClose={this.handleCloseModal}
           center
@@ -167,13 +170,11 @@ function mapStatesToProps(state, ownProps) {
   return {
     state: state.reducers,
     dopplerLists: state.reducers.setupDopplerList.dopplerLists,
-    retrievingDopplerLists:
-      state.reducers.setupDopplerList.retrievingDopplerLists,
+    retrievingDopplerLists: state.reducers.setupDopplerList.retrievingDopplerLists,
     selectedListId: state.reducers.setupDopplerList.selectedListId,
     settingDopplerList: state.reducers.setupDopplerList.settingDopplerList,
-    requestingListCreation:
-      state.reducers.setupDopplerList.requestingListCreation,
-    setupCompleted: state.reducers.appSetup.setupCompleted,
+    requestingListCreation: state.reducers.setupDopplerList.requestingListCreation,
+    setupCompleted: state.reducers.appSetup.setupCompleted
   };
 }
 

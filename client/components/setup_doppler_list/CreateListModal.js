@@ -72,7 +72,12 @@ class CreateListModal extends Component {
                     <br />
                     <Stack alignment="center" distribution="trailing">
                       <ButtonGroup>
-                        <Button onClick={this.handleCloseModal}>Cancel</Button>
+                        <Button 
+                          onClick={this.handleCloseModal}
+                          disabled={this.props.creatingDopplerList}
+                        >
+                          Cancel
+                        </Button>
                         <Button
                           primary
                           submit

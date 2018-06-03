@@ -56,7 +56,7 @@ class Welcome extends Component {
           </div>
         </Layout.Section>
         <Layout.Section secondary>
-          <Image source={ConnectedImage} />
+          <Image style={{maxWidth:"30rem"}} source={ConnectedImage} />
         </Layout.Section>
       </Layout>
     );

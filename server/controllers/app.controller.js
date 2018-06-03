@@ -168,11 +168,21 @@ class AppController {
   async synchronizeCustomers(request, response) {
     const { session: { shop, accessToken } } = request;
 
+    const redis = this.redisClientFactory.createClient();
+
+    await redis.storeShopAsync(
+      shop,
+      {
+        synchronizationInProgress: true,
+        lastSynchronizationDate: new Date().toISOString(),
+      },
+      false
+    );
+
     const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
 
     const customers = await shopify.customer.list();
 
-    const redis = this.redisClientFactory.createClient();
     const shopInstance = await redis.getShopAsync(shop);
 
     const doppler = this.dopplerClientFactory.createClient(
@@ -191,8 +201,6 @@ class AppController {
       shop,
       {
         importTaskId,
-        synchronizationInProgress: true,
-        lastSynchronizationDate: new Date().toISOString(),
       },
       true
     );

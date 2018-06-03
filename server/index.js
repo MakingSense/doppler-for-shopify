@@ -60,8 +60,7 @@ const shopifyConfig = {
   secret: SHOPIFY_APP_SECRET,
 
   // TODO: this should work with an array of string but it doesn't. Maybe a bug in the shopify module
-  scope:
-    'read_content,read_products,read_orders,write_customers,write_marketing_events,write_script_tags,write_price_rules',
+  scope: 'read_content,read_products,read_orders,write_customers,write_marketing_events,write_script_tags,write_price_rules',
   shopStore: new RedisStrategy(redisConfig),
   afterAuth(req, res) {
     appController.afterAuth(req, res);

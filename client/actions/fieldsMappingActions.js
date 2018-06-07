@@ -28,11 +28,12 @@ export function retrievingFields(retrievingFields = true) {
   };
 }
 
-export function fieldsRetrieved(shopifyFields, dopplerFields) {
+export function fieldsRetrieved(shopifyFields, dopplerFields, fieldsMapping) {
   return {
     type: types.FIELDS_RETRIEVED,
     shopifyFields,
     dopplerFields,
+    fieldsMapping,
   };
 }
 
@@ -92,7 +93,7 @@ export function getFields() {
       .then(response => {
         dispatch(retrievingFields(false));
         dispatch(
-          fieldsRetrieved(response.shopifyFields, response.dopplerFields)
+          fieldsRetrieved(response.shopifyFields, response.dopplerFields, response.fieldsMapping)
         );
       })
       .catch(errorPromise => {

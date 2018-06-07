@@ -69,6 +69,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStatesToProps, mapDispatchToProps)(
-  SynchronizeCustomersConfirmationModal
-);
+export default connect(mapStatesToProps, mapDispatchToProps)(SynchronizeCustomersConfirmationModal);

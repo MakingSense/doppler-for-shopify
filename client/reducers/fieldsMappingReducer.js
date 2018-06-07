@@ -36,6 +36,7 @@ export const fieldsMapping = (state = initialState.fieldsMapping, action) => {
         ...state,
         shopifyFields: action.shopifyFields,
         dopplerFields: action.dopplerFields,
+        fieldsMapping: action.fieldsMapping ? action.fieldsMapping : state.fieldsMapping,
       };
 
     case types.NEW_MAPPED_FIELD_ADDED:

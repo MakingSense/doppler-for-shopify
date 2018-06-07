@@ -147,7 +147,7 @@ class AppController {
     );
     const dopplerFields = await doppler.getFieldsAsync();
 
-    response.json({ shopifyFields, dopplerFields });
+    response.json({ shopifyFields, dopplerFields, fieldsMapping: shopInstance.fieldsMapping ? JSON.parse(shopInstance.fieldsMapping) : null });
   }
 
   async setFieldsMapping(request, response) {

@@ -1,6 +1,6 @@
 {
-  "name": "shopify-node-app",
-  "version": "0.0.0",
+  "name": "doppler-for-shopify",
+  "version": "1.0.0-rc1",
   "private": true,
   "scripts": {
     "prod": "yarn run clean && yarn run build && cross-env NODE_ENV=production yarn run start",

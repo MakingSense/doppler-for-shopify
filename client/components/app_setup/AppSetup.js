@@ -9,6 +9,8 @@ import {
   Banner,
   Link,
   FooterHelp,
+  Stack,
+  Spinner
 } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import SynchronizeCustomersConfirmationModal from './SynchronizeCustomersConfirmationModal';
@@ -29,6 +31,7 @@ class AppSetup extends Component {
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.getButton = this.getButton.bind(this);
     this.handleReloadLink = this.handleReloadLink.bind(this);
+    this.getSynchronizeButton = this.getSynchronizeButton.bind(this);
   }
 
   handleSetupDopplerList() {
@@ -49,6 +52,21 @@ class AppSetup extends Component {
 
   handleReloadLink() {
     this.setState({reloading:true});
+  }
+
+  getSynchronizeButton(){
+    if (this.props.synchronizationInProgress)
+      return (
+        <Stack>
+          <Spinner size="small"/>
+          <p>Synchronizing...</p>
+        </Stack>
+      );
+    return (
+      <Button primary onClick={this.handleRunSynchronizeCustomers}>
+        Synchronize Customers
+      </Button>
+    );
   }
 
   getButton({ onClick, label }) {
@@ -88,11 +106,8 @@ class AppSetup extends Component {
                 lastSynchronizationDate={this.props.lastSynchronizationDate}
                 handleReloadLink={this.handleReloadLink}
                 synchronizationInProgress={this.props.synchronizationInProgress}
-              /> 
-              {this.getButton({
-                onClick: this.handleRunSynchronizeCustomers,
-                label: 'Synchronize',
-              })}
+              />
+              {this.getSynchronizeButton()}
             </Card>
           </Layout.Section>
           <Layout.Section>

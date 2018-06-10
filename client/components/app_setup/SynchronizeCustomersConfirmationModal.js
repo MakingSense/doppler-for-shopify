@@ -34,12 +34,14 @@ class SynchronizeCustomersConfirmationModal extends Component {
             <Stack spacing="extraTight">
               <Icon source="risk" color="yellow" />
               <p>
-                By running the synchronization process the existing subscribers
+                By running the synchronization process the existing subscriberswill be replaced by the 
               </p>
             </Stack>
             <p>
-              will be replaced by the Shopify customers data. Do you want to
-              continue?
+              Shopify customers data. This action may take several minutes.
+            </p>
+            <p>
+              Do you want to continue?
             </p>
             <br />
             <Stack alignment="center" distribution="trailing">

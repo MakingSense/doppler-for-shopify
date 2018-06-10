@@ -34,8 +34,12 @@ export const fieldsMapping = (state = initialState.fieldsMapping, action) => {
     case types.FIELDS_RETRIEVED:
       return {
         ...state,
-        shopifyFields: action.shopifyFields,
-        dopplerFields: action.dopplerFields,
+        shopifyFields: action.shopifyFields.sort(function(a, b) {
+          return a.name.localeCompare(b.name);
+        }),
+        dopplerFields: action.dopplerFields.sort(function(a, b) {
+          return a.name.localeCompare(b.name);
+        }),
         fieldsMapping: action.fieldsMapping ? action.fieldsMapping : state.fieldsMapping,
       };
 

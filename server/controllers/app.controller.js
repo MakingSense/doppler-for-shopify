@@ -190,20 +190,29 @@ class AppController {
       shopInstance.dopplerApiKey
     );
 
-    const importTaskId = await doppler.importSubscribersAsync(
-      customers,
-      shopInstance.dopplerListId,
-      shop,
-      JSON.parse(shopInstance.fieldsMapping)
-    );
+    try {
+      const importTaskId = await doppler.importSubscribersAsync(
+        customers,
+        shopInstance.dopplerListId,
+        shop,
+        JSON.parse(shopInstance.fieldsMapping)
+      );
 
-    await redis.storeShopAsync(
-      shop,
-      {
-        importTaskId,
-      },
-      true
-    );
+      await redis.storeShopAsync(shop, { importTaskId }, true);
+    } catch (error) {
+      
+      const _redis = this.redisClientFactory.createClient();
+      await _redis.storeShopAsync(
+        shop,
+        {
+          synchronizationInProgress: false,
+          lastSynchronizationDate: '',
+        },
+        true
+      );
+
+      throw error;
+    }
 
     response.sendStatus(201);
   }

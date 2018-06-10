@@ -105,7 +105,7 @@ export function getFields() {
   };
 }
 
-export function setFieldsMapping(fieldsMapping) {
+export function setFieldsMapping(fieldsMapping, isSetupCompleted) {
   return (dispatch, getState) => {
     dispatch(settingFieldsMapping(true));
     return appService
@@ -113,7 +113,10 @@ export function setFieldsMapping(fieldsMapping) {
       .then(response => {
         dispatch(settingFieldsMapping(false));
         dispatch(setupCompleted(true));
-        dispatch(push('/app/setup'));
+        if (isSetupCompleted)
+          dispatch(push('/app/setup'));
+        else
+          dispatch(push('/app/setup-completed'));
       })
       .catch(errorPromise => {
         dispatch(settingFieldsMapping(false));

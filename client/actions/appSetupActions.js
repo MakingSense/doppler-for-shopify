@@ -29,13 +29,19 @@ export function gotoSetupDopplerList() {
   };
 }
 
+export function gotoAppSetup() {
+  return (dispatch, getState) => {
+    dispatch(push('/app/setup'));
+  };
+}
+
 export function synchronizeCustomers() {
   return (dispatch, getState) => {
     dispatch(synchronizationInProgress(true));
     dispatch(requestingSynchronization(false));
     return appService
       .synchronizeCustomers()
-      .then()
+      .then(dispatch(push('/app/setup')))
       .catch(errorPromise => {
         errorPromise
           .then(msg => dispatch(showErrorBanner(true, msg)))

@@ -33,6 +33,7 @@ class UpsertFieldMappingModal extends Component {
     this.handleSaveButtonClick = this.handleSaveButtonClick.bind(this);
     this.handleDopplerFieldChange = this.handleDopplerFieldChange.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
+    this.getFriendlyTypeName = this.getFriendlyTypeName.bind(this);
   }
 
   componentDidMount() {
@@ -43,13 +44,21 @@ class UpsertFieldMappingModal extends Component {
     this.handleShopifyFieldChange(shopifyFieldValue);
   }
 
+  getFriendlyTypeName(type) {
+    switch(type) {
+      case 'string': return 'text';
+      case 'boolean': return 'true/false';
+      default: return type;
+    }
+  }
+
   getShopifyFieldHelpText(shopifyFieldValue) {
     if (shopifyFieldValue === null) return '';
 
     const shopifyField = this.props.shopifyFields.find(
       sf => sf.path === shopifyFieldValue
     );
-    return `Type: ${shopifyField.type}. Sample: ${shopifyField.sample}`;
+    return `Type: ${this.getFriendlyTypeName(shopifyField.type)}. Sample: ${shopifyField.sample}`;
   }
 
   getDopplerFieldHelpText(dopplerFieldValue) {
@@ -58,9 +67,7 @@ class UpsertFieldMappingModal extends Component {
     const dopplerField = this.props.dopplerFields.find(
       df => df.name === dopplerFieldValue
     );
-    return `Type: ${dopplerField.type}.${
-      dopplerField.sample ? ` Sample: ${dopplerField.sample}` : ''
-    }`;
+    return `Type: ${this.getFriendlyTypeName(dopplerField.type)}.${dopplerField.sample ? ` Sample: ${dopplerField.sample}` : ''}`;
   }
 
   getShopifyOptions() {
@@ -76,8 +83,7 @@ class UpsertFieldMappingModal extends Component {
       .filter(
         d =>
           !this.props.fieldsMapping.some(m => m.doppler === d.name) &&
-          this.props.shopifyFields.find(f => f.path === shopifyFieldValue)
-            .type === d.type
+          this.props.shopifyFields.find(f => f.path === shopifyFieldValue).type === d.type
       )
       .map(d => {
         return { value: d.name, label: d.name };

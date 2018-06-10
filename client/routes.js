@@ -8,6 +8,7 @@ import ConnectToDoppler from './components/connect_to_doppler/ConnectToDoppler';
 import SetupDopplerList from './components/setup_doppler_list/SetupDopplerList';
 import FieldsMapping from './components/fields_mapping/FieldsMapping';
 import AppSetup from './components/app_setup/AppSetup';
+import SetupCompleted from './components/app_setup/SetupCompleted';
 import AboutPage from './components/about/AboutPage';
 import NotFound from './components/not_found/NotFound';
 
@@ -26,6 +27,7 @@ export default (
     <Route path="/app/connect-to-doppler" component={ConnectToDoppler} />
     <Route path="/app/setup-doppler-list" component={SetupDopplerList} />
     <Route path="/app/fields-mapping" component={FieldsMapping} />
+    <Route path="/app/setup-completed" component={SetupCompleted} />
     <Route path="/app/setup" component={AppSetup} />
     <Route path="/app/about" component={AboutPage} />
     <Route path="*" component={NotFound} />

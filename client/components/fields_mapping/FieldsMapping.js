@@ -90,7 +90,7 @@ class FieldsMapping extends Component {
   }
 
   handleSetFieldsMappingClick() {
-    this.props.actions.setFieldsMapping(this.props.fieldsMapping);
+    this.props.actions.setFieldsMapping(this.props.fieldsMapping, this.props.setupCompleted);
   }
 
   handleCancelButtonClick() {

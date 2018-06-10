@@ -144,9 +144,9 @@ class Doppler {
   }
 
   async importSubscribersAsync(customers, listId, shopDomain, fieldsMap) {
-    const url = `${baseUrl}/accounts/${this.accountName}/lists/${
-      listId
-    }/subscribers/import`;
+    if (customers.length === 0) return null;
+    
+    const url = `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers/import`;
 
     const subscribers = {
       items: customers.map(customer => {

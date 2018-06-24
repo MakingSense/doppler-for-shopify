@@ -5,6 +5,7 @@ COPY ./bin ./bin
 COPY ./config ./config
 COPY ./server ./server
 COPY ./assets ./assets
+RUN npm install -g pm2
 RUN yarn install
-CMD yarn start
+CMD yarn start-prod
 EXPOSE 3000

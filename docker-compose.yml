@@ -20,7 +20,6 @@ services:
       - redis-data:/data
   app:
     image: dopplerdev/doppler-for-shopify
-    command: ["yarn", "start"]
     environment:
       - NODE_ENV=production
       - SHOPIFY_APP_HOST=https://shopify.fromdoppler.com

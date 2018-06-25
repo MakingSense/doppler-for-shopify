@@ -7,5 +7,5 @@ COPY ./server ./server
 COPY ./assets ./assets
 RUN npm install -g pm2
 RUN yarn install
-CMD yarn start-prod
+CMD [ "pm2-runtime", "start", "./bin/www.js"]
 EXPOSE 3000

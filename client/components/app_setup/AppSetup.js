@@ -72,7 +72,7 @@ class AppSetup extends Component {
   getButton({ onClick, label }) {
     if (this.props.synchronizationInProgress)
       return (
-        <Tooltip content="This action cannot be performed while there is a synchronization process in progess">
+        <Tooltip content="This action cannot be performed while there is a synchronization process in progress">
           <Button primary disabled>
             {label}
           </Button>
@@ -95,11 +95,10 @@ class AppSetup extends Component {
             <Card title="Customers Synchronization" sectioned>
               <p>
                 Shopify is connected with the{' '}
-                <strong>{this.props.dopplerAccountName}</strong>'s Doppler
-                account. Every new customer will automatically be added as a
-                Doppler subscriber. If you wish to populate your Doppler list
-                with all the customers you currently have in Shopify, run the
-                synchronization process.
+                <strong>{this.props.dopplerAccountName}</strong>'s Doppler account. 
+                Every new customer will automatically be added as a Doppler Subscriber 
+                in the List you’ve selected. If you wish to add all the customers you 
+                currently have in Shopify to this Doppler List, run the synchronization process.
               </p>
               <br />
               <SynchronizationStatus
@@ -114,29 +113,29 @@ class AppSetup extends Component {
             <Card title="Subscribers List" sectioned>
               <p>
                 You have currently configured the{' '}
-                <strong>{this.props.dopplerListName}</strong> list. This is
-                where all the new subscribers will be added. If you want to
-                change this list or create a new one click the{' '}
-                <i>Change List</i> button.
+                <strong>{this.props.dopplerListName}</strong> List. 
+                This is where all the new Subscribers will be added. 
+                If you want to change the selected List or create a new one click the{' '}
+                <i>Replace List</i> button.
               </p>
               <br />
               {this.getButton({
                 onClick: this.handleSetupDopplerList,
-                label: 'Change List',
+                label: 'Replace List',
               })}
             </Card>
           </Layout.Section>
           <Layout.Section>
             <Card title="Fields Mapping" sectioned>
               <p>
-                Collect all the information that you need for your Doppler
-                campaigns, like names, addresses, phone numbers, etc. Choose
-                what fields you want to map from a customer to a subscriber.
+                Choose what Fields you want to assign from a customer to a Subscriber
+                 in order to collect all the information that you need for your Doppler 
+                 Campaigns: names, addresses, phone numbers, etc.
               </p>
               <br />
               {this.getButton({
                 onClick: this.handleSetupFieldsMapping,
-                label: 'Setup Fields Mapping',
+                label: 'Set up Fields Mapping',
               })}
             </Card>
           </Layout.Section>

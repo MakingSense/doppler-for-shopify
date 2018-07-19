@@ -84,14 +84,15 @@ class SetupDopplerList extends Component {
       <div>
         <Layout>
           <Layout.Section>
-            <Card sectioned title="Sync your store to a Doppler list">
+            <Card sectioned title="Sync your store to a Doppler List">
               <TextContainer spacing="loose">
                 <p>
-                  Your Doppler account is now connected. Increase sales by
-                  automations such as abandoned carts, product retargeting and
-                  order notification emails powered by Doppler.
+                  Your Doppler account is now connected. By associating your contacts to your Doppler Lists, 
+                  you can trigger customized and targeted Automation Emails based on a specific date, event, 
+                  or Subscriber activity. This will allow you to send personalized messages that will maximize 
+                  your business conversions, improve your consumer shopping experience and increase your profits.
                 </p>
-                <p>Select a list to sync to your store.</p>
+                <p>Select a Subscribers List to sync to your store:</p>
                 <Select
                   options={this.props.dopplerLists}
                   value={this.props.selectedListId}
@@ -115,7 +116,7 @@ class SetupDopplerList extends Component {
                       this.props.settingDopplerList
                     }
                   >
-                    New List
+                    Create new List
                   </Button>
                 </Stack.Item>
                 <ButtonGroup>
@@ -146,9 +147,9 @@ class SetupDopplerList extends Component {
             external={true}
             url="https://help.fromdoppler.com/en/guide-to-managing-your-subscribers-lists/"
           >
-            these
+            these tips
           </Link>{' '}
-          tips for managing your lists
+          for managing your Lists.
         </FooterHelp>
         <Modal
           closeOnOverlayClick={false}

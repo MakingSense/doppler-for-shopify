@@ -117,19 +117,18 @@ class FieldsMapping extends Component {
           <Layout.Section>
             <Card
               sectioned
-              title="Map your Shopify customer fields to your Doppler subscriber fields"
+              title="Map the Fields of your Shopify customers to your Doppler Subscribers"
             >
               <p>
-                Map one-to-one the data of your Shopify customers to your
-                Doppler subscriber fields. For each new customer a new
-                subscriber will be created based on this mapping.
+                Select the Doppler Field you'd like to assign to each Shopify field. 
+                For each new customer a new Subscriber will be created based on this mapping.
               </p>
               <br />
               <DataTable
                 columnContentTypes={['text', 'text', 'text', 'text']}
                 headings={[
-                  'Shopify Customer',
-                  'Doppler Subscriber',
+                  'Shopify',
+                  'Doppler',
                   'Field Type',
                   '',
                 ]}
@@ -148,7 +147,7 @@ class FieldsMapping extends Component {
                   this.props.retrievingFields || this.props.settingFieldsMapping
                 }
               >
-                New Field
+                Add new Field
               </Button>
             </Stack.Item>
             <ButtonGroup>
@@ -166,13 +165,13 @@ class FieldsMapping extends Component {
           </Stack>
         </div>
         <FooterHelp>
-          Need some help with the{' '}
+          Need to create a Custom Field in Doppler? Check{' '}
           <Link
             external={true}
             url="https://help.fromdoppler.com/en/?s=custom+fields"
           >
-            Doppler fields
-          </Link>?
+            this tutorial
+          </Link>.
         </FooterHelp>
         <Modal
           open={this.props.requestingFieldMappingUpsert}

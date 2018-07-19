@@ -30,13 +30,13 @@ class Welcome extends Component {
           <div style={{ marginTop: '2rem' }}>
             <TextContainer spacing="loose">
               <DisplayText size="large">
-                Connect your Doppler account
+                Connect your Shopify store to your Doppler account
               </DisplayText>
               <br />
               <TextStyle variation="subdued">
                 <DisplayText size="small">
-                  Follow a few steps to set up your account and sync customer
-                  data, generate more revenue, and grow your business.
+                  Follow a few steps to set up your account and add customers and their purchase data automatically to Doppler. 
+                  Reach the right people with the right message at the right time and generate more revenue!
                 </DisplayText>
               </TextStyle>
             </TextContainer>
@@ -44,13 +44,13 @@ class Welcome extends Component {
           <div style={{ marginTop: '2rem' }}>
             <ButtonGroup>
               <Button primary onClick={this.handleConnectButtonClick}>
-                Connect to Doppler
+                Connect existing account
               </Button>
               <Button
                 external
                 url="https://app2.fromdoppler.com/Registration/Register/StartRegistration?origin=shopify"
               >
-                Create new account
+                Sign up for free
               </Button>
             </ButtonGroup>
           </div>

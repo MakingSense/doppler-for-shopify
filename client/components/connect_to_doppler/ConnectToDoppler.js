@@ -98,7 +98,7 @@ class ConnectToDoppler extends Component {
                       <TextField
                         autoFocus
                         autoComplete={false}
-                        label="Account Name"
+                        label="Username"
                         placeholder="It's your email"
                         type="email"
                         value={this.state.dopplerAccountName}
@@ -142,7 +142,7 @@ class ConnectToDoppler extends Component {
               </Stack>
             </Card>
             <FooterHelp>
-              Learn how to get the{' '}
+              Learn where to find your{' '}
               <Link
                 external={true}
                 url="https://help.fromdoppler.com/en/where-do-i-find-my-api-key"

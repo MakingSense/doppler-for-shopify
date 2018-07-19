@@ -137,11 +137,13 @@ class UpsertFieldMappingModal extends Component {
       <div style={{ minWidth: '50rem' }}>
         <Layout>
           <Layout.Section>
-            <Card sectioned title="New Field">
+            <Card sectioned title="Add new Field">
               <p>
-                Choose a Shopify filed to be mapped with your Doppler field.
+                Select the Shopify Field you'd like to assign to a Doppler Field.
               </p>
-              <p>Only fields of the same type can be mapped.</p>
+              <p>
+                Keep in mind that only Fields of the same type can be assigned.
+              </p>
               <br />
               <FormLayout>
                 <Select

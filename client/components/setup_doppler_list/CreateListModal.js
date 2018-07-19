@@ -47,12 +47,11 @@ class CreateListModal extends Component {
       <div style={{ minWidth: '50rem' }}>
         <Layout>
           <Layout.Section>
-            <Card title="Create A New Doppler List">
+            <Card title="Create a new Doppler List">
               <div style={{ margin: '2rem' }}>
                 <TextContainer spacing="loose">
                   <p>
-                    You can create a new Doppler list from here, no need to open
-                    your Doppler accout.
+                    You can create a new Subscribers List from here, without needing to enter your account.
                   </p>
                   <Form>
                     <TextField
@@ -61,7 +60,7 @@ class CreateListModal extends Component {
                       label="List Name"
                       value={this.state.name}
                       onChange={this.handleNameChange}
-                      placeholder="Set a non existing one"
+                      placeholder="Write one that doesn’t exist yet"
                       error={
                         this.props.duplicatedListName
                           ? 'A list with this name already exists'

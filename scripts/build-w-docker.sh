@@ -7,4 +7,14 @@ set -e
 # reference: http://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
 cd $(dirname $0)
 
-docker-compose up
+rm -rf ../assets
+mkdir ../assets
+docker run --rm \
+    --mount type=bind,source="$(pwd)/../",target=//work \
+    -w //work \
+    node:8-alpine \
+    sh -c "\
+        yarn install \
+        && yarn test \
+        && yarn build \
+    "

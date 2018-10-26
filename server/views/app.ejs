@@ -24,12 +24,15 @@
         shopOrigin: window.shopOrigin,
       }
 
+      // If you donpt use the default (443) HTTPS protocol
+      // the shopify iframe host will not show the app due to its security policies.
       // This will allow you to access the app outside of the Shopify
       // parent iframe in development mode. Doing this will give you
       // access to React and Redux dev tools, but will also disrupt
       // postmessages to the parent and block EASDK calls
       // https://help.shopify.com/api/sdks/shopify-apps/embedded-app-sdk/methods#shopifyapp-init-config
-      if ("<%= process.env.NODE_ENV %>" === 'development') {
+      // if ("<%= process.env.NODE_ENV %>" === 'development') {
+      if (window.location.port != "") {
         shopifyAppConfig.forceRedirect = false;
       }
 

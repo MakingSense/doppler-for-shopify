@@ -10,7 +10,8 @@ cd $(dirname $0)
 rm -rf ./assets
 mkdir ./assets
 docker run --rm \
-    -v /`pwd`://work \
+    --name doppler-for-shopify-build-container \
+    --mount type=bind,source="$(pwd)",target=//work \
     -w //work \
     node:8-alpine \
     sh -c "\

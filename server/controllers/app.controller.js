@@ -81,7 +81,7 @@ class AppController {
     const redis = this.redisClientFactory.createClient();
     await redis.storeShopAsync(
       shop,
-      { dopplerAccountName, dopplerApiKey },
+      { dopplerAccountName, dopplerApiKey, connectedOn: new Date().toISOString() },
       true
     );
     response.sendStatus(200);

@@ -157,7 +157,7 @@ describe('The app controller', function() {
     ).to.have.been.callCount(1);
     expect(
       modulesMocks.redisClient.storeShopAsync
-    ).to.be.called.calledWithExactly(
+    ).to.be.called.calledWithMatch(
       'store.myshopify.com',
       {
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',

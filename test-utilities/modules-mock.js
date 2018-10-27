@@ -5,12 +5,16 @@ module.exports = {
         hgetall: function(key, done){},
         del: function(key, done){},
         on: function(done){},
-        set: function(key, hset, done){}
+        set: function(key, hset, done){},
+        sadd: function(key, hset, done){},
+        smembers: function(key, done){}
     },
     redisClient: {
         getShopAsync: async function () {},
+        getShopsAsync: async function () {},
         storeShopAsync: async function () {},
-        removeShopAsync: async function () {}
+        removeShopAsync: async function () {},
+        quitAsync: async function(){}
     },
     dopplerClient: {
         AreCredentialsValidAsync: async function () {},

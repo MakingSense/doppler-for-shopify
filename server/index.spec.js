@@ -67,6 +67,16 @@ describe('Server integration tests', function() {
       .callsFake((key, obj, cb) => {
         cb();
       });
+    this.sandbox
+      .stub(mocks.wrappedRedisClient, 'sadd')
+      .callsFake((key, obj, cb) => {
+        cb();
+      });
+    this.sandbox
+      .stub(mocks.wrappedRedisClient, 'smembers')
+      .callsFake((key, cb) => {
+        cb();
+      });
     this.sandbox.stub(mocks.wrappedRedisClient, 'del').callsFake((key, cb) => {
       cb();
     });
@@ -632,6 +642,46 @@ describe('Server integration tests', function() {
     it('Should return 200 status code on success', async function() {
       await request(app)
         .post(`/hooks/doppler-import-completed?shop=${shopDomain}`)
+        .expect(function(res) {
+          expect(200).to.be.eql(res.statusCode);
+        });
+    });
+  });
+
+  describe('GET me/shops', function() {
+    it('Should return 401 status code when there is not authorization header present', async function() {
+      await request(app)
+        .get('/me/shops')
+        .expect(function(res) {
+          expect(401).to.be.eql(res.statusCode);
+          expect('Missing `Authorization` header').to.be.eql(res.text);
+        });
+    });
+
+    it('Should return 401 status code when invalid token format (1)', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', 'INVALID HEADER')
+        .expect(function(res) {
+          expect(401).to.be.eql(res.statusCode);
+          expect('Invalid `Authorization` token format').to.be.eql(res.text);
+        });
+    });
+
+    it('Should return 401 status code when invalid token format (2)', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', 'token')
+        .expect(function(res) {
+          expect(401).to.be.eql(res.statusCode);
+          expect('Invalid `Authorization` token format').to.be.eql(res.text);
+        });
+    });
+
+    it('Should return 200 status code when a token is passed as authorization header', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', 'token fjdlskfjds8fu2jlskdfj')
         .expect(function(res) {
           expect(200).to.be.eql(res.statusCode);
         });

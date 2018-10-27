@@ -41,17 +41,27 @@ describe('The redis-client module', function() {
       .callsFake((key, obj, cb) => {
         cb();
       });
+      this.sandbox
+      .stub(mocks.wrappedRedisClient, 'sadd')
+      .callsFake((key, obj, cb) => {
+        cb();
+      });
     this.sandbox.stub(mocks.wrappedRedisClient, 'quit');
 
     const redisClient = Redis.createClient();
     await redisClient.storeShopAsync('my-store.myshopify.com', {
       accessToken: '1234567890',
+      dopplerApiKey: '0f9k409qkc09q4kf'
     });
 
     expect(mocks.wrappedRedisClient.hmset).to.have.been.callCount(1);
     expect(mocks.wrappedRedisClient.hmset).to.have.been.calledWith(
       'my-store.myshopify.com',
-      { accessToken: '1234567890' }
+      { accessToken: '1234567890', dopplerApiKey: '0f9k409qkc09q4kf' }
+    );
+    expect(mocks.wrappedRedisClient.sadd).to.have.been.calledWith(
+      'doppler:0f9k409qkc09q4kf',
+      [ 'my-store.myshopify.com' ]
     );
     expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(0);
   });
@@ -118,6 +128,19 @@ describe('The redis-client module', function() {
     this.sandbox.stub(mocks.wrappedRedisClient, 'del').callsFake((key, cb) => {
       cb();
     });
+    this.sandbox.stub(mocks.wrappedRedisClient, 'hgetall').callsFake((key, cb) => {
+      cb(null, { dopplerApiKey: 'jv8jf9a8jecdsc' });
+    });
+    this.sandbox.stub(mocks.wrappedRedisClient, 'smembers').callsFake((key, cb) => {
+      cb(null, [
+        'my-store.myshopify.com',
+        'my-store-2.myshopify.com'
+      ]);
+       
+    });
+    this.sandbox.stub(mocks.wrappedRedisClient, 'sadd').callsFake((key,obj, cb) => {
+      cb();
+    });
     this.sandbox.stub(mocks.wrappedRedisClient, 'quit');
 
     const redisClient = Redis.createClient();
@@ -129,10 +152,24 @@ describe('The redis-client module', function() {
       'my-store.myshopify.com'
     );
     expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(0);
+    expect(mocks.wrappedRedisClient.hgetall).to.have.been.calledWith(
+      'my-store.myshopify.com'
+    );
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.calledWith(
+      'doppler:jv8jf9a8jecdsc'
+    );
+    expect(mocks.wrappedRedisClient.sadd).to.have.been.calledWith(
+      'doppler:jv8jf9a8jecdsc', ['my-store-2.myshopify.com']
+    );
   });
 
   it('removeShopAsync should raise the error thrown by redis and close the connection', async function() {
     const error = new Error('Forced Error');
+    this.sandbox.stub(mocks.wrappedRedisClient, 'hgetall').callsFake((key, cb) => {
+      cb(null, {
+        dopplerApiKey: "ds8a7dhqdnkwjdn29"
+      });
+    });
     this.sandbox.stub(mocks.wrappedRedisClient, 'del').throws(error);
     this.sandbox.stub(mocks.wrappedRedisClient, 'quit').callsFake(cb => {
       cb();
@@ -143,6 +180,90 @@ describe('The redis-client module', function() {
     await throwsAsync(async () => {
       await redisClient.removeShopAsync('my-store.myshopify.com', true);
     }, 'Error removing shop my-store.myshopify.com. Error: Forced Error');
+
+    expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(1);
+  });
+
+  it('getShopsAsync should call wrapped method correctly and close the connection', async function() {
+    this.sandbox
+      .stub(mocks.wrappedRedisClient, 'smembers')
+      .callsFake((key, cb) => {
+        cb();
+      });
+
+    this.sandbox.stub(mocks.wrappedRedisClient, 'quit').callsFake((cb) => {
+      cb();
+    });
+
+    const redisClient = Redis.createClient();
+
+    await redisClient.getShopsAsync('dhnsa789dhsaiffdsfds', true);
+
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.callCount(1);
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.calledWith(
+      'doppler:dhnsa789dhsaiffdsfds'
+    );
+    expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(1);
+  });
+
+  it('getShopsAsync should return an empty array when shops do not exist for a given Doppler API key (1)', async function() {
+    this.sandbox
+      .stub(mocks.wrappedRedisClient, 'smembers')
+      .callsFake((key, cb) => {
+        cb(undefined);
+      });
+
+    this.sandbox.stub(mocks.wrappedRedisClient, 'quit').callsFake((cb) => {
+      cb();
+    });
+
+    const redisClient = Redis.createClient();
+
+    var result = await redisClient.getShopsAsync('dhnsa789dhsaiffdsfds', true);
+
+    expect(result).to.be.eql([]);
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.callCount(1);
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.calledWith(
+      'doppler:dhnsa789dhsaiffdsfds'
+    );
+    expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(1);
+  });
+
+  it('getShopsAsync should return an empty array when shops do not exist for a given Doppler API key (2)', async function() {
+    this.sandbox
+      .stub(mocks.wrappedRedisClient, 'smembers')
+      .callsFake((key, cb) => {
+        cb(null);
+      });
+
+    this.sandbox.stub(mocks.wrappedRedisClient, 'quit').callsFake((cb) => {
+      cb();
+    });
+
+    const redisClient = Redis.createClient();
+
+    var result = await redisClient.getShopsAsync('dhnsa789dhsaiffdsfds', true);
+
+    expect(result).to.be.eql([]);
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.callCount(1);
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.calledWith(
+      'doppler:dhnsa789dhsaiffdsfds'
+    );
+    expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(1);
+  });
+
+  it('getShopsAsync should raise the error thrown by redis and close the connection', async function() {
+    const error = new Error('Forced Error');
+    this.sandbox.stub(mocks.wrappedRedisClient, 'smembers').throws(error);
+    this.sandbox.stub(mocks.wrappedRedisClient, 'quit').callsFake(cb => {
+      cb();
+    });
+
+    const redisClient = Redis.createClient();
+
+    await throwsAsync(async () => {
+      await redisClient.getShopsAsync('dhnsa789dhsaiffdsfds', true);
+    }, 'Error retrieving shops for Doppler account. Error: Forced Error');
 
     expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(1);
   });

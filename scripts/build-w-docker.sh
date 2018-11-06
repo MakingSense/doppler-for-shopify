@@ -18,3 +18,4 @@ docker run --rm \
         && yarn test \
         && yarn build \
     "
+rm -rf ../node_modules

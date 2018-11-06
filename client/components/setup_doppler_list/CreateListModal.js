@@ -11,7 +11,7 @@ import {
   ButtonGroup,
   Button,
 } from '@shopify/polaris';
-import * as setupDopplerListActions from '../../actions/SetupDopplerListActions';
+import * as setupDopplerListActions from '../../actions/setupDopplerListActions';
 
 class CreateListModal extends Component {
   constructor(props) {

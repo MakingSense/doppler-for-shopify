@@ -17,7 +17,7 @@ import {
 } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import CreateListModal from './CreateListModal';
-import * as setupDopplerListActions from '../../actions/SetupDopplerListActions';
+import * as setupDopplerListActions from '../../actions/setupDopplerListActions.js';
 import LoadingSkeleton from '../loading_skeleton/LoadingSkeleton';
 
 class SetupDopplerList extends Component {

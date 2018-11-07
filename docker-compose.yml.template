@@ -1,0 +1,48 @@
+version: "2"
+services:
+  nginx${ENV_SUFFIX}:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - ${ENV_PORT}:443
+    links:
+      - app${ENV_SUFFIX}
+    networks:
+      - app${ENV_SUFFIX}
+    volumes:
+      - ./:/work
+      - ${SSL_CERT_PATH}:/etc/nginx/cert
+    command: /bin/sh -c "cp /work/nginx.conf /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+  redis${ENV_SUFFIX}:
+    image: redis:4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis${ENV_SUFFIX}
+    networks:
+      - redis-net${ENV_SUFFIX}
+    volumes:
+      - redis-data${ENV_SUFFIX}:/data
+  app${ENV_SUFFIX}:
+    image: dopplerdev/doppler-for-shopify${ENV_SUFFIX}
+    environment:
+      - NODE_ENV=production
+      - SHOPIFY_APP_HOST=${SHOPIFY_APP_HOST}
+      - SHOPIFY_APP_KEY=${SHOPIFY_APP_KEY}
+      - SHOPIFY_APP_SECRET=${SHOPIFY_APP_SECRET}
+      - SHOPIFY_APP_PORT=3000
+      - SHOPIFY_APP_STORAGE_ENGINE=memory
+      - REDIS_HOST=redis${ENV_SUFFIX}
+      - REDIS_PORT=6379
+    expose:
+      - "3000"
+    networks:
+      - redis-net${ENV_SUFFIX}
+      - app${ENV_SUFFIX}
+    depends_on:
+      - redis${ENV_SUFFIX}
+networks:
+  redis-net${ENV_SUFFIX}:
+  app${ENV_SUFFIX}:
+
+volumes:
+  redis-data${ENV_SUFFIX}:
+  

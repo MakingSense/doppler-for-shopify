@@ -48,5 +48,10 @@ module.exports = function(withShop, appController) {
     withShop({ authBaseUrl: '/shopify' }),
     wrapAsync((req, res) => appController.synchronizeCustomers(req, res))
   );
+  router.get(
+    '/synchronization-status',
+    withShop({ authBaseUrl: '/shopify' }),
+    wrapAsync((req, res) => appController.getSynchronizationStatus(req, res))
+  );
   return router;
 };

@@ -105,6 +105,19 @@ class AppService {
       throw response.text();
     });
   }
+
+  static getSyncrhonizationStatus() {
+    const request = new Request('/synchronization-status', {
+      ...commonRequestHeaders,
+      method: 'GET',
+    });
+
+    return fetch(request).then(response => {
+      if (response.status === 200) return response.json();
+
+      throw response.text();
+    });
+  }
 }
 
 export default AppService;

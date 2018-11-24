@@ -198,7 +198,15 @@ class AppController {
         JSON.parse(shopInstance.fieldsMapping)
       );
 
-      await redis.storeShopAsync(shop, { importTaskId }, true);
+      await redis.storeShopAsync
+      (
+        shop, 
+        { 
+          importTaskId: importTaskId,
+          synchronizationInProgress: false 
+        },
+         true
+      );
     } catch (error) {
       
       const _redis = this.redisClientFactory.createClient();
@@ -215,6 +223,17 @@ class AppController {
     }
 
     response.sendStatus(201);
+  }
+
+  async getSynchronizationStatus(request, response) {
+    const { session: { shop } } = request;
+
+    const redis = this.redisClientFactory.createClient();
+    
+    const shopInstance = await redis.getShopAsync(shop, true);
+
+    response.json({
+      synchronizationInProgress: shopInstance.synchronizationInProgress ? JSON.parse(shopInstance.synchronizationInProgress) : false });
   }
 }
 

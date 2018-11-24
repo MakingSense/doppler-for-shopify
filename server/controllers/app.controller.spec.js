@@ -504,4 +504,59 @@ describe('The app controller', function() {
     //expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456' }, true);
     expect(response.sendStatus).to.be.called.calledWithExactly(201);
   });
+
+  it('getSynchronizationStatus should return synchronizationInProgress flag if set', async function() {
+    const request = sinonMock.mockReq({
+      session: { shop: 'store.myshopify.com' },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+        synchronizationInProgress: true
+      })
+    );
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+
+    await appController.getSynchronizationStatus(request, response);
+
+    expect(
+      modulesMocks.redisClient.getShopAsync
+    ).to.be.called.calledWithExactly('store.myshopify.com', true);
+    expect(response.json).to.be.called.calledWithExactly({ synchronizationInProgress: true });
+  });
+
+  it('getSynchronizationStatus should return false if not set', async function() {
+    const request = sinonMock.mockReq({
+      session: { shop: 'store.myshopify.com' },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+      })
+    );
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+
+    await appController.getSynchronizationStatus(request, response);
+
+    expect(
+      modulesMocks.redisClient.getShopAsync
+    ).to.be.called.calledWithExactly('store.myshopify.com', true);
+    expect(response.json).to.be.called.calledWithExactly({ synchronizationInProgress: false });
+  });
 });

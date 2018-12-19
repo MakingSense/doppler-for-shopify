@@ -1,4 +1,5 @@
 const shopifyFields = require('../modules/shopify-extras').customerFields;
+const shopifyCustomersPageSize = require('../modules/shopify-extras').shopifyCustomersPageSize;
 
 class AppController {
   constructor(redisClientFactory, dopplerClientFactory, shopifyClientFactory) {
@@ -81,7 +82,7 @@ class AppController {
     const redis = this.redisClientFactory.createClient();
     await redis.storeShopAsync(
       shop,
-      { dopplerAccountName, dopplerApiKey, connectedOn: new Date().toISOString() },
+      { dopplerAccountName, dopplerApiKey, connectedOn: new Date().toISOString(), synchronizedCustomersCount: 0 },
       true
     );
     response.sendStatus(200);
@@ -181,7 +182,13 @@ class AppController {
 
     const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
 
-    const customers = await shopify.customer.list();
+    const totalCustomers = await shopify.customer.count();
+
+    let customers = [];
+    for (let pageNumber = 1; pageNumber <= totalCustomers/shopifyCustomersPageSize + 1; pageNumber++)
+    {
+      customers = customers.concat(await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }));
+    }
 
     const shopInstance = await redis.getShopAsync(shop);
 
@@ -203,7 +210,7 @@ class AppController {
         shop, 
         { 
           importTaskId: importTaskId,
-          synchronizationInProgress: false 
+          synchronizedCustomersCount: customers.length
         },
          true
       );

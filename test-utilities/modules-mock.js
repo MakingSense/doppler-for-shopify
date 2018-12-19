@@ -29,7 +29,8 @@ module.exports = {
             create: async function () {}
         },
         customer: {
-            list: async function () {}
+            list: async function () {},
+            count: async function () {}
         }
     }
 }

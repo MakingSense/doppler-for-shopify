@@ -69,7 +69,7 @@ describe('The hooks controller', function() {
     expect(modulesMocks.redisClient.removeShopAsync).to.have.been.callCount(0);
   });
 
-  it('customerCreated create a subscriber in Doppler', async function() {
+  it('customerCreated create a subscriber in Doppler (1)', async function() {
     const request = sinonMock.mockReq({
       webhook: { shopDomain: 'store.myshopify.com' },
       body:
@@ -84,8 +84,10 @@ describe('The hooks controller', function() {
         dopplerListId: 1456877,
         fieldsMapping:
           '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]',
+        synchronizedCustomersCount: "32"
       })
     );
+    this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
     this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
 
     const hooksController = new HookController(
@@ -97,23 +99,98 @@ describe('The hooks controller', function() {
 
     expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly(
       'store.myshopify.com',
-      true
+      false
     );
     expect(
-      modulesMocks.dopplerClient.createSubscriberAsync
-    ).to.be.calledWithExactly(
-      {
-        default_address: { company: 'Winterfell' },
-        email: 'jonsnow@example.com',
-        first_name: 'Jon',
-        id: 623558295613,
-        last_name: 'Snow',
-      },
+      modulesMocks.dopplerClient.createSubscriberAsync).to.be.calledWithExactly(
+        {
+          default_address: { company: 'Winterfell' },
+          email: 'jonsnow@example.com',
+          first_name: 'Jon',
+          id: 623558295613,
+          last_name: 'Snow',
+        },
       1456877,
       [
         { doppler: 'FIRSTNAME', shopify: 'first_name' },
         { doppler: 'LASTNAME', shopify: 'last_name' },
       ]
+    );
+
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly(
+      'store.myshopify.com',
+      {
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+        dopplerListId: 1456877,
+        fieldsMapping:
+          '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]',
+        synchronizedCustomersCount: 33
+      },
+      true
+    );
+  });
+
+  it('customerCreated create a subscriber in Doppler (2)', async function() {
+    const request = sinonMock.mockReq({
+      webhook: { shopDomain: 'store.myshopify.com' },
+      body:
+        '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}',
+    });
+
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+        dopplerListId: 1456877,
+        fieldsMapping:
+          '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]'
+      })
+    );
+    this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
+
+    const hooksController = new HookController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+    await hooksController.customerCreated(undefined, request);
+
+    expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly(
+      'store.myshopify.com',
+      false
+    );
+    expect(
+      modulesMocks.dopplerClient.createSubscriberAsync).to.be.calledWithExactly(
+        {
+          default_address: { company: 'Winterfell' },
+          email: 'jonsnow@example.com',
+          first_name: 'Jon',
+          id: 623558295613,
+          last_name: 'Snow',
+        },
+      1456877,
+      [
+        { doppler: 'FIRSTNAME', shopify: 'first_name' },
+        { doppler: 'LASTNAME', shopify: 'last_name' },
+      ]
+    );
+
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly(
+      'store.myshopify.com',
+      {
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+        dopplerListId: 1456877,
+        fieldsMapping:
+          '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]',
+        synchronizedCustomersCount: 1
+      },
+      true
     );
   });
 
@@ -152,6 +229,7 @@ describe('The hooks controller', function() {
           '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]',
       })
     );
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
     this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
 
     const hooksController = new HookController(
@@ -163,8 +241,9 @@ describe('The hooks controller', function() {
 
     expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly(
       'store.myshopify.com',
-      true
+      false
     );
+    expect(modulesMocks.redisClient.quitAsync).to.be.callCount(1);
     expect(
       modulesMocks.dopplerClient.createSubscriberAsync
     ).to.have.been.callCount(0);
@@ -179,6 +258,7 @@ describe('The hooks controller', function() {
     this.sandbox
       .stub(modulesMocks.redisClient, 'getShopAsync')
       .returns(Promise.resolve(null));
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
     this.sandbox.stub(modulesMocks.dopplerClient, 'createSubscriberAsync');
 
     const hooksController = new HookController(
@@ -190,8 +270,9 @@ describe('The hooks controller', function() {
 
     expect(modulesMocks.redisClient.getShopAsync).to.be.calledWithExactly(
       'store.myshopify.com',
-      true
+      false
     );
+    expect(modulesMocks.redisClient.quitAsync).to.be.callCount(1);
     expect(
       modulesMocks.dopplerClient.createSubscriberAsync
     ).to.have.been.callCount(0);

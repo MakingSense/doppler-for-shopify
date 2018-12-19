@@ -13,9 +13,14 @@ class DopplerController {
         .map(async shopName => {
             let shop = await redis.getShopAsync(shopName);
             return {
-                shop: shopName,
-                accessToken: shop.accessToken,
-                connectedOn: shop.connectedOn
+                shopName: shopName,
+                shopifyAccessToken: shop.accessToken,
+                connectedOn: shop.connectedOn,
+                dopplerListId: shop.dopplerListId,
+                importedCustomersCount: shop.synchronizedCustomersCount,
+                syncProcessDopplerImportSubscribersTaskId: shop.importTaskId,
+                syncProcessInProgress: shop.synchronizationInProgress,
+                syncProcessLastRunDate: shop.lastSynchronizationDate
             };
         });
         

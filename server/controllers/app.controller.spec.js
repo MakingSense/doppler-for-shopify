@@ -162,6 +162,7 @@ describe('The app controller', function() {
       {
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
         dopplerAccountName: 'user@example.com',
+        synchronizedCustomersCount: 0
       },
       true
     );
@@ -443,6 +444,9 @@ describe('The app controller', function() {
         },
       ])
     );
+    this.sandbox.stub(modulesMocks.shopifyClient.customer, 'count').returns(
+      Promise.resolve(2)
+    );
     this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
       Promise.resolve({
         accessToken: 'ae768b8c78d68a54565434',
@@ -500,8 +504,12 @@ describe('The app controller', function() {
         { shopify: 'last_name', doppler: 'LASTNAME' },
       ]
     );
+    expect(modulesMocks.redisClient.storeShopAsync).callCount(2);
+
     // TODO: mock the Date
-    //expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456' }, true);
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithMatch('store.myshopify.com', { synchronizationInProgress: true }, false);
+
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456', synchronizedCustomersCount: 2 }, true);
     expect(response.sendStatus).to.be.called.calledWithExactly(201);
   });
 

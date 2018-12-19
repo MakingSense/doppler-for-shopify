@@ -205,4 +205,5 @@ module.exports = {
     },
   ],
   shopifyAPIClientFactory: new ShopifyAPIClientFactory(),
+  shopifyCustomersPageSize: 250 // 250 = MAX
 };

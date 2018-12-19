@@ -43,12 +43,12 @@ describe('The doppler controller', function() {
     .onCall(0)
     .returns(
       Promise.resolve(
-        { accessToken: "fmdklsf893rnj3nrfd", dopplerApiKey: "DSJKAHDDWAIUWDNSA", dopplerAccountName: "user1@example.com", connectedOn: "2018-11-01T01:43:06.976Z" })
+        { accessToken: "fmdklsf893rnj3nrfd", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
     )
     .onCall(1)
     .returns(
       Promise.resolve(
-        { accessToken: "fdsf3rwefsdcsdv", dopplerApiKey: "DJKSUDAHSKJDSA", dopplerAccountName: "user2@example.com", connectedOn: "2018-10-01T01:43:06.976Z" })
+        { accessToken: "fdsf3rwefsdcsdv", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-10-01T01:43:06.976Z", dopplerListId: 123, synchronizationInProgress: true, synchronizedCustomersCount: 0, importTaskId: undefined })
     );
 
     const dopplerController = new DopplerController(
@@ -58,8 +58,26 @@ describe('The doppler controller', function() {
     await dopplerController.getShops(request, response);
 
     expect(response.json).to.be.called.calledWithExactly([
-      { shop: 'my-store.myshopify.com', accessToken: "fmdklsf893rnj3nrfd", connectedOn: "2018-11-01T01:43:06.976Z" },
-      { shop: 'my-store-2.myshopify.com', accessToken: "fdsf3rwefsdcsdv", connectedOn: "2018-10-01T01:43:06.976Z" }
+      { 
+        shopName: "my-store.myshopify.com", 
+        shopifyAccessToken: "fmdklsf893rnj3nrfd", 
+        connectedOn: "2018-11-01T01:43:06.976Z", 
+        dopplerListId: 321, 
+        syncProcessInProgress: false, 
+        importedCustomersCount: 33, 
+        syncProcessDopplerImportSubscribersTaskId: "task-321",
+        syncProcessLastRunDate:  "2018-11-01T01:43:05.976Z"
+      },
+      { 
+        shopName: "my-store-2.myshopify.com", 
+        shopifyAccessToken: "fdsf3rwefsdcsdv", 
+        connectedOn: "2018-10-01T01:43:06.976Z", 
+        dopplerListId: 123, 
+        syncProcessInProgress: true,
+        importedCustomersCount: 0, 
+        syncProcessDopplerImportSubscribersTaskId: undefined,
+        syncProcessLastRunDate:  "2018-11-01T01:43:05.976Z"
+      }
     ]);
 
     expect(

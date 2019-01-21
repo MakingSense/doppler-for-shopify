@@ -173,7 +173,7 @@ class Doppler {
     const responseBody = await sendRequestAsync(this.fetch, url, {
       method: 'POST',
       body: JSON.stringify(subscribers),
-      headers: { Authorization: `token ${this.apiKey}` },
+      headers: { Authorization: `token ${this.apiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
     });
 
     return responseBody.createdResourceId;
@@ -200,7 +200,7 @@ class Doppler {
     await sendRequestAsync(this.fetch, url, {
       method: 'POST',
       body: JSON.stringify(subscriber),
-      headers: { Authorization: `token ${this.apiKey}` },
+      headers: { Authorization: `token ${this.apiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
     });
   }
 

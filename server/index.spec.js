@@ -485,7 +485,7 @@ describe('Server integration tests', function() {
           {
             body: expectedRequestBody,
             method: 'POST',
-            headers: { Authorization: `token ${dopplerApiKey}` },
+            headers: { Authorization: `token ${dopplerApiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
           }
         )
         .returns(

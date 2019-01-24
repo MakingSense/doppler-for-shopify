@@ -170,6 +170,9 @@ class Doppler {
       enableEmailNotification: true,
     };
 
+    console.log("-- Test --")
+    console.debug(subscribers);
+
     const responseBody = await sendRequestAsync(this.fetch, url, {
       method: 'POST',
       body: JSON.stringify(subscribers),

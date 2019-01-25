@@ -7,12 +7,14 @@ module.exports = {
         on: function(done){},
         set: function(key, hset, done){},
         sadd: function(key, hset, done){},
-        smembers: function(key, done){}
+        smembers: function(key, done){},
+        srem: function(key, done){}
     },
     redisClient: {
         getShopAsync: async function () {},
         getShopsAsync: async function () {},
         storeShopAsync: async function () {},
+        sremAsync: async function () {},
         removeShopAsync: async function () {},
         quitAsync: async function(){}
     },

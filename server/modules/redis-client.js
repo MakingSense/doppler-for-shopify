@@ -19,14 +19,15 @@ class Redis {
       delAsync: promisify(wrappedClient.del).bind(wrappedClient),
       quitAsync: promisify(wrappedClient.quit).bind(wrappedClient),
       saddAsync: promisify(wrappedClient.sadd).bind(wrappedClient),
-      smembersAsync: promisify(wrappedClient.smembers).bind(wrappedClient)
+      smembersAsync: promisify(wrappedClient.smembers).bind(wrappedClient),
+      sremAsync: promisify(wrappedClient.srem).bind(wrappedClient)
     };
   }
 
   async storeShopAsync(shopDomain, shop, closeConnection) {
     try {
       await this.client.hmsetAsync(shopDomain, shop);
-      await this.client.saddAsync(`doppler:${shop.dopplerApiKey}`, [shopDomain]);
+      await this.client.saddAsync(`doppler:${shop.dopplerApiKey}`, shopDomain);
     } catch (error) {
       throw new Error(`Error storing shop ${shopDomain}. ${error.toString()}`);
     } finally {
@@ -49,13 +50,10 @@ class Redis {
   async removeShopAsync(shopDomain, closeConnection) {
     try {
       const shop = await this.client.hgetallAsync(shopDomain);
+
       await this.client.delAsync(shopDomain);
-      const shops = await this.client.smembersAsync(`doppler:${shop.dopplerApiKey}`);
-      const index = shops.indexOf(shopDomain);
-      if (index > -1) {
-        shops.splice(index, 1);
-        await this.client.saddAsync(`doppler:${shop.dopplerApiKey}`, shops);
-      }
+      await this.client.sremAsync(`doppler:${shop.dopplerApiKey}`, shopDomain)
+      
     } catch (error) {
       throw new Error(`Error removing shop ${shopDomain}. ${error.toString()}`);
     } finally {

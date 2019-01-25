@@ -61,7 +61,7 @@ describe('The redis-client module', function() {
     );
     expect(mocks.wrappedRedisClient.sadd).to.have.been.calledWith(
       'doppler:0f9k409qkc09q4kf',
-      [ 'my-store.myshopify.com' ]
+      'my-store.myshopify.com'
     );
     expect(mocks.wrappedRedisClient.quit).to.have.been.callCount(0);
   });
@@ -131,12 +131,8 @@ describe('The redis-client module', function() {
     this.sandbox.stub(mocks.wrappedRedisClient, 'hgetall').callsFake((key, cb) => {
       cb(null, { dopplerApiKey: 'jv8jf9a8jecdsc' });
     });
-    this.sandbox.stub(mocks.wrappedRedisClient, 'smembers').callsFake((key, cb) => {
-      cb(null, [
-        'my-store.myshopify.com',
-        'my-store-2.myshopify.com'
-      ]);
-       
+    this.sandbox.stub(mocks.wrappedRedisClient, 'srem').callsFake((key,obj, cb) => {
+      cb();
     });
     this.sandbox.stub(mocks.wrappedRedisClient, 'sadd').callsFake((key,obj, cb) => {
       cb();
@@ -155,11 +151,8 @@ describe('The redis-client module', function() {
     expect(mocks.wrappedRedisClient.hgetall).to.have.been.calledWith(
       'my-store.myshopify.com'
     );
-    expect(mocks.wrappedRedisClient.smembers).to.have.been.calledWith(
-      'doppler:jv8jf9a8jecdsc'
-    );
-    expect(mocks.wrappedRedisClient.sadd).to.have.been.calledWith(
-      'doppler:jv8jf9a8jecdsc', ['my-store-2.myshopify.com']
+    expect(mocks.wrappedRedisClient.srem).to.have.been.calledWith(
+      'doppler:jv8jf9a8jecdsc', 'my-store.myshopify.com'
     );
   });
 

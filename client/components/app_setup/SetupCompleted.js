@@ -23,6 +23,7 @@ class SetupCompleted extends Component {
   }
 
   handleRunSynchronizeCustomers() {
+    window.currentAppSetupTab = 1;
     this.props.actions.requestingSynchronization(true);
   }
 

@@ -1,0 +1,19 @@
+[Unit]
+Description=Doppler for Shopify Docker Compose Service (${ENV_SUFFIX})
+Requires=docker.service
+After=docker.service
+
+[Service]
+#Type=oneshot
+#RemainAfterExit=yes
+EnvironmentFile=/etc/environment
+WorkingDirectory=${DEST_DIR}
+ExecStart=/usr/bin/docker-compose up
+ExecStop=/usr/bin/docker-compose down
+TimeoutStartSec=0
+Restart=on-failure
+StartLimitInterval=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target

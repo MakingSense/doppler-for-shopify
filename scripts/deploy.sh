@@ -8,8 +8,8 @@ set -e
 cd $(dirname $0)
 
 if [ "$#" -eq 0 ] || ( [ "$1" != "dev" ] && [ "$1" != "qa" ] && [ "$1" != "prod" ] ) ; then
-    echo "Invalid or missing environment. Usage: $0 dev|qa|prod [dest_dir]"
-    echo "Example: $0 qa /root/doppler-for-shopify-qa"
+    echo "Invalid or missing environment. Usage: $0 dev|qa|prod [dest_dir] [dest_systemd_dir]"
+    echo "Example: $0 qa /root/doppler-for-shopify-qa /etc/systemd/system"
     exit 1;
 fi
 
@@ -19,10 +19,16 @@ NC='\033[0m' # No Color
 export DOLLAR='$'
 export SSL_CERT_PATH=$SSL_CERT_PATH # Define this as an environment variable in Docker in host
 export DEST_DIR=$(pwd)
+export DEST_SYSTEMD_DIR='/etc/systemd/system'
 
 if [ "$#" -gt 1 ] #if the dest_dir parameter is present
   then
     DEST_DIR=$2
+fi
+
+if [ "$#" -gt 2 ] #if the dest_systemd_dir parameter is present
+  then
+    DEST_SYSTEMD_DIR=$3
 fi
 
 echo -e " 🚀   ${COLOR}Deploying Doppler for Shopify to [$1] environment. Deployment dir: $DEST_DIR${NC}"
@@ -59,7 +65,7 @@ fi
 
 export APP_HOST_NAME=app${ENV_SUFFIX}
 
-echo -e " 🙈   ${COLOR}Pulling latest Docker dopplerdev/doppler-for-shopify$ENV_SUFFIX image...${NC}"
+echo -e " ☁  ${COLOR}Pulling latest Docker dopplerdev/doppler-for-shopify$ENV_SUFFIX image...${NC}"
 docker pull dopplerdev/doppler-for-shopify$ENV_SUFFIX
 
 echo -e " 🙉   ${COLOR}Generating file $DEST_DIR/docker-compose.yml from template...${NC}"
@@ -67,3 +73,6 @@ echo -e " 🙉   ${COLOR}Generating file $DEST_DIR/docker-compose.yml from templ
 
 echo -e " 🙊   ${COLOR}Generating file $DEST_DIR/nginx.conf from template...${NC}"
 /bin/sh -c "envsubst < ../nginx/nginx.conf.template > $DEST_DIR/nginx.conf"
+
+echo -e " 🙈   ${COLOR}Generating file $DEST_SYSTEMD_DIR/doppler-for-shopify$ENV_SUFFIX.service from template...${NC}"
+/bin/sh -c "envsubst < ../doppler-for-shopify.service.template > $DEST_SYSTEMD_DIR/doppler-for-shopify$ENV_SUFFIX.service"

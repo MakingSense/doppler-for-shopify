@@ -2,6 +2,7 @@ import * as types from './actionTypes';
 import { push } from 'react-router-redux';
 import appService from '../services/appService';
 import { showErrorBanner } from './errorBannerActions';
+import { synchronizeCustomers }  from './appSetupActions';
 
 export function requestFieldMappingUpsert(status = true) {
   return {
@@ -113,11 +114,15 @@ export function setFieldsMapping(fieldsMapping, isSetupCompleted) {
       .then(response => {
         dispatch(settingFieldsMapping(false));
         dispatch(setupCompleted(true));
-        if (isSetupCompleted)
+          if (!isSetupCompleted)
+          {
+            dispatch(synchronizeCustomers());
+            window.currentAppSetupTab = 1;
+          }
+            
           dispatch(push('/app/setup'));
-        else
-          dispatch(push('/app/setup-completed'));
-      })
+        }
+      )
       .catch(errorPromise => {
         dispatch(settingFieldsMapping(false));
         errorPromise

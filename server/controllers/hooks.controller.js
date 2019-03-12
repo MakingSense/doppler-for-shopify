@@ -16,6 +16,7 @@ class HooksController {
 
       const redis = this.redisClientFactory.createClient();
       await redis.removeShopAsync(shopDomain, true);
+      response.send('Thank you!');
     }
     catch (err){}
   }

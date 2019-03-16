@@ -74,7 +74,7 @@ class Doppler {
       items: responseBody.items.map(list => {
         return { listId: list.listId, name: list.name };
       }),
-      itemsCount: responseBody.itemsCount,
+      itemsCount: responseBody.itemsCount
     };
   }
 

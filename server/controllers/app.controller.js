@@ -106,7 +106,14 @@ class AppController {
       shopInstance.dopplerAccountName,
       shopInstance.dopplerApiKey
     );
+
     const lists = await doppler.getListsAsync();
+    
+    if ((typeof(shopInstance.dopplerListId) == "undefined" || shopInstance.dopplerListId == null) 
+      && !lists.items.find(l => l.name == "Shopify Contacto")) {
+        lists.items.unshift({ listId: -1, name: "Shopify Contacto" });
+        lists.itemsCount++;
+    }
 
     response.json(lists);
   }
@@ -133,12 +140,33 @@ class AppController {
   }
 
   async setDopplerList(request, response) {
-    const {
+    let {
       session: { shop },
       body: { dopplerListId, dopplerListName },
     } = request;
 
     const redis = this.redisClientFactory.createClient();
+
+    if (dopplerListId == -1) {
+      try {
+        const shopInstance = await redis.getShopAsync(shop, false);
+
+        const doppler = this.dopplerClientFactory.createClient(
+          shopInstance.dopplerAccountName,
+          shopInstance.dopplerApiKey
+        );
+
+        dopplerListId = await doppler.createListAsync("Shopify Contacto");
+        dopplerListName = "Shopify Contacto";
+      } catch (error) {
+        if (error.errorCode === 2 && error.statusCode === 400) {
+          response.sendStatus(400);
+          return;
+        }
+        else throw error;
+      }
+    }
+
     await redis.storeShopAsync(shop, { dopplerListId, dopplerListName }, true);
 
     response.sendStatus(200);

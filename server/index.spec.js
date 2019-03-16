@@ -291,7 +291,7 @@ describe('Server integration tests', function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
         .callsFake((key, cb) => {
-          cb(null, { accessToken, dopplerAccountName, dopplerApiKey });
+          cb(null, { accessToken, dopplerAccountName, dopplerApiKey, dopplerListId });
         });
 
       fetchStub

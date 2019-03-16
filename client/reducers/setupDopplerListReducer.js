@@ -1,6 +1,13 @@
 import * as types from '../actions/actionTypes';
 import initialState from './initialState';
 
+function getDefaultSelectedListId(dopplerLists)
+{
+  let shopifyContactoList = dopplerLists.filter(l => l.label === "Shopify Contacto");
+  
+  return shopifyContactoList ? shopifyContactoList[0].value : action.dopplerLists[0].value;
+}
+
 export const setupDopplerList = (
   state = initialState.setupDopplerList,
   action
@@ -18,7 +25,7 @@ export const setupDopplerList = (
         dopplerLists: action.dopplerLists,
         selectedListId:
           state.selectedListId == null && action.dopplerLists.length > 0
-            ? action.dopplerLists[0].value
+            ? getDefaultSelectedListId(action.dopplerLists)
             : state.selectedListId,
       };
 

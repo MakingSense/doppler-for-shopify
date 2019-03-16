@@ -11,9 +11,7 @@ import {
   ButtonGroup,
   FooterHelp,
   Link,
-  SkeletonPage,
-  SkeletonBodyText,
-  Spinner,
+  Tooltip
 } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import CreateListModal from './CreateListModal';
@@ -31,6 +29,7 @@ class SetupDopplerList extends Component {
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.handleCancelButtonClick = this.handleCancelButtonClick.bind(this);
     this.getCancelAction = this.getCancelAction.bind(this);
+    this.getListsDropdown = this.getListsDropdown.bind(this);
   }
 
   componentDidMount() {
@@ -77,6 +76,24 @@ class SetupDopplerList extends Component {
     ) : null;
   }
 
+  getListsDropdown() {
+    var selectComponent = <Select
+        options={this.props.dopplerLists}
+        value={this.props.selectedListId}
+        onChange={this.handleSelectedListChange}
+        disabled={
+          !this.props.dopplerLists.length ||
+          this.props.retrievingDopplerLists ||
+          this.props.settingDopplerList
+        }
+      />;
+    
+      if (this.props.selectedListId === -1)
+        selectComponent = <Tooltip content="This list will be created" preferredPosition="above">{selectComponent}</Tooltip>
+      
+      return selectComponent;
+  }
+
   render() {
     return this.props.retrievingDopplerLists ? (
       <LoadingSkeleton />
@@ -93,16 +110,7 @@ class SetupDopplerList extends Component {
                   your business conversions, improve your consumer shopping experience and increase your profits.
                 </p>
                 <p>Select a Subscribers List to sync to your store:</p>
-                <Select
-                  options={this.props.dopplerLists}
-                  value={this.props.selectedListId}
-                  onChange={this.handleSelectedListChange}
-                  disabled={
-                    !this.props.dopplerLists.length ||
-                    this.props.retrievingDopplerLists ||
-                    this.props.settingDopplerList
-                  }
-                />
+                {this.getListsDropdown()}
               </TextContainer>
             </Card>
             <div style={{ marginTop: '2rem' }}>

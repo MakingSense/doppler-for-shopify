@@ -33,6 +33,9 @@ module.exports = {
         customer: {
             list: async function () {},
             count: async function () {}
-        }
+        },
+        scriptTag: {
+            create: async function () {}
+        },
     }
 }

@@ -30,7 +30,15 @@ class AppController {
       .then(() => {})
       .catch(err => console.error(err));
 
-    response.redirect('/');
+      shopify.scriptTag
+        .create({
+          event: "onload",
+          src: "https://hub.fromdoppler.com/public/dhtrack.js"
+        })
+        .then(() => {})
+        .catch(err => console.error(err));
+
+      response.redirect('/');
   }
 
   async home(request, response) {

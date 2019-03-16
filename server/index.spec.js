@@ -45,7 +45,7 @@ const app = proxyquire('./', {
   'node-fetch': fetchStub, // Fake the http requests made by Doppler and others.
   redis: redisStub, // Fake the database.
   got: gotStub, //  Fake the http requests made by Shopify API client.
-  'connect-redis': session => {
+  'connect-redis': () => {
     return undefined;
   },
 });

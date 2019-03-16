@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import {
   Layout,
   Card,
-  Button,
-  Tooltip
+  Button
 } from '@shopify/polaris';
 
 class AppSetupMarketingActions extends Component {
@@ -46,11 +45,9 @@ class AppSetupMarketingActions extends Component {
               After someone visits a product page, this email reminds them of what they saw. Use Doppler editor to customize the design.
             </p>
             <br />
-            <Tooltip content="coming soon...">
-              <Button disabled primary external url={"https://app2.fromdoppler.com/Integrations/Shopify/VisitedProducts?shop=" + this.props.shopOrigin}>
-                  Open in Doppler
-              </Button>
-            </Tooltip>
+            <Button primary external url={"https://app2.fromdoppler.com/Integrations/Shopify/VisitedProducts?shop=" + this.props.shopOrigin}>
+                Open in Doppler
+            </Button>
           </Card>
         </Layout.Section>
       </Layout>

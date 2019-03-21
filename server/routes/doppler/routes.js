@@ -11,6 +11,12 @@ module.exports = function(dopplerController) {
     json(),
     wrapAsync((req, res) => dopplerController.getShops(req, res))
   );
+  router.post(
+    '/me/synchronize-customers',
+    withDoppler(),
+    json(),
+    wrapAsync((req, res) => dopplerController.synchronizeCustomers(req, res))
+  );
   
   return router;
 };

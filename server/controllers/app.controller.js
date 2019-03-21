@@ -206,6 +206,13 @@ class AppController {
     const { session: { shop, accessToken } } = request;
 
     const redis = this.redisClientFactory.createClient();
+    
+    const shopInstance = await redis.getShopAsync(shop, false);
+
+    if (shopInstance.synchronizationInProgress && JSON.parse(shopInstance.synchronizationInProgress)) {
+      response.status(400).send("There is another syncrhonization process in progress. Please try again later.");
+      return;
+    }
 
     await redis.storeShopAsync(
       shop,
@@ -225,8 +232,6 @@ class AppController {
     {
       customers = customers.concat(await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }));
     }
-
-    const shopInstance = await redis.getShopAsync(shop);
 
     const doppler = this.dopplerClientFactory.createClient(
       shopInstance.dopplerAccountName,
@@ -248,7 +253,7 @@ class AppController {
           importTaskId: importTaskId,
           synchronizedCustomersCount: customers.length
         },
-         true
+        true
       );
     } catch (error) {
       
@@ -260,9 +265,10 @@ class AppController {
           lastSynchronizationDate: '',
         },
         true
-      );
-
+      )
       throw error;
+    } finally {
+      await redis.quitAsync();
     }
 
     response.sendStatus(201);

@@ -40,7 +40,8 @@ const hooksController = new HooksController(
   shopifyClientFactory.shopifyAPIClientFactory
 );
 const dopplerController = new DopplerController(
-  redisClientFactory
+  redisClientFactory,
+  appController
 );
 
 const {

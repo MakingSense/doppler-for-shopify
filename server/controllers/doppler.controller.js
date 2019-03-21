@@ -1,6 +1,7 @@
 class DopplerController {
-    constructor(redisClientFactory) {
+    constructor(redisClientFactory, appController) {
       this.redisClientFactory = redisClientFactory;
+      this.appController = appController;
     }
 
     async getShops(request, response) {
@@ -26,6 +27,23 @@ class DopplerController {
         
         response.json(await Promise.all(shops));
         await redis.quitAsync();
+    }
+
+    async synchronizeCustomers(request, response) {
+      const {
+        session: { dopplerApiKey },
+        body: { shop }
+      } = request;
+
+      const redis = this.redisClientFactory.createClient();
+      const shopInstance = await redis.getShopAsync(shop);
+
+      if (dopplerApiKey != shopInstance.dopplerApiKey) {
+          response.sendStatus(403);
+          return;
+      }
+
+      await this.appController.synchronizeCustomers({ session: { shop, accessToken: shopInstance.accessToken } }, response);
     }
 }
 

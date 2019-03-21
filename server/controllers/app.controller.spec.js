@@ -601,7 +601,7 @@ describe('The app controller', function() {
     expect(modulesMocks.shopifyClient.customer.list).to.have.been.callCount(1);
     expect(
       modulesMocks.redisClient.getShopAsync
-    ).to.be.called.calledWithExactly('store.myshopify.com');
+    ).to.be.called.calledWithExactly('store.myshopify.com', false);
     expect(
       modulesMocks.dopplerClient.importSubscribersAsync
     ).to.be.called.calledWithExactly(

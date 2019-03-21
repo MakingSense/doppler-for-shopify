@@ -25,7 +25,7 @@ describe('The doppler controller', function() {
     this.sandbox.restore();
   });
 
-  it('should return a list of N shops when there are N shops associated to the same Doppler account', async function() {
+  it('getShops should return a list of N shops when there are N shops associated to the same Doppler account', async function() {
     const request = sinonMock.mockReq({
       session: {
         dopplerApiKey: 'fb5d67a5bd67ab5d67ab5d'
@@ -52,7 +52,8 @@ describe('The doppler controller', function() {
     );
 
     const dopplerController = new DopplerController(
-      redisClientFactoryStub
+      redisClientFactoryStub,
+      modulesMocks.appController
     );
 
     await dopplerController.getShops(request, response);
@@ -84,4 +85,60 @@ describe('The doppler controller', function() {
       modulesMocks.redisClient.getShopsAsync
     ).to.be.called.calledWithExactly('fb5d67a5bd67ab5d67ab5d', false);
   });
+
+  it('synchronizeCustomers should synchronize customers using compossed controller', async function() {
+    const request = sinonMock.mockReq({
+      body: { shop: "my-store.myshopify.com" },
+      session: { dopplerApiKey: 'fb5d67a5bd67ab5d67ab5d' }
+    });
+    const response = sinonMock.mockRes();
+
+    this.sandbox.stub(modulesMocks.redisClient, "getShopAsync")
+    .returns(
+      Promise.resolve(
+        { accessToken: "fmdklsf893rnj3nrfd", dopplerApiKey:"fb5d67a5bd67ab5d67ab5d", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
+    );
+    this.sandbox.stub(modulesMocks.appController, 'synchronizeCustomers');
+
+    const dopplerController = new DopplerController(
+      redisClientFactoryStub,
+      modulesMocks.appController
+    );
+
+    await dopplerController.synchronizeCustomers(request, response);
+
+    expect(
+      modulesMocks.appController.synchronizeCustomers
+    ).to.be.called.calledWithExactly({ session: { shop: "my-store.myshopify.com", accessToken: "fmdklsf893rnj3nrfd" } }, response);
+  });
+
+  it('synchronizeCustomers should send 403 response when shop does not belong to doppler account', async function() {
+    // Arrange
+    const request = sinonMock.mockReq({
+      body: { shop: "my-store.myshopify.com" },
+      session: { dopplerApiKey: 'fb5d67a5bd67ab5d67ab5d' }
+    });
+    const response = sinonMock.mockRes();
+
+    this.sandbox.stub(modulesMocks.redisClient, "getShopAsync")
+    .returns(
+      Promise.resolve(
+        { accessToken: "fmdklsf893rnj3nrfd", dopplerApiKey:"aaaaaaaaaaaaaaaaaa", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
+    );
+
+    this.sandbox.stub(modulesMocks.appController, 'synchronizeCustomers');
+
+    const dopplerController = new DopplerController(
+      redisClientFactoryStub,
+      modulesMocks.appController
+    );
+
+    // Act
+    await dopplerController.synchronizeCustomers(request, response);
+    
+    // Assert
+    expect(response.sendStatus).to.be.called.calledWithExactly(403);
+    expect(modulesMocks.appController.synchronizeCustomers).to.be.callCount(0);
+  });
+
 });

@@ -37,5 +37,8 @@ module.exports = {
         scriptTag: {
             create: async function () {}
         },
+    },
+    appController: {
+        synchronizeCustomers: async function (request, response) {}
     }
 }

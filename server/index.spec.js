@@ -648,7 +648,7 @@ describe('Server integration tests', function() {
     });
   });
 
-  describe('GET me/shops', function() {
+  describe('GET /me/shops', function() {
     it('Should return 401 status code when there is not authorization header present', async function() {
       await request(app)
         .get('/me/shops')
@@ -684,6 +684,83 @@ describe('Server integration tests', function() {
         .set('Authorization', 'token fjdlskfjds8fu2jlskdfj')
         .expect(function(res) {
           expect(200).to.be.eql(res.statusCode);
+        });
+    });
+  });
+
+  describe('POST /me/synchronize-customers', function() {
+    it('Should return 201 status code on success', async function() {
+      this.sandbox
+        .stub(mocks.wrappedRedisClient, 'hgetall')
+        .callsFake((key, cb) => {
+          cb(null, {
+            shop: shopDomain,
+            accessToken,
+            dopplerAccountName,
+            dopplerApiKey,
+            fieldsMapping,
+            dopplerListId,
+          });
+        });
+
+      const expectedRequestBody = JSON.stringify(
+        dopplerApiPayloads.IMPORT_SUBSCRIBERS_PAYLOAD
+      );
+
+      fetchStub
+        .withArgs(
+          `https://restapi.fromdoppler.com/accounts/${querystring.escape(
+            dopplerAccountName
+          )}/lists/${dopplerListId}/subscribers/import`,
+          {
+            body: expectedRequestBody,
+            method: 'POST',
+            headers: { Authorization: `token ${dopplerApiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
+          }
+        )
+        .returns(
+          Promise.resolve({
+            status: 202,
+            json: async function() {
+              return dopplerApiResponses.IMPORT_TASK_CREATED_202;
+            },
+          })
+        );
+
+      gotStub.returns(
+        Promise.resolve({
+          headers: { 'x-shopify-shop-api-call-limit': '1/9999' },
+          body: {
+            customers: [
+              {
+                id: 623558295613,
+                email: 'jonsnow@example.com',
+                first_name: 'Jon',
+                last_name: 'Snow',
+                default_address: {
+                  company: 'Winterfell',
+                },
+              },
+              {
+                id: 546813203473,
+                email: 'nickrivers@example.com',
+                first_name: 'Nick',
+                last_name: 'Rivers',
+                default_address: {
+                  company: 'Top Secret',
+                },
+              },
+            ],
+          },
+        })
+      );
+
+      await request(app)
+        .post('/me/synchronize-customers')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .send({ shop: shopDomain })
+        .expect(function(res) {
+          expect(201).to.be.eql(res.statusCode);
         });
     });
   });

@@ -14,6 +14,8 @@ const getCustomerFieldValue = function(customer, fieldPath) {
   let currentProperty = customer;
 
   fieldPath.split('.').forEach(propertyName => {
+    if (typeof(currentProperty) == "undefined") 
+      return null;
     currentProperty = currentProperty[propertyName];
   });
 
@@ -159,7 +161,7 @@ class Doppler {
                     name: m.doppler,
                     value: getCustomerFieldValue(customer, m.shopify),
                   };
-                })
+                }).filter(f => f.value != null)
               : [],
         };
       }),
@@ -193,7 +195,7 @@ class Doppler {
                 name: m.doppler,
                 value: getCustomerFieldValue(customer, m.shopify),
               };
-            })
+            }).filter(f => f.value != null)
           : [],
     };
 

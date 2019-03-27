@@ -169,7 +169,7 @@ class AppController {
 
     await redis.storeShopAsync(shop, { dopplerListId, dopplerListName }, true);
 
-    response.sendStatus(200);
+    response.status(200).send({ dopplerListId });
   }
 
   async getFields(request, response) {
@@ -184,7 +184,10 @@ class AppController {
     );
     const dopplerFields = await doppler.getFieldsAsync();
 
-    response.json({ shopifyFields, dopplerFields, fieldsMapping: shopInstance.fieldsMapping ? JSON.parse(shopInstance.fieldsMapping) : null });
+    response.json({ shopifyFields, dopplerFields, fieldsMapping: shopInstance.fieldsMapping 
+      ? JSON.parse(shopInstance.fieldsMapping)
+        .filter(m => dopplerFields.some(d =>  d.name === m.doppler))
+      : null });
   }
 
   async setFieldsMapping(request, response) {

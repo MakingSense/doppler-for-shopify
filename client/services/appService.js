@@ -60,7 +60,7 @@ class AppService {
     });
 
     return fetch(request).then(response => {
-      if (response.status === 200) return;
+      if (response.status === 200) return response.json();
 
       throw response.text();
     });

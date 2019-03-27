@@ -88,7 +88,7 @@ class SetupDopplerList extends Component {
         }
       />;
     
-      if (this.props.selectedListId === -1)
+      if (this.props.selectedListId === -1 && !this.props.setupCompleted)
         selectComponent = <Tooltip content="This list will be created" preferredPosition="above">{selectComponent}</Tooltip>
       
       return selectComponent;

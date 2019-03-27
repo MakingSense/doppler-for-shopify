@@ -117,7 +117,7 @@ export function setFieldsMapping(fieldsMapping, isSetupCompleted) {
           if (!isSetupCompleted)
           {
             dispatch(synchronizeCustomers());
-            window.currentAppSetupTab = 1;
+            window.currentAppSetupTab = 0;
           }
             
           dispatch(push('/app/setup'));

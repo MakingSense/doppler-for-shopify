@@ -427,7 +427,7 @@ describe('The app controller', function() {
       { dopplerListId: 15457, dopplerListName: 'customers' },
       true
     );
-    expect(response.sendStatus).to.be.called.calledWithExactly(200);
+    expect(response.status).to.be.called.calledWithExactly(200);
   });
 
   it('setDopplerList create "Shopify Contacto" list when listId is -1', async function() {
@@ -461,7 +461,7 @@ describe('The app controller', function() {
       { dopplerListId: 543151, dopplerListName: 'Shopify Contacto' },
       true
     );
-    expect(response.sendStatus).to.be.called.calledWithExactly(200);
+    expect(response.status).to.be.called.calledWithExactly(200);
   });
 
   it('getFields should return Shopify and Doppler fields', async function() {

@@ -145,9 +145,47 @@ class Doppler {
     });
   }
 
+  async getAllDopplerSubscribers(listId) {
+    let subscribers = [];
+    let pageNumber = 1
+    let responseBody = null;
+    do {
+      responseBody = await sendRequestAsync(this.fetch, 
+        `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers?page=${pageNumber}&per_page=100`, {
+        method: 'GET',
+        headers: { Authorization: `token ${this.apiKey}`}
+      });
+      subscribers = subscribers.concat(responseBody.items);
+      pageNumber++;
+
+    } while (pageNumber <= responseBody.pagesCount);
+
+    return subscribers;
+  }
+
+  async disassociateSubscribersFromList(customers, listId) {
+    try {
+      (await this.getAllDopplerSubscribers(listId))
+        .filter(s => !customers.some(c => c.email === s.email))
+        .forEach(async s => { 
+          await sendRequestAsync(this.fetch, 
+            `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers/${s.email}`, {
+            method: 'DELETE',
+            headers: { Authorization: `token ${this.apiKey}`}
+          });
+        }
+        );
+
+    } catch (error) {
+      console.debug(error);
+    }
+  }
+
   async importSubscribersAsync(customers, listId, shopDomain, fieldsMap) {
     if (customers.length === 0) return null;
     
+    await this.disassociateSubscribersFromList(customers, listId);
+
     const url = `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers/import`;
 
     const subscribers = {

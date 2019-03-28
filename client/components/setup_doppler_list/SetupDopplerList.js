@@ -11,7 +11,8 @@ import {
   ButtonGroup,
   FooterHelp,
   Link,
-  Tooltip
+  Tooltip,
+  Banner
 } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import CreateListModal from './CreateListModal';
@@ -109,6 +110,9 @@ class SetupDopplerList extends Component {
                   or Subscriber activity. This will allow you to send personalized messages that will maximize 
                   your business conversions, improve your consumer shopping experience and increase your profits.
                 </p>
+                <Banner status="warning">
+                  <p>All existing subscribers in the selected List will be desassociated from it.</p>
+                </Banner>
                 <p>Select a Subscribers List to sync to your store:</p>
                 {this.getListsDropdown()}
               </TextContainer>

@@ -53,13 +53,31 @@ class AppController {
       return;
     }
 
+    let dopplerList = null;
+
+    try {
+      if (shopInstance.dopplerAccountName && shopInstance.dopplerApiKey && shopInstance.dopplerListId) {
+        const doppler = this.dopplerClientFactory.createClient(
+          shopInstance.dopplerAccountName,
+          shopInstance.dopplerApiKey
+        );
+
+        dopplerList = await doppler.getListAsync(shopInstance.dopplerListId);
+      }
+
+    } catch (error) {
+      // We don't want to crash the app if the Doppler API is not responding
+      console.debug(error);
+    }
+    
+
     response.render('app', {
       title: 'Doppler for Shopify',
       apiKey: process.env.SHOPIFY_APP_KEY,
       shop: shop,
       dopplerAccountName: shopInstance.dopplerAccountName,
       dopplerListId: shopInstance.dopplerListId,
-      dopplerListName: shopInstance.dopplerListName,
+      dopplerListName: dopplerList ? dopplerList.name : shopInstance.dopplerListName,
       fieldsMapping: shopInstance.fieldsMapping,
       setupCompleted:
         shopInstance.dopplerListId && shopInstance.fieldsMapping ? true : false,

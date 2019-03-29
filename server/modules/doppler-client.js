@@ -145,6 +145,14 @@ class Doppler {
     });
   }
 
+  async getListAsync(listId) {
+    return await sendRequestAsync(this.fetch, 
+      `${baseUrl}/accounts/${this.accountName}/lists/${listId}`, {
+      method: 'GET',
+      headers: { Authorization: `token ${this.apiKey}`}
+    });
+  }
+
   async getAllDopplerSubscribers(listId) {
     let subscribers = [];
     let pageNumber = 1

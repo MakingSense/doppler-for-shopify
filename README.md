@@ -23,11 +23,21 @@ This example app uses Node, Express, Webpack, React, Redux, and Shopify/polaris
 
 ## Running the project locally
 
-### Run easily with Docker without install dependencies
+### Build and run tests with Docker (without install dependencies)
 
-1. Define `SHOPIFY_APP_SECRET` as environment variable with the right value.
-2. Run `./run-with-docker.sh`
-3. Open <http://localhost:3000>
+1. Run `./scripts/run-with-docker.sh`, in windows `sh ./scripts/run-with-docker.sh` 
+
+### Build and run tests locally
+
+1. yarn install
+2. yarn test
+3. yarn build
+
+### Run locally
+
+1. yarn install
+2. npm install cross-env
+3. yarn run dev
 
 To try it inside Shopify, it will be necessary to create the tunnel and register the app as it is described in following sections.
 

@@ -20,6 +20,4 @@ fi
 
 sh ./build-w-docker.sh
 
-docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-docker build -t dopplerdev/doppler-for-shopify$ENV_SUFFIX ../
-docker push dopplerdev/doppler-for-shopify$ENV_SUFFIX
+docker build -t doppler-for-shopify$ENV_SUFFIX ../

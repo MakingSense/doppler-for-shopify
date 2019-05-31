@@ -35,7 +35,7 @@ class Welcome extends Component {
               <br />
               <TextStyle variation="subdued">
                 <DisplayText size="small">
-                  Follow a few steps to set up your account and add customers and their purchase data automatically to Doppler. 
+                  Hola Andrés. 
                   Reach the right people with the right message at the right time and generate more revenue!
                 </DisplayText>
               </TextStyle>

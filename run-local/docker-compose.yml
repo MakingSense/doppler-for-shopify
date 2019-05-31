@@ -1,0 +1,35 @@
+version: "2"
+services:
+  redis:
+    image: redis:4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    networks:
+      - redis-net
+    volumes:
+      - redis-data:/data
+  app:
+    image: doppler-for-shopify
+    environment:
+      - NODE_ENV=production
+      - SHOPIFY_APP_HOST=https://c29d78e6.ngrok.io
+      - SHOPIFY_APP_KEY=ede73d617afa8f3736d61f61088276c0
+      - SHOPIFY_APP_SECRET=03d838f178abd2038447c4431a933967
+      - SHOPIFY_APP_PORT=3000
+      - SHOPIFY_APP_STORAGE_ENGINE=memory
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - 3000:3000
+    networks:
+      - redis-net
+      - app
+    depends_on:
+      - redis
+networks:
+  redis-net:
+  app:
+
+volumes:
+  redis-data:
+  

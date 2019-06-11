@@ -16,6 +16,13 @@ export function changeDopplerCredentialValiationStatus(valid = true) {
   };
 }
 
+export function userLoggedIn(dopplerAccountName) {
+  return {
+    type: types.USER_LOGGED_IN,
+    dopplerAccountName
+  };
+}
+
 export function connectToDoppler({ dopplerAccountName, dopplerApiKey }) {
   return (dispatch, getState) => {
     dispatch(connectingToDoppler(true));
@@ -23,7 +30,10 @@ export function connectToDoppler({ dopplerAccountName, dopplerApiKey }) {
       .connectToDoppler({ dopplerAccountName, dopplerApiKey })
       .then(success => {
         dispatch(connectingToDoppler(false));
-        if (success) dispatch(push('/app/setup-doppler-list'));
+        if (success) {
+          dispatch(userLoggedIn(dopplerAccountName))
+          dispatch(push('/app/setup-doppler-list'));
+        }
         else dispatch(changeDopplerCredentialValiationStatus(false));
       })
       .catch(errorPromise => {

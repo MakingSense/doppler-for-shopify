@@ -6,7 +6,7 @@ export const appSetup = (state = initialState.appSetup, action) => {
     case types.SETUP_COMPLETED:
       return {
         ...state,
-        setupCompleted: action.setupCompleted,
+        setupCompleted: action.setupCompleted
       };
 
     case types.SYNCHRONIZATION_IN_PROGRESS:
@@ -15,21 +15,27 @@ export const appSetup = (state = initialState.appSetup, action) => {
         synchronizationInProgress: action.synchronizationInProgress,
         lastSynchronizationDate: action.synchronizationInProgress
           ? new Date().toISOString()
-          : state.lastSynchronizationDate,
+          : state.lastSynchronizationDate
       };
 
     case types.REQUESTING_SYNCHRONIZATION:
       return {
         ...state,
-        requestingSynchronization: action.requestingSynchronization,
+        requestingSynchronization: action.requestingSynchronization
       };
 
     case types.LIST_SET:
       return {
         ...state,
         dopplerListId: action.dopplerListId,
-        dopplerListName: action.dopplerListName,
+        dopplerListName: action.dopplerListName
       };
+
+      case types.USER_LOGGED_IN:
+        return {
+          ...state,
+          dopplerAccountName: action.dopplerAccountName
+        };
 
     default:
       return state;

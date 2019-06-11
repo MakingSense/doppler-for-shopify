@@ -25,10 +25,10 @@ class AppSetup extends Component {
 
     const tabs = [
       {
-        id: 'marketing-actions',
-        accessibilityLabel: 'Marketing Actions',
-        content: 'Marketing Actions',
-        panelID: 'marketing-actions'
+        id: 'email-marketing-actions',
+        accessibilityLabel: 'Email Marketing Actions',
+        content: 'Email Marketing Actions',
+        panelID: 'email-marketing-actions'
       },
       {
         id: 'customers-synchronization-setup',
@@ -52,8 +52,8 @@ class AppSetup extends Component {
           </Card.Section>
         </Card>
         <FooterHelp>
-        Doubts? Questions?{' '}
-        <Link external={true} url="https://www.fromdoppler.com/en/contact">
+          Any questions?{' '}
+        <Link external={true} url="mailto:support@fromdoppler.com">
           Contact
         </Link>{' '}
         us!

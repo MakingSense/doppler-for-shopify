@@ -105,10 +105,9 @@ class SetupDopplerList extends Component {
             <Card sectioned title="Sync your store to a Doppler List">
               <TextContainer spacing="loose">
                 <p>
-                  Your Doppler account is now connected. By associating your contacts to your Doppler Lists, 
-                  you can trigger customized and targeted Automation Emails based on a specific date, event, 
-                  or Subscriber activity. This will allow you to send personalized messages that will maximize 
-                  your business conversions, improve your consumer shopping experience and increase your profits.
+                  <strong>Your Doppler account is now connected.</strong> Start by associating your customers to your Lists, 
+                  so you can trigger customized and targeted Automation Emails based on a specific date, event, 
+                  or their activity on your Campaigns or Website.
                 </p>
                 <Banner status="warning">
                   <p>All existing subscribers in the selected List will be desassociated from it.</p>
@@ -157,8 +156,7 @@ class SetupDopplerList extends Component {
           Check{' '}
           <Link
             external={true}
-            url="https://help.fromdoppler.com/en/guide-to-managing-your-subscribers-lists/"
-          >
+            url="https://help.fromdoppler.com/en/guide-to-managing-your-subscribers-lists/?utm_source=integracion&utm_medium=integracion&utm_campaign=shopify">
             these tips
           </Link>{' '}
           for managing your Lists.

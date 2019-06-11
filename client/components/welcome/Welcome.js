@@ -35,8 +35,12 @@ class Welcome extends Component {
               <br />
               <TextStyle variation="subdued">
                 <DisplayText size="small">
-                  Follow a few steps to set up your account and add customers and their purchase data automatically to Doppler. 
-                  Reach the right people with the right message at the right time and generate more revenue!
+                  Follow a few steps to connect both platforms and add customers and their purchase data 
+                  automatically to Doppler, import your store products into Email Templates and create Abandoned 
+                  Cart and Retargeting Product Automations. To start, please use your Doppler account or
+                  create one if you haven't yet.
+                  <br/>
+                  You need a paid account to connect with Shopify.
                 </DisplayText>
               </TextStyle>
             </TextContainer>
@@ -48,9 +52,8 @@ class Welcome extends Component {
               </Button>
               <Button
                 external
-                url="https://app2.fromdoppler.com/Registration/Register/StartRegistration?origin=shopify"
-              >
-                Sign up for free
+                url="https://app2.fromdoppler.com/Registration/Register/StartRegistration?origin=shopify">
+                Sign up now
               </Button>
             </ButtonGroup>
           </div>

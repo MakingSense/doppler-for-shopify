@@ -15,38 +15,39 @@ class AppSetupMarketingActions extends Component {
     return (<div>
       <Layout>
         <Layout.Section>
-          <Card title="Abandoned cart email" sectioned>
+          <Card title="Integrated products in Emails" sectioned>
             <p>
-              Remind customers about items they've left behind to recapture sales and generate more revenue.
-              This email includes items from the customer’s cart and a quick link to checkout. You can customize it in Doppler.
+              Through this feature, 
+              you can import the items from your store to an Email Template. 
+              It will take the image, the price, the description and the alternative text of the product. 
+              Also the Call to Action you loaded in your Shopify store.
             </p>
             <br />
-            <Button primary external url={"https://app2.fromdoppler.com/Integrations/Shopify/Checkouts?shop=" + this.props.shopOrigin}>
-                Open in Doppler
+            <Button primary external url={"https://app2.fromdoppler.com/Campaigns/BasicInfo"}>
+              Create your Campaign
             </Button>
           </Card>
         </Layout.Section>
         <Layout.Section>
-          <Card title="Published products" sectioned>
+          <Card title="Abandoned Cart Automation" sectioned>
             <p>
-              Encourage customers to make a purchase with retargeting emails that showcase new items, best sellers, and other products they might like.
-              After someone visits a product page, this email reminds them of what they saw. Use Doppler editor to customize the design.
+            Send automated Emails with the items your customers left in their carts. Encourage them to
+            come back and complete their purchase.
             </p>
             <br />
-            <Button primary external url={"https://app2.fromdoppler.com/Integrations/Shopify/Products?shop=" + this.props.shopOrigin}>
-                Open in Doppler
+            <Button primary external url={"https://app2.fromdoppler.com/Automation/EditorConfig?idTaskType=0"}>
+              Recover Abandoned Carts
             </Button>
           </Card>
         </Layout.Section>
         <Layout.Section>
-          <Card title="Visited products" sectioned>
+          <Card title="Product Retargeting Automation" sectioned>
             <p>
-              Encourage customers to make a purchase with retargeting emails that showcase new items, best sellers, and other products they might like.
-              After someone visits a product page, this email reminds them of what they saw. Use Doppler editor to customize the design.
+              Send automated Emails with the items your customers visited on your Shopify store but they didn't buy.
             </p>
             <br />
-            <Button primary external url={"https://app2.fromdoppler.com/Integrations/Shopify/VisitedProducts?shop=" + this.props.shopOrigin}>
-                Open in Doppler
+            <Button primary external url={"https://app2.fromdoppler.com/Automation/EditorConfig?idTaskType=0"}>
+              Retarget your Customers
             </Button>
           </Card>
         </Layout.Section>

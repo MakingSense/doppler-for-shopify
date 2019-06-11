@@ -79,7 +79,7 @@ class AppSetupSynchronizationSettings extends Component {
         <Layout.Section>
           <Card title="Customers Synchronization" sectioned>
             <p>
-              Shopify is connected with the{' '}
+              Shopify is connected with {' '}
               <strong>{this.props.dopplerAccountName}</strong>'s Doppler account. 
               Every new customer will automatically be added as a Doppler Subscriber 
               in the List you’ve selected. If you wish to add all the customers you 

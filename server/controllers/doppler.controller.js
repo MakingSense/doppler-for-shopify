@@ -45,6 +45,12 @@ class DopplerController {
 
       await this.appController.synchronizeCustomers({ session: { shop, accessToken: shopInstance.accessToken } }, response);
     }
+
+    async migrateShop({ body }, response) {
+      const redis = this.redisClientFactory.createClient();
+      const shopInstance = await redis.getShopAsync(body.shopDomain, true);
+      response.json(!!shopInstance);
+    }
 }
 
 module.exports = DopplerController;

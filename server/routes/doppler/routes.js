@@ -17,6 +17,10 @@ module.exports = function(dopplerController) {
     json(),
     wrapAsync((req, res) => dopplerController.synchronizeCustomers(req, res))
   );
-  
+  router.post(
+    '/me/migrate-shop',
+    json(),
+    wrapAsync((req, res) => dopplerController.migrateShop(req, res))
+  );
   return router;
 };

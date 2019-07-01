@@ -12,9 +12,13 @@ module.exports = {
     },
     redisClient: {
         getShopAsync: async function () {},
+        /**
+         * @deprecated use getAllShopDomainsByDopplerApiKey or getAllShopDomainsByDopplerAccountName in place
+         */
         getShopsAsync: async function () {},
+        getAllShopDomainsByDopplerApiKeyAsync: async function () {},
+        getAllShopDomainsByDopplerAccountNameAsync: async function () {},
         storeShopAsync: async function () {},
-        sremAsync: async function () {},
         removeShopAsync: async function () {},
         quitAsync: async function(){}
     },

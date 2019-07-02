@@ -50,7 +50,7 @@
   ],
   "dependencies": {
     "@shopify/polaris": "^2.12.1",
-    "@shopify/shopify-express": "1.0.0-alpha.7",
+    "@shopify/shopify-express": "1.0.0-alpha.8",
     "autoprefixer": "^9.6.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",

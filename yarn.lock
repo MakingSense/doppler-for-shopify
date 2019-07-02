@@ -171,20 +171,20 @@
     "@types/react-dom" "^16.0.5"
     classnames "^2.2.5"
 
-"@shopify/shopify-express@1.0.0-alpha.7":
-  version "1.0.0-alpha.7"
-  resolved "https://registry.yarnpkg.com/@shopify/shopify-express/-/shopify-express-1.0.0-alpha.7.tgz#3cda42038cec51ae2be4543cabb952520c3bf0eb"
-  integrity sha512-dCioTTnHGBj4M1KQlfj6q8M//Ctwgq6qP+96Xpwt2ub+uNWUmMuFytJ49yh+Mbdn1swvGxCvfz2W4BDQkHJVGw==
+"@shopify/shopify-express@1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/@shopify/shopify-express/-/shopify-express-1.0.0-alpha.8.tgz#5ad8bf3d0c74cc6a70821c9e7e51f2def7bf09bb"
+  integrity sha512-x52vGhu9aQesdzQj94+BFUAOLV4upvpoATvhH2DgOJ3rXq1lqd3ae4XQ1HgVUFfLW4kfZW5qlUh3ETmFkcyNFQ==
   dependencies:
     body-parser "^1.18.2"
     connect-redis "^3.3.0"
+    cookie-parser "^1.4.3"
     express "^4.16.2"
     express-session "^1.15.3"
     knex "^0.13.0"
     node-fetch "^1.7.3"
     prop-types "^15.6.1"
     raw-body "^2.3.2"
-    redis "^2.7.1"
     sqlite3 "^3.1.9"
     url "^0.11.0"
 
@@ -2006,6 +2006,14 @@ convert-source-map@^1.5.1, convert-source-map@^1.6.0:
   integrity sha512-eFu7XigvxdZ1ETfbgPBohgyQ/Z++C0eEhTor0qRwBw9unw+L0/6V8wkSuGgzdThkiS5lSpdptOQPD8Ak40a+7A==
   dependencies:
     safe-buffer "~5.1.1"
+
+cookie-parser@^1.4.3:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/cookie-parser/-/cookie-parser-1.4.4.tgz#e6363de4ea98c3def9697b93421c09f30cf5d188"
+  integrity sha512-lo13tqF3JEtFO7FyA49CqbhaFkskRJ0u/UAiINgrIXeRCY41c88/zxtrECl8AKH3B0hj9q10+h3Kt8I7KlW4tw==
+  dependencies:
+    cookie "0.3.1"
+    cookie-signature "1.0.6"
 
 cookie-signature@1.0.6:
   version "1.0.6"
@@ -6513,7 +6521,7 @@ redis-parser@^2.6.0:
   resolved "https://registry.yarnpkg.com/redis-parser/-/redis-parser-2.6.0.tgz#52ed09dacac108f1a631c07e9b69941e7a19504b"
   integrity sha1-Uu0J2srBCPGmMcB+m2mUHnoZUEs=
 
-redis@^2.7.1, redis@^2.8.0:
+redis@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/redis/-/redis-2.8.0.tgz#202288e3f58c49f6079d97af7a10e1303ae14b02"
   integrity sha512-M1OkonEQwtRmZv4tEWF2VgpG0JWJ8Fv1PhlgT5+B+uNq2cA3Rt1Yt/ryoR+vQNOQcIEgdCdfH0jr3bDpihAw1A==

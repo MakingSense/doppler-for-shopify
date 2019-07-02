@@ -658,7 +658,7 @@ describe('Server integration tests', function() {
         .set('Authorization', 'INVALID HEADER')
         .expect(function(res) {
           expect(res.statusCode).to.be.eql(401);
-          expect(res.text).to.be.eql('Invalid `Authorization` token format');
+          expect(res.text).to.be.eql('Invalid `Authorization` token format. It should be something like: `Authorization: token {DopplerApiKey/DopplerJwtToken}`.');
         });
     });
 
@@ -668,7 +668,17 @@ describe('Server integration tests', function() {
         .set('Authorization', 'token')
         .expect(function(res) {
           expect(res.statusCode).to.be.eql(401);
-          expect(res.text).to.be.eql('Invalid `Authorization` token format');
+          expect(res.text).to.be.eql('Invalid `Authorization` token format. It should be something like: `Authorization: token {DopplerApiKey/DopplerJwtToken}`.');
+        });
+    });
+
+    it('Should return 401 status code when invalid token format (APIKEY without a character)', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey.substring(0, 31)}`)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(401);
+          expect(res.text).to.be.eql('Invalid `Authorization` token format. Expected a Doppler API Key or a Doppler JWT Token.');
         });
     });
     

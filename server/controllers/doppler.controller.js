@@ -7,7 +7,7 @@ class DopplerController {
     async getShops({ dopplerData }, response) {
         const redis = this.redisClientFactory.createClient();
         const shops = (await redis.getAllShopDomainsByDopplerDataAsync(dopplerData, false))
-        .map(async shopName => {
+          .map(async shopName => {
             let shop = await redis.getShopAsync(shopName);
             return {
                 shopName: shopName,

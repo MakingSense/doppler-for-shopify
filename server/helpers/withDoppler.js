@@ -15,9 +15,9 @@ module.exports = function withDoppler() {
 
     if (/^[ABCDEF\d]{32}$/i.test(token)) {
       // DOPPLER API KEY
-      req.session.dopplerApiKey = token;
+      req.dopplerData = { apiKey: token };
       return next();
-    } 
+    }
     
     res.status(401).send('Invalid `Authorization` token format. Expected a Doppler API Key or a Doppler JWT Token.');
   };

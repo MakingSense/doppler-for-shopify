@@ -64,20 +64,20 @@ describe('Server integration tests', function() {
     });
     this.sandbox
       .stub(mocks.wrappedRedisClient, 'hmset')
-      .callsFake((key, obj, cb) => {
+      .callsFake((_key, _obj, cb) => {
         cb();
       });
     this.sandbox
       .stub(mocks.wrappedRedisClient, 'sadd')
-      .callsFake((key, obj, cb) => {
+      .callsFake((_key, _obj, cb) => {
         cb();
       });
     this.sandbox
       .stub(mocks.wrappedRedisClient, 'smembers')
-      .callsFake((key, cb) => {
+      .callsFake((_key, cb) => {
         cb();
       });
-    this.sandbox.stub(mocks.wrappedRedisClient, 'del').callsFake((key, cb) => {
+    this.sandbox.stub(mocks.wrappedRedisClient, 'del').callsFake((_key, cb) => {
       cb();
     });
   });
@@ -90,7 +90,7 @@ describe('Server integration tests', function() {
     await request(app)
       .get(`/foo/bar`)
       .expect(function(res) {
-        expect(302).to.be.eql(res.statusCode);
+        expect(res.statusCode).to.be.eql(302);
       });
   });
 
@@ -141,7 +141,7 @@ describe('Server integration tests', function() {
           expect(res.statusCode).to.be.eql(302);
           expect(res.headers.location).to.be.eql('/');
           cookie = res.get('set-cookie');
-          expect(1).to.be.eql(cookie.length);
+          expect(cookie.length).to.be.eql(1);
         });
     });
   });
@@ -170,7 +170,7 @@ describe('Server integration tests', function() {
     it('Should render the home page when there is an existing session', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, {
             accessToken: accessToken,
             dopplerAccountName: dopplerAccountName,
@@ -181,14 +181,14 @@ describe('Server integration tests', function() {
         .get('/')
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
 
     it('Should redirect to /shopify/auth?shop={shop} when access token has changed', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, {
             accessToken: '111111111111',
             dopplerAccountName: dopplerAccountName,
@@ -199,7 +199,7 @@ describe('Server integration tests', function() {
         .get('/')
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(302).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(302);
           expect(res.headers.location).to.be.eql(
             `/shopify/auth?shop=${shopDomain}`
           );
@@ -232,7 +232,7 @@ describe('Server integration tests', function() {
         .send({ dopplerAccountName, dopplerApiKey: 'AAAAAAAAAAAAAAAAAA' })
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(401).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(401);
         });
     });
 
@@ -260,7 +260,7 @@ describe('Server integration tests', function() {
         .send({ dopplerAccountName, dopplerApiKey })
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
 
@@ -281,7 +281,7 @@ describe('Server integration tests', function() {
         .send({ dopplerAccountName, dopplerApiKey })
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(500).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(500);
         });
     });
   });
@@ -290,7 +290,7 @@ describe('Server integration tests', function() {
     it('Should return the Doppler lists correctly', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, { accessToken, dopplerAccountName, dopplerApiKey, dopplerListId });
         });
 
@@ -316,9 +316,8 @@ describe('Server integration tests', function() {
         .get('/doppler-lists')
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(
-            '{"items":[{"listId":1459381,"name":"shopify"},{"listId":1222381,"name":"marketing"},{"listId":1170501,"name":"development"}],"itemsCount":3}'
-          ).to.be.eql(res.text);
+          expect(res.text).to.be.eql(
+            '{"items":[{"listId":1459381,"name":"shopify"},{"listId":1222381,"name":"marketing"},{"listId":1170501,"name":"development"}],"itemsCount":3}');
           expect(200).to.be.eql(res.statusCode);
         });
     });
@@ -326,7 +325,7 @@ describe('Server integration tests', function() {
     it('Should return 500 status code when there is not a Doppler API key', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, { accessToken });
         });
 
@@ -334,7 +333,7 @@ describe('Server integration tests', function() {
         .get('/doppler-lists')
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(500).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(500);
         });
     });
   });
@@ -363,7 +362,7 @@ describe('Server integration tests', function() {
 
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, { accessToken, dopplerAccountName, dopplerApiKey });
         });
 
@@ -373,14 +372,14 @@ describe('Server integration tests', function() {
         .set('cookie', cookie)
         .expect(function(res) {
           expect(res.body).to.be.eql({ listId: '1462409' });
-          expect(201).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(201);
         });
     });
 
     it('Should return 500 status code when there is not a Doppler API key', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, { accessToken });
         });
 
@@ -389,7 +388,7 @@ describe('Server integration tests', function() {
         .send({ name: 'Fresh List' })
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(500).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(500);
         });
     });
   });
@@ -401,7 +400,7 @@ describe('Server integration tests', function() {
         .send({ dopplerListId })
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
   });
@@ -426,7 +425,7 @@ describe('Server integration tests', function() {
 
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, { accessToken, dopplerAccountName, dopplerApiKey });
         });
 
@@ -435,7 +434,7 @@ describe('Server integration tests', function() {
         .set('cookie', cookie)
         .expect(function(res) {
           expect(res.text.length).to.be.gt(0);
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
   });
@@ -453,7 +452,7 @@ describe('Server integration tests', function() {
         })
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
   });
@@ -462,7 +461,7 @@ describe('Server integration tests', function() {
     it('Should return 201 status code on success', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, {
             shop: shopDomain,
             accessToken,
@@ -529,7 +528,7 @@ describe('Server integration tests', function() {
         .post('/synchronize-customers')
         .set('cookie', cookie)
         .expect(function(res) {
-          expect(201).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(201);
         });
     });
   });
@@ -542,21 +541,16 @@ describe('Server integration tests', function() {
         .set('X-Shopify-Topic', 'app/uninstalled')
         .set('X-Shopify-Shop-Domain', shopDomain)
         .expect(function(res) {
-          expect(401).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(401);
         });
     });
 
     it('Should return 401 status code when shop does not exist', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, null);
         });
-
-      const hmac = crypto
-        .createHmac('sha256', process.env.SHOPIFY_APP_SECRET)
-        .update(new Buffer([]))
-        .digest('base64');
 
       await request(app)
         .post('/hooks/app/uninstalled')
@@ -564,14 +558,14 @@ describe('Server integration tests', function() {
         .set('X-Shopify-Topic', 'app/uninstalled')
         .set('X-Shopify-Shop-Domain', shopDomain)
         .expect(function(res) {
-          expect(401).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(401);
         });
     });
 
     it('Should return 200 status code on success', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, { accessToken });
         });
 
@@ -586,7 +580,7 @@ describe('Server integration tests', function() {
         .set('X-Shopify-Topic', 'app/uninstalled')
         .set('X-Shopify-Shop-Domain', shopDomain)
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
   });
@@ -595,7 +589,7 @@ describe('Server integration tests', function() {
     it('Should return 200 status code on success', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, {
             shop: shopDomain,
             accessToken,
@@ -633,7 +627,7 @@ describe('Server integration tests', function() {
           '{"id":623558295613,"email":"jonsnow@example.com","first_name":"Jon","last_name":"Snow","default_address":{"company":"Winterfell"}}'
         )
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
   });
@@ -643,7 +637,7 @@ describe('Server integration tests', function() {
       await request(app)
         .post(`/hooks/doppler-import-completed?shop=${shopDomain}`)
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
   });
@@ -653,7 +647,7 @@ describe('Server integration tests', function() {
       await request(app)
         .get('/me/shops')
         .expect(function(res) {
-          expect(401).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(401);
           expect('Missing `Authorization` header').to.be.eql(res.text);
         });
     });
@@ -663,8 +657,8 @@ describe('Server integration tests', function() {
         .get('/me/shops')
         .set('Authorization', 'INVALID HEADER')
         .expect(function(res) {
-          expect(401).to.be.eql(res.statusCode);
-          expect('Invalid `Authorization` token format').to.be.eql(res.text);
+          expect(res.statusCode).to.be.eql(401);
+          expect(res.text).to.be.eql('Invalid `Authorization` token format');
         });
     });
 
@@ -673,17 +667,17 @@ describe('Server integration tests', function() {
         .get('/me/shops')
         .set('Authorization', 'token')
         .expect(function(res) {
-          expect(401).to.be.eql(res.statusCode);
-          expect('Invalid `Authorization` token format').to.be.eql(res.text);
+          expect(res.statusCode).to.be.eql(401);
+          expect(res.text).to.be.eql('Invalid `Authorization` token format');
         });
     });
-
+    
     it('Should return 200 status code when a token is passed as authorization header', async function() {
       await request(app)
         .get('/me/shops')
-        .set('Authorization', 'token fjdlskfjds8fu2jlskdfj')
+        .set('Authorization', `token ${dopplerApiKey}`)
         .expect(function(res) {
-          expect(200).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(200);
         });
     });
   });
@@ -692,7 +686,7 @@ describe('Server integration tests', function() {
     it('Should return 201 status code on success', async function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
-        .callsFake((key, cb) => {
+        .callsFake((_key, cb) => {
           cb(null, {
             shop: shopDomain,
             accessToken,
@@ -760,7 +754,7 @@ describe('Server integration tests', function() {
         .set('Authorization', `token ${dopplerApiKey}`)
         .send({ shop: shopDomain })
         .expect(function(res) {
-          expect(201).to.be.eql(res.statusCode);
+          expect(res.statusCode).to.be.eql(201);
         });
     });
   });

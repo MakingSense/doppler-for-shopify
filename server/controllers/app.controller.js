@@ -224,14 +224,21 @@ class AppController {
 
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
   async synchronizeCustomers(request, response) {
-    const { session: { shop, accessToken } } = request;
+    const { query, session: { shop, accessToken } } = request;
+
+    // undefined and null will be false
+    // '', 0, 'false', 'true', another string, number or object will be true
+    // POST /synchronize-customers?force => true
+    // POST /synchronize-customers => false
+    const force = query && query.force != null;
 
     const redis = this.redisClientFactory.createClient();
     
     const shopInstance = await redis.getShopAsync(shop, false);
 
-    if (shopInstance.synchronizationInProgress && JSON.parse(shopInstance.synchronizationInProgress)) {
-      response.status(400).send("There is another syncrhonization process in progress. Please try again later.");
+
+    if (!force && shopInstance.synchronizationInProgress && JSON.parse(shopInstance.synchronizationInProgress)) {
+      response.status(400).send("There is another synchronization process in progress. Please try again later.");
       return;
     }
 

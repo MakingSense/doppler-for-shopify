@@ -586,6 +586,7 @@ describe('The app controller', function() {
       })
     );
     this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
 
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'importSubscribersAsync')
@@ -601,7 +602,7 @@ describe('The app controller', function() {
     expect(modulesMocks.shopifyClient.customer.list).to.have.been.callCount(1);
     expect(
       modulesMocks.redisClient.getShopAsync
-    ).to.be.called.calledWithExactly('store.myshopify.com', false);
+    ).to.be.called.calledWithExactly('store.myshopify.com');
     expect(
       modulesMocks.dopplerClient.importSubscribersAsync
     ).to.be.called.calledWithExactly(
@@ -635,9 +636,10 @@ describe('The app controller', function() {
     expect(modulesMocks.redisClient.storeShopAsync).callCount(2);
 
     // TODO: mock the Date
-    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithMatch('store.myshopify.com', { synchronizationInProgress: true }, false);
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithMatch('store.myshopify.com', { synchronizationInProgress: true });
 
-    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456', synchronizedCustomersCount: 2 }, true);
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456', synchronizedCustomersCount: 2 });
+    expect(modulesMocks.redisClient.quitAsync).callCount(1);
     expect(response.sendStatus).to.be.called.calledWithExactly(201);
   });
 

@@ -224,74 +224,80 @@ class AppController {
 
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
   async synchronizeCustomers(request, response) {
-    const { session: { shop, accessToken } } = request;
+    const { query, session: { shop, accessToken } } = request;
+
+    // undefined and null will be false
+    // '', 0, 'false', 'true', another string, number or object will be true
+    // POST /synchronize-customers?force => true
+    // POST /synchronize-customers => false
+    const force = query && query.force != null;
 
     const redis = this.redisClientFactory.createClient();
     
-    const shopInstance = await redis.getShopAsync(shop, false);
-
-    if (shopInstance.synchronizationInProgress && JSON.parse(shopInstance.synchronizationInProgress)) {
-      response.status(400).send("There is another syncrhonization process in progress. Please try again later.");
-      return;
-    }
-
-    await redis.storeShopAsync(
-      shop,
-      {
-        synchronizationInProgress: true,
-        lastSynchronizationDate: new Date().toISOString(),
-      },
-      false
-    );
-
-    const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
-
-    const totalCustomers = await shopify.customer.count();
-
-    let customers = [];
-    for (let pageNumber = 1; pageNumber <= totalCustomers/shopifyCustomersPageSize + 1; pageNumber++)
-    {
-      customers = customers.concat(await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }));
-    }
-
-    const doppler = this.dopplerClientFactory.createClient(
-      shopInstance.dopplerAccountName,
-      shopInstance.dopplerApiKey
-    );
+    const shopInstance = await redis.getShopAsync(shop);
 
     try {
-      const importTaskId = await doppler.importSubscribersAsync(
-        customers,
-        shopInstance.dopplerListId,
-        shop,
-        JSON.parse(shopInstance.fieldsMapping)
-      );
 
-      await redis.storeShopAsync
-      (
-        shop, 
-        { 
-          importTaskId: importTaskId,
-          synchronizedCustomersCount: customers.length
-        },
-        true
-      );
-    } catch (error) {
-      
-      const _redis = this.redisClientFactory.createClient();
-      await _redis.storeShopAsync(
+      if (!force && shopInstance.synchronizationInProgress && JSON.parse(shopInstance.synchronizationInProgress)) {
+        response.status(400).send("There is another synchronization process in progress. Please try again later.");
+        return;
+      }
+
+      await redis.storeShopAsync(
         shop,
         {
-          synchronizationInProgress: false,
-          lastSynchronizationDate: '',
-        },
-        true
-      )
-      throw error;
-    } finally {
+          synchronizationInProgress: true,
+          lastSynchronizationDate: new Date().toISOString(),
+        }
+      );
+
+      const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
+
+      const totalCustomers = await shopify.customer.count();
+
+      let customers = [];
+      for (let pageNumber = 1; pageNumber <= totalCustomers/shopifyCustomersPageSize + 1; pageNumber++)
+      {
+        customers = customers.concat(await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }));
+      }
+
+      const doppler = this.dopplerClientFactory.createClient(
+        shopInstance.dopplerAccountName,
+        shopInstance.dopplerApiKey
+      );
+
+      try {
+        const importTaskId = await doppler.importSubscribersAsync(
+          customers,
+          shopInstance.dopplerListId,
+          shop,
+          JSON.parse(shopInstance.fieldsMapping)
+        );
+
+        await redis.storeShopAsync
+        (
+          shop, 
+          { 
+            importTaskId: importTaskId,
+            synchronizedCustomersCount: customers.length
+          }
+        );
+      } catch (error) {
+        
+        const _redis = this.redisClientFactory.createClient();
+        await _redis.storeShopAsync(
+          shop,
+          {
+            synchronizationInProgress: false,
+            lastSynchronizationDate: '',
+          }
+        )
+        throw error;
+      }
+    }
+    finally {
       await redis.quitAsync();
     }
-
     response.sendStatus(201);
   }
 

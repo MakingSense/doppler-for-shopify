@@ -8,7 +8,7 @@ module.exports = function withDoppler() {
     }
 
     const token = authorizationHeader.substring(6);
-    if (token === "" || authorizationHeader.substring(0,5) !== "token"){
+    if (!token || authorizationHeader.substring(0,5) !== "token"){
       res.status(401).send('Invalid `Authorization` token format. It should be something like: `Authorization: token {DopplerApiKey/DopplerJwtToken}`.');
       return;
     }

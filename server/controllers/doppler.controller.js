@@ -10,7 +10,7 @@ class DopplerController {
         } = request;
 
         const redis = this.redisClientFactory.createClient();
-        const shops = (await redis.getShopsAsync(apiKey, false))
+        const shops = (await redis.getAllShopDomainsByDopplerApiKeyAsync(apiKey, false))
         .map(async shopName => {
             let shop = await redis.getShopAsync(shopName);
             return {

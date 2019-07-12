@@ -4,6 +4,8 @@ const httpMocks = require('node-mocks-http');
 const expect = chai.expect;
 const withDoppler = require('./withDoppler');
 
+// https://jwt.io/#debugger-io?token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc1N1IjpmYWxzZSwic3ViIjoiYW1vc2NoaW5pQG1ha2luZ3NlbnNlLmNvbSIsImN1c3RvbWVySWQiOiIxMzY3IiwiZGF0YWh1YkN1c3RvbWVySWQiOiIxMzY3IiwiaWF0IjoxNTYyOTQ0Mjc0LCJleHAiOjE1NjI5NDYwNzR9.UCPZT4AS3DvPl91XhU8adc5Zb7oUdN0mxQyIy4N78LZYcNSSGmoIGfbmXXgRZ0M6KGRUnCgnSOAqW6uaBFn9kQ
+const validJwtToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc1N1IjpmYWxzZSwic3ViIjoiYW1vc2NoaW5pQG1ha2luZ3NlbnNlLmNvbSIsImN1c3RvbWVySWQiOiIxMzY3IiwiZGF0YWh1YkN1c3RvbWVySWQiOiIxMzY3IiwiaWF0IjoxNTYyOTQ0Mjc0LCJleHAiOjE1NjI5NDYwNzR9.UCPZT4AS3DvPl91XhU8adc5Zb7oUdN0mxQyIy4N78LZYcNSSGmoIGfbmXXgRZ0M6KGRUnCgnSOAqW6uaBFn9kQ';
 
 describe('withDoppler middleware', () => {
   it('should return 401 error when there is not an authorization header', () => {
@@ -87,13 +89,35 @@ describe('withDoppler middleware', () => {
     expect(req.dopplerData.apiKey).to.equal(token);
   });
 
-  it('should fill dopplerData.tokenJwt when token has an JWT format', () => {
+  it('should return 401 error when JWT token is expired', () => {
     // Arrange
     const middleware = withDoppler();
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+ 
     const req = httpMocks.createRequest({ 
       headers: {
-        Authorization: `token ${token}`
+        Authorization: `token ${validJwtToken}`
+      }
+    });
+    const res = httpMocks.createResponse();
+    var next = sinon.spy();
+    
+    // Act
+    middleware(req, res, next);
+
+    // Assert
+    expect(res.statusCode).to.be.equal(401);
+    expect(res._getData()).to.be.equal(
+      'Invalid `Authorization` token. JWT Error: jwt expired');
+    expect(next.notCalled).to.be.true;
+  });
+
+  it('should fill dopplerData.tokenJwt when token has a valid JWT format', () => {
+    // Arrange
+    const middleware = withDoppler({ ignoreExpiration: true });
+
+    const req = httpMocks.createRequest({ 
+      headers: {
+        Authorization: `token ${validJwtToken}`
       }
     });
     const res = httpMocks.createResponse();
@@ -107,6 +131,8 @@ describe('withDoppler middleware', () => {
     expect(req).to.have.property('dopplerData');
     expect(req.dopplerData).to.have.property('tokenJwt');
     expect(req.dopplerData).to.not.have.property('apiKey');
-    expect(req.dopplerData.tokenJwt).to.equal(token);
+    expect(req.dopplerData.tokenJwt).to.equal(validJwtToken);
+    expect(req.dopplerData.isSuperUser).to.be.false;
+    expect(req.dopplerData.accountName).to.equal('amoschini@makingsense.com');
   });
 });

@@ -4,6 +4,8 @@ const wrapAsync = require('../../helpers/wrapAsync');
 const withDoppler =  require('../../helpers/withDoppler');
 
 module.exports = function(dopplerController) {
+  // TODO: deprecate `/me/...` routes and use `/doppler/{accountName}/...` ones
+  // in place of them. In that way, we could allow SuperUser JWT tokens  
   const router = new Router();
   router.get(
     '/me/shops',

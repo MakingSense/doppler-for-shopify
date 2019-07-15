@@ -33,6 +33,9 @@ function withDoppler(configuration) {
       return;
     }
 
+    // TODO: Parse accountName from `/doppler/{accountName}/...` routes
+    // and inject it in DopplerData.
+
     if (/^[ABCDEF\d]{32}$/i.test(token)) {
       // DOPPLER API KEY
       req.dopplerData = { apiKey: token };
@@ -44,6 +47,7 @@ function withDoppler(configuration) {
           res.status(401).send(`Invalid \`Authorization\` token. JWT Error: ${err.message}`);
           return;
         } else {
+          // TODO: validate that decoded.sub matches accountName from the URL or isSuperUser
           req.dopplerData = { 
             tokenJwt: token,
             accountName: decoded.sub,

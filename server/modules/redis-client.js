@@ -93,6 +93,11 @@ class Redis {
     }
   }
 
+  async getAllShopDomainsByDopplerDataAsync(dopplerData, closeConnection) {
+    return dopplerData.accountName ? (await this.getAllShopDomainsByDopplerAccountNameAsync(dopplerData.accountName, closeConnection))
+      : (await this.getAllShopDomainsByDopplerApiKeyAsync(dopplerData.apiKey, closeConnection));
+  }
+
   async getAllShopDomainsByDopplerApiKeyAsync(dopplerApiKey, closeConnection) {
     try {
       const newShops = (await this.client.smembersAsync(keyShopDomainsByDopplerApikey({dopplerApiKey}))) || [];

@@ -583,4 +583,34 @@ describe('The redis-client module', function() {
     }, `Error retrieving shops for Doppler account. Error: ${errorMessage}`);
   });
   
+  it(`getAllShopDomainsByDopplerDataAsync should search by shopDomainsByDopplerAccountName when dopplerData has accountName field`, async function() {
+    const accountName = 'email@test.com';
+    const domain = 'domain.com';
+    prepareDummySandbox(this.sandbox, {
+      smembers: (key, cb) => { cb(
+        undefined, 
+        key === `shopDomainsByDopplerAccountName:${accountName}` ? [ domain ] : null); }
+    });
+    const redisClient = Redis.createClient();
+    const result = await redisClient.getAllShopDomainsByDopplerDataAsync({ accountName });
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.callCount(1);
+    expect(result).to.be.deep.equal([ domain ]);
+  });
+
+  it(`getAllShopDomainsByDopplerDataAsync should search by shopDomainsByDopplerApikey when dopplerData has apiKey field`, async function() {
+    const apiKey = '0123456789ABCDEF';
+    const domain1 = 'domain1.com';
+    const domain2 = 'domain2.com';
+    prepareDummySandbox(this.sandbox, {
+      smembers: (key, cb) => { cb(
+        undefined, 
+        key === `shopDomainsByDopplerApikey:${apiKey}` ? [ domain1 ] 
+        : key === `doppler:${apiKey}` ? [ domain2 ] 
+        : null); }
+    });
+    const redisClient = Redis.createClient();
+    const result = await redisClient.getAllShopDomainsByDopplerDataAsync({ apiKey });
+    expect(mocks.wrappedRedisClient.smembers).to.have.been.callCount(2);
+    expect(result).to.be.deep.equal([ domain1, domain2 ]);
+  });
 });

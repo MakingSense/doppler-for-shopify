@@ -89,7 +89,7 @@
     "sqlite3": "^4.0.9",
     "style-loader": "~0.23.1",
     "url": "^0.11.0",
-    "webpack": "^2.7.0",
+    "webpack": "^4.35.3",
     "webpack-dev-middleware": "^3.7.0",
     "webpack-dev-server": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0",

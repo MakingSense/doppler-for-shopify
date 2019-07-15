@@ -30,12 +30,13 @@ class AppSetup extends Component {
         accessibilityLabel: 'Customers Synchronization Setup',
         panelID: 'customers-synchronization-setup'
       },
-      {
-        id: 'email-marketing-actions',
-        accessibilityLabel: 'Email Marketing Actions',
-        content: 'Email Marketing Actions',
-        panelID: 'email-marketing-actions'
-      },
+      // TODO: revert this when Doppler Marketing actions be ready
+      // {
+      //   id: 'email-marketing-actions',
+      //   accessibilityLabel: 'Email Marketing Actions',
+      //   content: 'Email Marketing Actions',
+      //   panelID: 'email-marketing-actions'
+      // },
     ];
 
     return (

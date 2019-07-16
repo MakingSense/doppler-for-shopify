@@ -25,17 +25,18 @@ class AppSetup extends Component {
 
     const tabs = [
       {
-        id: 'email-marketing-actions',
-        accessibilityLabel: 'Email Marketing Actions',
-        content: 'Email Marketing Actions',
-        panelID: 'email-marketing-actions'
-      },
-      {
         id: 'customers-synchronization-setup',
         content: 'Customers Synchronization Setup',
         accessibilityLabel: 'Customers Synchronization Setup',
         panelID: 'customers-synchronization-setup'
       },
+      // TODO: revert this when Doppler Marketing actions be ready
+      // {
+      //   id: 'email-marketing-actions',
+      //   accessibilityLabel: 'Email Marketing Actions',
+      //   content: 'Email Marketing Actions',
+      //   panelID: 'email-marketing-actions'
+      // },
     ];
 
     return (
@@ -48,7 +49,7 @@ class AppSetup extends Component {
             fitted
           />
           <Card.Section title={tabs[selected].title}>
-            {selected == 0 ? <AppSetupMarketingActions /> : <AppSetupSynchronizationSettings />}
+            {selected == 0 ? <AppSetupSynchronizationSettings /> : <AppSetupMarketingActions />}
           </Card.Section>
         </Card>
         <FooterHelp>

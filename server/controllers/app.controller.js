@@ -224,19 +224,14 @@ class AppController {
 
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
   async synchronizeCustomers({ query: { force }, session: { shop, accessToken } }, response) {
-
     // undefined and null will be false
     // '', 0, 'false', 'true', another string, number or object will be true
     // POST /synchronize-customers?force => true
     // POST /synchronize-customers => false
     force = force != null;
-
     const redis = this.redisClientFactory.createClient();
-    
     const shopInstance = await redis.getShopAsync(shop);
-
     try {
-
       if (!force && shopInstance.synchronizationInProgress && JSON.parse(shopInstance.synchronizationInProgress)) {
         response.status(400).send("There is another synchronization process in progress. Please try again later.");
         return;
@@ -247,8 +242,7 @@ class AppController {
         {
           synchronizationInProgress: true,
           lastSynchronizationDate: new Date().toISOString(),
-        }
-      );
+        });
 
       const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
 
@@ -262,34 +256,29 @@ class AppController {
 
       const doppler = this.dopplerClientFactory.createClient(
         shopInstance.dopplerAccountName,
-        shopInstance.dopplerApiKey
-      );
+        shopInstance.dopplerApiKey);
 
       try {
         const importTaskId = await doppler.importSubscribersAsync(
           customers,
           shopInstance.dopplerListId,
           shop,
-          JSON.parse(shopInstance.fieldsMapping)
-        );
+          JSON.parse(shopInstance.fieldsMapping));
 
         await redis.storeShopAsync(
           shop, 
           { 
             importTaskId: importTaskId,
-            synchronizedCustomersCount: customers.length
-          }
-        );
+            synchronizedCustomersCount: customers.length,
+          });
       } catch (error) {
-        
         const _redis = this.redisClientFactory.createClient();
         await _redis.storeShopAsync(
           shop,
           {
             synchronizationInProgress: false,
             lastSynchronizationDate: '',
-          }
-        )
+          });
         throw error;
       }
     }

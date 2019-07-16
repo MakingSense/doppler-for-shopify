@@ -141,6 +141,7 @@ describe('The app controller', function() {
     });
     const response = sinonMock.mockRes();
     this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
       .returns(Promise.resolve(true));
@@ -152,21 +153,20 @@ describe('The app controller', function() {
     );
     await appController.connectToDoppler(request, response);
 
-    expect(
-      modulesMocks.dopplerClient.AreCredentialsValidAsync
-    ).to.have.been.callCount(1);
-    expect(
-      modulesMocks.redisClient.storeShopAsync
-    ).to.be.called.calledWithMatch(
-      'store.myshopify.com',
-      {
-        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
-        dopplerAccountName: 'user@example.com',
-        synchronizedCustomersCount: 0
-      },
-      true
-    );
-    expect(response.sendStatus).to.be.called.calledWithExactly(200);
+    expect(modulesMocks.dopplerClient.AreCredentialsValidAsync)
+      .to.have.been.callCount(1);
+    expect(modulesMocks.redisClient.storeShopAsync)
+      .to.be.called.calledWithMatch(
+        'store.myshopify.com',
+        {
+          dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+          dopplerAccountName: 'user@example.com',
+          synchronizedCustomersCount: 0
+        });
+    expect(modulesMocks.redisClient.quitAsync)
+      .to.have.been.callCount(1);
+    expect(response.sendStatus)
+      .to.be.called.calledWithExactly(200);
   });
 
   it('connectToDoppler should return "Invalid credentials" when Doppler credentials are invalid', async function() {

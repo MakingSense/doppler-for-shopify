@@ -171,7 +171,7 @@ class Doppler {
     return subscribers;
   }
 
-  async disassociateSubscribersFromList(customers, listId) {
+  async safeDisassociateSubscribersFromList(customers, listId) {
     try {
       (await this.getAllDopplerSubscribers(listId))
         .filter(s => !customers.some(c => c.email === s.email))
@@ -192,7 +192,7 @@ class Doppler {
   async importSubscribersAsync(customers, listId, shopDomain, fieldsMap) {
     if (customers.length === 0) return null;
     
-    await this.disassociateSubscribersFromList(customers, listId);
+    await this.safeDisassociateSubscribersFromList(customers, listId);
 
     const url = `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers/import`;
 

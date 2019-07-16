@@ -29,12 +29,7 @@ class DopplerController {
         await redis.quitAsync();
     }
 
-    async synchronizeCustomers(request, response) {
-      const {
-        session: { dopplerApiKey },
-        body: { shop }
-      } = request;
-
+    async synchronizeCustomers({ query: { force }, session: { dopplerApiKey }, body: { shop } }, response) {
       const redis = this.redisClientFactory.createClient();
       const shopInstance = await redis.getShopAsync(shop);
 
@@ -43,7 +38,7 @@ class DopplerController {
           return;
       }
 
-      await this.appController.synchronizeCustomers({ session: { shop, accessToken: shopInstance.accessToken } }, response);
+      await this.appController.synchronizeCustomers({ query: { force }, session: { shop, accessToken: shopInstance.accessToken } }, response);
     }
 
     async migrateShop({ body }, response) {

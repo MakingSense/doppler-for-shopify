@@ -237,28 +237,26 @@ class AppController {
         return;
       }
 
-      await redis.storeShopAsync(
-        shop,
-        {
-          synchronizationInProgress: true,
-          lastSynchronizationDate: new Date().toISOString(),
-        });
-
-      const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
-
-      const totalCustomers = await shopify.customer.count();
-
-      let customers = [];
-      for (let pageNumber = 1; pageNumber <= totalCustomers/shopifyCustomersPageSize + 1; pageNumber++)
-      {
-        customers = customers.concat(await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }));
-      }
-
-      const doppler = this.dopplerClientFactory.createClient(
-        shopInstance.dopplerAccountName,
-        shopInstance.dopplerApiKey);
-
       try {
+        await redis.storeShopAsync(
+          shop,
+          {
+            synchronizationInProgress: true,
+            lastSynchronizationDate: new Date().toISOString(),
+          });
+
+        const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
+        const totalCustomers = await shopify.customer.count();
+
+        let customers = [];
+        for (let pageNumber = 1; pageNumber <= totalCustomers/shopifyCustomersPageSize + 1; pageNumber++)
+        {
+          customers = customers.concat(await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }));
+        }
+
+        const doppler = this.dopplerClientFactory.createClient(
+          shopInstance.dopplerAccountName,
+          shopInstance.dopplerApiKey);
         const importTaskId = await doppler.importSubscribersAsync(
           customers,
           shopInstance.dopplerListId,

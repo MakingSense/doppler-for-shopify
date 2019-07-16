@@ -109,7 +109,7 @@ describe('The doppler controller', function() {
 
     expect(
       modulesMocks.appController.synchronizeCustomers
-    ).to.be.called.calledWithExactly({ session: { shop: "my-store.myshopify.com", accessToken: "fmdklsf893rnj3nrfd" } }, response);
+    ).to.be.called.calledWithExactly({ query: { force: undefined }, session: { shop: "my-store.myshopify.com", accessToken: "fmdklsf893rnj3nrfd" } }, response);
   });
 
   it('synchronizeCustomers should send 403 response when shop does not belong to doppler account', async function() {

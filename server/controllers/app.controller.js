@@ -223,14 +223,13 @@ class AppController {
   }
 
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
-  async synchronizeCustomers(request, response) {
-    const { query, session: { shop, accessToken } } = request;
+  async synchronizeCustomers({ query: { force }, session: { shop, accessToken } }, response) {
 
     // undefined and null will be false
     // '', 0, 'false', 'true', another string, number or object will be true
     // POST /synchronize-customers?force => true
     // POST /synchronize-customers => false
-    const force = query && query.force != null;
+    force = force != null;
 
     const redis = this.redisClientFactory.createClient();
     
@@ -274,8 +273,7 @@ class AppController {
           JSON.parse(shopInstance.fieldsMapping)
         );
 
-        await redis.storeShopAsync
-        (
+        await redis.storeShopAsync(
           shop, 
           { 
             importTaskId: importTaskId,

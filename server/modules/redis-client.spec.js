@@ -103,7 +103,7 @@ describe('The redis-client module', function() {
 
     expect(mocks.wrappedRedisClient.hmset).to.have.been.callCount(1);
     expect(mocks.wrappedRedisClient.hmset).to.have.been.calledWith(
-      'shopsByShopDomain:my-store.myshopify.com',
+      'my-store.myshopify.com',
       { accessToken: '1234567890', dopplerApiKey: '0f9k409qkc09q4kf' }
     );
   });
@@ -237,43 +237,6 @@ describe('The redis-client module', function() {
     expect(result).to.equal(shop);
   });
 
-  it('getShopAsync should get shop if it is stored with the old key and migrate it', async function() {
-    const domainName = 'my-store.myshopify.com';
-    const dopplerApiKey = 'apikey';
-    const dopplerAccountName = 'account@name.com';
-    const shop = { dopplerApiKey, dopplerAccountName };
-
-    prepareDummySandbox(this.sandbox, { 
-      hgetall: (key, cb) => { cb(undefined, key.startsWith('shopsByShopDomain:') ? null : shop); }
-    });
-
-    const redisClient = Redis.createClient();
-
-    const result = await redisClient.getShopAsync(domainName);
-
-    expect(mocks.wrappedRedisClient.hgetall).to.have.been.calledWith(domainName);
-    expect(result).to.equal(shop);
-
-    // Assert migration
-    expect(mocks.wrappedRedisClient.hmset).to.have.been.calledWith(
-      `shopsByShopDomain:${domainName}`,
-      shop
-    );
-    expect(mocks.wrappedRedisClient.sadd).to.have.been.calledWith(
-      `shopDomainsByDopplerApikey:${dopplerApiKey}`,
-      domainName
-    );
-    expect(mocks.wrappedRedisClient.sadd).to.have.been.calledWith(
-      `shopDomainsByDopplerAccountName:${dopplerAccountName}`,
-      domainName
-    );
-    expect(mocks.wrappedRedisClient.del).to.have.been.calledWith(domainName);
-    expect(mocks.wrappedRedisClient.srem).to.have.been.calledWith(
-      `doppler:${dopplerApiKey}`,
-      domainName
-    );
-  });
-
   it('getShopAsync should check in old and new keys if the shop does not exist', async function() {
     prepareDummySandbox(this.sandbox);
 
@@ -344,9 +307,12 @@ describe('The redis-client module', function() {
     const redisClient = Redis.createClient();
     await redisClient.removeShopAsync(domainName);
 
-    expect(mocks.wrappedRedisClient.del).to.have.been.callCount(1);
+    expect(mocks.wrappedRedisClient.del).to.have.been.callCount(2);
     expect(mocks.wrappedRedisClient.del).to.have.been.calledWith(
       `shopsByShopDomain:${domainName}`
+    );
+    expect(mocks.wrappedRedisClient.del).to.have.been.calledWith(
+      domainName
     );
     expect(mocks.wrappedRedisClient.srem).to.have.been.calledWith(
       `shopDomainsByDopplerApikey:${dopplerApiKey}`, domainName
@@ -382,12 +348,13 @@ describe('The redis-client module', function() {
     const redisClient = Redis.createClient();
     await redisClient.removeShopAsync(domainName);
 
-    expect(mocks.wrappedRedisClient.del).to.have.been.callCount(1);
+    expect(mocks.wrappedRedisClient.del).to.have.been.callCount(2);
     expect(mocks.wrappedRedisClient.del).to.have.been.calledWith(domainName);
-    expect(mocks.wrappedRedisClient.srem).to.have.been.callCount(1);
-    expect(mocks.wrappedRedisClient.srem).to.have.been.calledWith(
-      `doppler:${dopplerApiKey}`, domainName
-    );
+    expect(mocks.wrappedRedisClient.del).to.have.been.calledWith(`shopsByShopDomain:${domainName}`);
+    expect(mocks.wrappedRedisClient.srem).to.have.been.callCount(3);
+    expect(mocks.wrappedRedisClient.srem).to.have.been.calledWith(`shopDomainsByDopplerApikey:${dopplerApiKey}`, domainName);
+    expect(mocks.wrappedRedisClient.srem).to.have.been.calledWith(`shopDomainsByDopplerAccountName:${dopplerAccountName}`, domainName);
+    expect(mocks.wrappedRedisClient.srem).to.have.been.calledWith(`doppler:${dopplerApiKey}`, domainName);
   });
 
   it('removeShopAsync should raise the error thrown by redis and close the connection', async function() {

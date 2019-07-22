@@ -254,6 +254,28 @@ describe('Server integration tests', function() {
             },
           })
         );
+      fetchStub
+        .withArgs(
+          `https://restapi.fromdoppler.com/accounts/${querystring.escape(
+            dopplerAccountName
+          )}/integrations/shopify`,
+          {
+            body: JSON.stringify({
+              accessToken: accessToken,
+              accountName: shopDomain
+            }),
+            method: 'POST',
+            headers: { Authorization: `token ${dopplerApiKey}` },
+          }
+        )
+        .returns(
+          Promise.resolve({
+            status: 200,
+            json: async function() {
+              return dopplerApiResponses.INTEGRATION_UPDATED_200;
+            },
+          })
+        );
 
       await request(app)
         .post('/connect-to-doppler')

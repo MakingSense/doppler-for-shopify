@@ -88,7 +88,7 @@ class AppController {
     });
   }
 
-  async connectToDoppler({ session: { shop }, body: { dopplerAccountName, dopplerApiKey } }, response) {
+  async connectToDoppler({ session: { accessToken, shop }, body: { dopplerAccountName, dopplerApiKey } }, response) {
     const doppler = this.dopplerClientFactory.createClient(
       dopplerAccountName,
       dopplerApiKey
@@ -105,6 +105,10 @@ class AppController {
       await redis.storeShopAsync(
         shop,
         { dopplerAccountName, dopplerApiKey, connectedOn: new Date().toISOString(), synchronizedCustomersCount: 0 });
+      await doppler.putShopifyIntegrationAsync(shop, accessToken);
+    } catch (error) {
+      await redis.removeShopAsync(shop);
+      throw error;
     } finally {
       await redis.quitAsync();
     }

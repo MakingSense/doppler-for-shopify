@@ -169,6 +169,91 @@ describe('The app controller', function() {
       .to.be.called.calledWithExactly(200);
   });
 
+
+  it('connectToDoppler should call put Doppler integration using Doppler Client', async function() {
+    const shop = 'store.myshopify.com';
+    const accessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
+    const request = sinonMock.mockReq({
+      session: { shop, accessToken },
+      body: {
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+      },
+    });
+    const response = sinonMock.mockRes();
+
+    this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
+    
+    this.sandbox
+      .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
+      .returns(Promise.resolve(true));
+    
+      this.sandbox
+      .stub(modulesMocks.dopplerClient, 'putShopifyIntegrationAsync')
+      .returns(Promise.resolve(true));
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+    
+    await appController.connectToDoppler(request, response);
+
+    expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
+      .to.have.been.callCount(1);
+    expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
+      .to.be.called.calledWithMatch(shop, accessToken);
+    expect(response.sendStatus)
+      .to.be.called.calledWithExactly(200);
+  });
+
+  it('connectToDoppler remove the shop when putShopifyIntegrationAsync fails', async function() {
+    const shop = 'store.myshopify.com';
+    const accessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
+    const request = sinonMock.mockReq({
+      session: { shop, accessToken },
+      body: {
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+      },
+    });
+    const response = sinonMock.mockRes();
+
+    this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
+    
+    this.sandbox
+      .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
+      .returns(Promise.resolve(true));
+    
+      this.sandbox
+      .stub(modulesMocks.dopplerClient, 'putShopifyIntegrationAsync')
+      .returns(Promise.reject('Arbitrary error'));
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+    
+    try {
+      await appController.connectToDoppler(request, response);
+      sinon.assert.fail('It should fail');
+    } catch (error) {
+      expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
+        .to.have.been.callCount(1);
+      expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
+        .to.be.called.calledWithMatch(shop, accessToken);    
+      expect(modulesMocks.redisClient.removeShopAsync)
+        .to.be.called.calledWithMatch(shop);
+      expect(modulesMocks.redisClient.quitAsync)
+        .to.have.been.callCount(1);
+    }
+  });
+
   it('connectToDoppler should return "Invalid credentials" when Doppler credentials are invalid', async function() {
     const request = sinonMock.mockReq({
       session: { shop: 'store.myshopify.com' },

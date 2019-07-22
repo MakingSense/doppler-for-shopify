@@ -27,7 +27,8 @@ module.exports = {
         importSubscribersAsync: async function () {},
         createSubscriberAsync: async function () {},
         disassociateSubscribersFromList: async function () {},
-        getListAsync: async function () {}
+        getListAsync: async function () {},
+        putShopifyIntegrationAsync: async function () {}
     },
     shopifyClient: {
         webhook: {

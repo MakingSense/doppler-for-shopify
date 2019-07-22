@@ -164,5 +164,10 @@ module.exports = {
     SUBSCRIBER_ADDED_TO_LIST_200: {
         message: "Subscriber successfully added to List",
         _links: []
-    }
+    },
+
+    INTEGRATION_UPDATED_200: {
+      message: "Third Party App was saved",
+      _links: []
+  }
 }

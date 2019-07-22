@@ -646,4 +646,34 @@ describe('The doppler-client module', function() {
       }
     );
   });
+
+  it('putShopifyIntegrationAsync should call Doppler API with the right payload', async function() {
+    fetchStub.returns(
+      Promise.resolve({
+        status: 200,
+        json: async function() {
+          return dopplerApiResponses.INTEGRATION_UPDATED_200
+        },
+      })
+    );
+
+    const doppler = Doppler.createClient(
+      'user@example.com',
+      'C22CADA13759DB9BBDF93B9D87C14D5A'
+    );
+
+    await doppler.putShopifyIntegrationAsync('dopplertest.myshopify.com', '127424ab9aa0ebce26dfdc786bc7fba4');
+
+    expect(fetchStub).to.be.calledWithExactly(
+      'https://restapi.fromdoppler.com/accounts/user%40example.com/integrations/shopify',
+      {
+        body: JSON.stringify({
+          accessToken: '127424ab9aa0ebce26dfdc786bc7fba4',
+          accountName: 'dopplertest.myshopify.com'
+        }),
+        method: 'POST',
+        headers: { "Authorization": 'token C22CADA13759DB9BBDF93B9D87C14D5A' },
+      }
+    );
+  });
 });

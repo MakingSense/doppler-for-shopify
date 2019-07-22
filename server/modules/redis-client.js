@@ -93,11 +93,9 @@ class Redis {
     }
   }
 
-  /**
-   * @deprecated use getAllShopDomainsByDopplerApiKey or getAllShopDomainsByDopplerAccountName in place
-   */
-  async getShopsAsync(dopplerApiKey, closeConnection) {
-    return await this.getAllShopDomainsByDopplerApiKeyAsync(dopplerApiKey, closeConnection);
+  async getAllShopDomainsByDopplerDataAsync(dopplerData, closeConnection) {
+    return dopplerData.accountName ? (await this.getAllShopDomainsByDopplerAccountNameAsync(dopplerData.accountName, closeConnection))
+      : (await this.getAllShopDomainsByDopplerApiKeyAsync(dopplerData.apiKey, closeConnection));
   }
 
   async getAllShopDomainsByDopplerApiKeyAsync(dopplerApiKey, closeConnection) {

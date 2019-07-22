@@ -27,12 +27,12 @@ describe('The doppler controller', function() {
 
   it('getShops should return a list of N shops when there are N shops associated to the same Doppler account', async function() {
     const request = sinonMock.mockReq({
-      session: {
-        dopplerApiKey: 'fb5d67a5bd67ab5d67ab5d'
+      dopplerData: {
+        apiKey: 'fb5d67a5bd67ab5d67ab5d'
       },
     });
     const response = sinonMock.mockRes();
-    this.sandbox.stub(modulesMocks.redisClient, 'getShopsAsync').returns(
+    this.sandbox.stub(modulesMocks.redisClient, 'getAllShopDomainsByDopplerDataAsync').returns(
       Promise.resolve([
         'my-store.myshopify.com',
         'my-store-2.myshopify.com'
@@ -82,14 +82,14 @@ describe('The doppler controller', function() {
     ]);
 
     expect(
-      modulesMocks.redisClient.getShopsAsync
-    ).to.be.called.calledWithExactly('fb5d67a5bd67ab5d67ab5d', false);
+      modulesMocks.redisClient.getAllShopDomainsByDopplerDataAsync
+    ).to.be.called.calledWithExactly({ apiKey: 'fb5d67a5bd67ab5d67ab5d' }, false);
   });
 
   it('synchronizeCustomers should synchronize customers using compossed controller', async function() {
     const request = sinonMock.mockReq({
       body: { shop: "my-store.myshopify.com" },
-      session: { dopplerApiKey: 'fb5d67a5bd67ab5d67ab5d' }
+      dopplerData: { apiKey: 'fb5d67a5bd67ab5d67ab5d' }
     });
     const response = sinonMock.mockRes();
 
@@ -116,7 +116,7 @@ describe('The doppler controller', function() {
     // Arrange
     const request = sinonMock.mockReq({
       body: { shop: "my-store.myshopify.com" },
-      session: { dopplerApiKey: 'fb5d67a5bd67ab5d67ab5d' }
+      dopplerData: { apiKey: 'fb5d67a5bd67ab5d67ab5d' }
     });
     const response = sinonMock.mockRes();
 

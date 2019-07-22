@@ -4,13 +4,9 @@ class DopplerController {
       this.appController = appController;
     }
 
-    async getShops(request, response) {
-        const {
-            session: { dopplerApiKey }
-        } = request;
-
+    async getShops({ dopplerData }, response) {
         const redis = this.redisClientFactory.createClient();
-        const shops = (await redis.getShopsAsync(dopplerApiKey, false))
+        const shops = (await redis.getAllShopDomainsByDopplerDataAsync(dopplerData, false))
         .map(async shopName => {
             let shop = await redis.getShopAsync(shopName);
             return {
@@ -29,11 +25,11 @@ class DopplerController {
         await redis.quitAsync();
     }
 
-    async synchronizeCustomers({ query: { force }, session: { dopplerApiKey }, body: { shop } }, response) {
+    async synchronizeCustomers({ query: { force }, dopplerData: { apiKey }, body: { shop } }, response) {
       const redis = this.redisClientFactory.createClient();
       const shopInstance = await redis.getShopAsync(shop);
 
-      if (dopplerApiKey != shopInstance.dopplerApiKey) {
+      if (apiKey != shopInstance.dopplerApiKey) {
           response.sendStatus(403);
           return;
       }

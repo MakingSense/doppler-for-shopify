@@ -16,6 +16,7 @@ class HooksController {
 
       const redis = this.redisClientFactory.createClient();
       await redis.removeShopAsync(shopDomain, true);
+      response.send('Thank you!');
     }
     catch (err){}
   }
@@ -28,28 +29,30 @@ class HooksController {
     try
     {
       const redis = this.redisClientFactory.createClient();
-      const shopInstance = await redis.getShopAsync(
-        request.webhook.shopDomain,
-        true
-      );
+      const shopInstance = await redis.getShopAsync(request.webhook.shopDomain, false);
 
       if (
         !shopInstance ||
         !shopInstance.dopplerListId ||
         !shopInstance.fieldsMapping
       )
+      {
+        await redis.quitAsync();
         return;
+      }
 
       const customer = JSON.parse(request.body);
-      const doppler = this.dopplerClientFactory.createClient(
-        shopInstance.dopplerAccountName,
-        shopInstance.dopplerApiKey
-      );
+      const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
+      
       await doppler.createSubscriberAsync(
         customer,
         shopInstance.dopplerListId,
         JSON.parse(shopInstance.fieldsMapping)
       );
+
+      shopInstance.synchronizedCustomersCount = (parseInt(shopInstance.synchronizedCustomersCount) || 0) + 1;
+
+      await redis.storeShopAsync(request.webhook.shopDomain, shopInstance, true);
     }
     catch(err){}
   }

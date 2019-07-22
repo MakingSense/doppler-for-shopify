@@ -8,3 +8,4 @@ db.sqlite3
 /.nyc_output/*
 /test_stderr.log
 /yarn-error.log
+.vscode

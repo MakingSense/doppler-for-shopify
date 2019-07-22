@@ -117,11 +117,12 @@ class FieldsMapping extends Component {
           <Layout.Section>
             <Card
               sectioned
-              title="Map the Fields of your Shopify customers to your Doppler Subscribers"
+              title="Map the Fields of your Shopify customers"
             >
               <p>
-                Select the Doppler Field you'd like to assign to each Shopify field. 
-                For each new customer a new Subscriber will be created based on this mapping.
+              Select the Doppler Field you'd like to assign to each Shopify field. 
+              For each new customer, a new Subscriber will be created based on this mapping. 
+              Keep in mind that you need to create Custom Fields previously in your Doppler account.
               </p>
               <br />
               <DataTable
@@ -168,8 +169,7 @@ class FieldsMapping extends Component {
           Need to create a Custom Field in Doppler? Check{' '}
           <Link
             external={true}
-            url="https://help.fromdoppler.com/en/?s=custom+fields"
-          >
+            url="https://help.fromdoppler.com/en/how-to-create-a-customized-field/?utm_source=integracion&utm_medium=integracion&utm_campaign=shopify">
             this tutorial
           </Link>.
         </FooterHelp>

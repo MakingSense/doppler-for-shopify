@@ -2,6 +2,7 @@ import * as types from './actionTypes';
 import { push } from 'react-router-redux';
 import appService from '../services/appService';
 import { showErrorBanner } from './errorBannerActions';
+import { synchronizeCustomers }  from './appSetupActions';
 
 export function retrievingDopplerLists(status = true) {
   return {
@@ -137,10 +138,17 @@ export function setDopplerList(
     return appService
       .setDopplerList(selectedListId, dopplerListName)
       .then(response => {
-        dispatch(listSet(selectedListId, dopplerListName));
+        dispatch(listSet(response.dopplerListId, dopplerListName));
+        dispatch(changeCurrentSelectedList(response.dopplerListId));
         dispatch(settingDopplerList(false));
-        if (setupCompleted) dispatch(push('/app/setup'));
-        else dispatch(push('/app/fields-mapping'));
+        if (setupCompleted) {
+          dispatch(synchronizeCustomers());
+          window.currentAppSetupTab = 0;
+          dispatch(push('/app/setup'));
+        }
+        else {
+          dispatch(push('/app/fields-mapping'));
+        }
       })
       .catch(errorPromise => {
         dispatch(settingDopplerList(false));

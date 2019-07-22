@@ -14,6 +14,8 @@ const getCustomerFieldValue = function(customer, fieldPath) {
   let currentProperty = customer;
 
   fieldPath.split('.').forEach(propertyName => {
+    if (typeof(currentProperty) == "undefined") 
+      return null;
     currentProperty = currentProperty[propertyName];
   });
 
@@ -74,7 +76,7 @@ class Doppler {
       items: responseBody.items.map(list => {
         return { listId: list.listId, name: list.name };
       }),
-      itemsCount: responseBody.itemsCount,
+      itemsCount: responseBody.itemsCount
     };
   }
 
@@ -143,9 +145,55 @@ class Doppler {
     });
   }
 
+  async getListAsync(listId) {
+    return await sendRequestAsync(this.fetch, 
+      `${baseUrl}/accounts/${this.accountName}/lists/${listId}`, {
+      method: 'GET',
+      headers: { Authorization: `token ${this.apiKey}`}
+    });
+  }
+
+  async getAllDopplerSubscribers(listId) {
+    let subscribers = [];
+    let pageNumber = 1
+    let responseBody = null;
+    do {
+      responseBody = await sendRequestAsync(this.fetch, 
+        `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers?page=${pageNumber}&per_page=100`, {
+        method: 'GET',
+        headers: { Authorization: `token ${this.apiKey}`}
+      });
+      subscribers = subscribers.concat(responseBody.items);
+      pageNumber++;
+
+    } while (pageNumber <= responseBody.pagesCount);
+
+    return subscribers;
+  }
+
+  async safeDisassociateSubscribersFromList(customers, listId) {
+    try {
+      (await this.getAllDopplerSubscribers(listId))
+        .filter(s => !customers.some(c => c.email === s.email))
+        .forEach(async s => { 
+          await sendRequestAsync(this.fetch, 
+            `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers/${s.email}`, {
+            method: 'DELETE',
+            headers: { Authorization: `token ${this.apiKey}`}
+          });
+        }
+        );
+
+    } catch (error) {
+      console.debug(error);
+    }
+  }
+
   async importSubscribersAsync(customers, listId, shopDomain, fieldsMap) {
     if (customers.length === 0) return null;
     
+    await this.safeDisassociateSubscribersFromList(customers, listId);
+
     const url = `${baseUrl}/accounts/${this.accountName}/lists/${listId}/subscribers/import`;
 
     const subscribers = {
@@ -159,7 +207,7 @@ class Doppler {
                     name: m.doppler,
                     value: getCustomerFieldValue(customer, m.shopify),
                   };
-                })
+                }).filter(f => f.value != null)
               : [],
         };
       }),
@@ -170,16 +218,18 @@ class Doppler {
       enableEmailNotification: true,
     };
 
-    console.log("-- Test --")
-    console.debug(subscribers);
-
-    const responseBody = await sendRequestAsync(this.fetch, url, {
-      method: 'POST',
-      body: JSON.stringify(subscribers),
-      headers: { Authorization: `token ${this.apiKey}` },
-    });
-
-    return responseBody.createdResourceId;
+    try
+    {
+      const responseBody = await sendRequestAsync(this.fetch, url, {
+        method: 'POST',
+        body: JSON.stringify(subscribers),
+        headers: { Authorization: `token ${this.apiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
+      });
+  
+      return responseBody.createdResourceId;
+    } catch (error) {
+      throw new Error(`Error sending subscribers to ${url}: ${error.message}`);
+    }
   }
 
   async createSubscriberAsync(customer, listId, fieldsMap) {
@@ -196,14 +246,14 @@ class Doppler {
                 name: m.doppler,
                 value: getCustomerFieldValue(customer, m.shopify),
               };
-            })
+            }).filter(f => f.value != null)
           : [],
     };
 
     await sendRequestAsync(this.fetch, url, {
       method: 'POST',
       body: JSON.stringify(subscriber),
-      headers: { Authorization: `token ${this.apiKey}` },
+      headers: { Authorization: `token ${this.apiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
     });
   }
 

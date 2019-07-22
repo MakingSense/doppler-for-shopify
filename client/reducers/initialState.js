@@ -6,6 +6,7 @@ const {
   setupCompleted,
   synchronizationInProgress,
   lastSynchronizationDate,
+  shopOrigin
 } = window;
 
 export default {
@@ -42,6 +43,7 @@ export default {
     errorMessage: '',
   },
   appSetup: {
+    shopOrigin: shopOrigin.replace("https://", ""),
     appName: 'Doppler for Shopify',
     dopplerAccountName,
     dopplerListId,

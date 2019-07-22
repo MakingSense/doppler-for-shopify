@@ -574,7 +574,7 @@ describe('The doppler-client module', function() {
       {
         body: expectedRequestBody,
         method: 'POST',
-        headers: { Authorization: 'token C22CADA13759DB9BBDF93B9D87C14D5A' },
+        headers: { "Authorization": 'token C22CADA13759DB9BBDF93B9D87C14D5A', "X-Doppler-Subscriber-Origin": "Shopify" },
       }
     );
   });
@@ -642,7 +642,7 @@ describe('The doppler-client module', function() {
       {
         body: expectedRequestBody,
         method: 'POST',
-        headers: { Authorization: 'token C22CADA13759DB9BBDF93B9D87C14D5A' },
+        headers: { "Authorization": 'token C22CADA13759DB9BBDF93B9D87C14D5A', "X-Doppler-Subscriber-Origin": "Shopify" },
       }
     );
   });

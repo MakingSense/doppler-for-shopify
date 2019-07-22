@@ -60,7 +60,7 @@ class AppService {
     });
 
     return fetch(request).then(response => {
-      if (response.status === 200) return;
+      if (response.status === 200) return response.json();
 
       throw response.text();
     });
@@ -101,6 +101,19 @@ class AppService {
 
     return fetch(request).then(response => {
       if (response.status === 201) return;
+
+      throw response.text();
+    });
+  }
+
+  static getSyncrhonizationStatus() {
+    const request = new Request('/synchronization-status', {
+      ...commonRequestHeaders,
+      method: 'GET',
+    });
+
+    return fetch(request).then(response => {
+      if (response.status === 200) return response.json();
 
       throw response.text();
     });

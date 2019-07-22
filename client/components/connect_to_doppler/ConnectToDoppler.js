@@ -72,13 +72,12 @@ class ConnectToDoppler extends Component {
                 />
                 <TextContainer>
                   <TextStyle variation="strong">Connect</TextStyle>{' '}
-                  {this.props.appName}{' '}
-                  <TextStyle variation="strong">to your account</TextStyle>
+                  Doppler{' '}
+                  <TextStyle variation="strong">to your Shopify account</TextStyle>
                 </TextContainer>
                 <TextContainer>
                   <TextStyle variation="subdued">
-                    {this.props.appName} is a free application that connects
-                    your
+                    Doppler is a free application that connects your
                   </TextStyle>
                 </TextContainer>
                 <TextContainer>
@@ -99,7 +98,7 @@ class ConnectToDoppler extends Component {
                         autoFocus
                         autoComplete={false}
                         label="Username"
-                        placeholder="It's your email"
+                        placeholder="Psst! It's your Email"
                         type="email"
                         value={this.state.dopplerAccountName}
                         onChange={this.handleAccountNameChange}
@@ -145,8 +144,7 @@ class ConnectToDoppler extends Component {
               Learn where to find your{' '}
               <Link
                 external={true}
-                url="https://help.fromdoppler.com/en/where-do-i-find-my-api-key"
-              >
+                url="https://help.fromdoppler.com/en/where-do-i-find-my-api-key/?utm_source=integracion&utm_medium=integracion&utm_campaign=shopify">
                 API Key
               </Link>.
             </FooterHelp>

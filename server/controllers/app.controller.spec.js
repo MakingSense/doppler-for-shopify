@@ -157,11 +157,12 @@ describe('The app controller', function() {
     ).to.have.been.callCount(1);
     expect(
       modulesMocks.redisClient.storeShopAsync
-    ).to.be.called.calledWithExactly(
+    ).to.be.called.calledWithMatch(
       'store.myshopify.com',
       {
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
         dopplerAccountName: 'user@example.com',
+        synchronizedCustomersCount: 0
       },
       true
     );
@@ -206,6 +207,7 @@ describe('The app controller', function() {
         accessToken: 'ae768b8c78d68a54565434',
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
         dopplerAccountName: 'user@example.com',
+        dopplerListId: 312
       })
     );
 
@@ -238,6 +240,99 @@ describe('The app controller', function() {
         { listId: 1170501, name: 'development' },
       ],
       itemsCount: 3,
+    });
+  });
+
+  it('getDopplerLists should return the lists from Doppler including the `Shopify Contacto` list', async function() {
+    const request = sinonMock.mockReq({
+      session: { shop: 'store.myshopify.com' },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com'
+      })
+    );
+
+    this.sandbox.stub(modulesMocks.dopplerClient, 'getListsAsync').returns(
+      Promise.resolve({
+        items: [
+          { listId: 1459381, name: 'shopify' },
+          { listId: 1222381, name: 'marketing' },
+          { listId: 1170501, name: 'development' },
+        ],
+        itemsCount: 3,
+      })
+    );
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+    await appController.getDopplerLists(request, response);
+
+    expect(modulesMocks.dopplerClient.getListsAsync).to.have.been.callCount(1);
+    expect(
+      modulesMocks.redisClient.getShopAsync
+    ).to.be.called.calledWithExactly('store.myshopify.com', true);
+    expect(response.json).to.be.called.calledWithExactly({
+      items: [
+        { listId: -1, name: 'Shopify Contacto' },
+        { listId: 1459381, name: 'shopify' },
+        { listId: 1222381, name: 'marketing' },
+        { listId: 1170501, name: 'development' }
+      ],
+      itemsCount: 4,
+    });
+  });
+
+  it('getDopplerLists should should not include the "-1" list if "Shopify Contacto" already exists', async function() {
+    const request = sinonMock.mockReq({
+      session: { shop: 'store.myshopify.com' },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com'
+      })
+    );
+
+    this.sandbox.stub(modulesMocks.dopplerClient, 'getListsAsync').returns(
+      Promise.resolve({
+        items: [
+          { listId: 157894, name: 'Shopify Contacto' },
+          { listId: 1459381, name: 'shopify' },
+          { listId: 1222381, name: 'marketing' },
+          { listId: 1170501, name: 'development' }
+        ],
+        itemsCount: 4,
+      })
+    );
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+    await appController.getDopplerLists(request, response);
+
+    expect(modulesMocks.dopplerClient.getListsAsync).to.have.been.callCount(1);
+    expect(
+      modulesMocks.redisClient.getShopAsync
+    ).to.be.called.calledWithExactly('store.myshopify.com', true);
+    expect(response.json).to.be.called.calledWithExactly({
+      items: [
+        { listId: 157894, name: 'Shopify Contacto' },
+        { listId: 1459381, name: 'shopify' },
+        { listId: 1222381, name: 'marketing' },
+        { listId: 1170501, name: 'development' }
+      ],
+      itemsCount: 4,
     });
   });
 
@@ -332,7 +427,41 @@ describe('The app controller', function() {
       { dopplerListId: 15457, dopplerListName: 'customers' },
       true
     );
-    expect(response.sendStatus).to.be.called.calledWithExactly(200);
+    expect(response.status).to.be.called.calledWithExactly(200);
+  });
+
+  it('setDopplerList create "Shopify Contacto" list when listId is -1', async function() {
+    const request = sinonMock.mockReq({
+      session: { shop: 'store.myshopify.com' },
+      body: { dopplerListId: -1, dopplerListName: 'custom' },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.dopplerClient, 'createListAsync')
+      .returns(Promise.resolve(543151));
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com'
+      })
+    );
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+
+    await appController.setDopplerList(request, response);
+    
+    expect(modulesMocks.dopplerClient.createListAsync).to.be.called.calledWithExactly('Shopify Contacto');
+    expect(
+      modulesMocks.redisClient.storeShopAsync).to.be.called.calledWithExactly(
+      'store.myshopify.com',
+      { dopplerListId: 543151, dopplerListName: 'Shopify Contacto' },
+      true
+    );
+    expect(response.status).to.be.called.calledWithExactly(200);
   });
 
   it('getFields should return Shopify and Doppler fields', async function() {
@@ -443,6 +572,9 @@ describe('The app controller', function() {
         },
       ])
     );
+    this.sandbox.stub(modulesMocks.shopifyClient.customer, 'count').returns(
+      Promise.resolve(2)
+    );
     this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
       Promise.resolve({
         accessToken: 'ae768b8c78d68a54565434',
@@ -454,6 +586,7 @@ describe('The app controller', function() {
       })
     );
     this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
 
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'importSubscribersAsync')
@@ -500,8 +633,68 @@ describe('The app controller', function() {
         { shopify: 'last_name', doppler: 'LASTNAME' },
       ]
     );
+    expect(modulesMocks.redisClient.storeShopAsync).callCount(2);
+
     // TODO: mock the Date
-    //expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456' }, true);
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithMatch('store.myshopify.com', { synchronizationInProgress: true });
+
+    expect(modulesMocks.redisClient.storeShopAsync).to.be.calledWithExactly('store.myshopify.com', { importTaskId: 'importTask-123456', synchronizedCustomersCount: 2 });
+    expect(modulesMocks.redisClient.quitAsync).callCount(1);
     expect(response.sendStatus).to.be.called.calledWithExactly(201);
+  });
+
+  it('getSynchronizationStatus should return synchronizationInProgress flag if set', async function() {
+    const request = sinonMock.mockReq({
+      session: { shop: 'store.myshopify.com' },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+        synchronizationInProgress: true
+      })
+    );
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+
+    await appController.getSynchronizationStatus(request, response);
+
+    expect(
+      modulesMocks.redisClient.getShopAsync
+    ).to.be.called.calledWithExactly('store.myshopify.com', true);
+    expect(response.json).to.be.called.calledWithExactly({ synchronizationInProgress: true });
+  });
+
+  it('getSynchronizationStatus should return false if not set', async function() {
+    const request = sinonMock.mockReq({
+      session: { shop: 'store.myshopify.com' },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+      })
+    );
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+
+    await appController.getSynchronizationStatus(request, response);
+
+    expect(
+      modulesMocks.redisClient.getShopAsync
+    ).to.be.called.calledWithExactly('store.myshopify.com', true);
+    expect(response.json).to.be.called.calledWithExactly({ synchronizationInProgress: false });
   });
 });

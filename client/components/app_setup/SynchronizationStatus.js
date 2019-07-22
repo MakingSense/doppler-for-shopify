@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Banner, Link } from '@shopify/polaris';
+import { Banner } from '@shopify/polaris';
 
 class SynchronizationStatus extends Component {
   constructor(props) {
@@ -19,7 +19,6 @@ class SynchronizationStatus extends Component {
             <Banner icon="horizontalDots" status="warning">
               <p>
                 Synchronization process status: <strong>IN PROGRESS </strong>
-                (Click <Link onClick={this.props.handleReloadLink} url=".">here</Link> to refresh)
               </p>
               <p>
                 Requested on:{' '}

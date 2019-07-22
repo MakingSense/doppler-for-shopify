@@ -5,12 +5,22 @@ module.exports = {
         hgetall: function(key, done){},
         del: function(key, done){},
         on: function(done){},
-        set: function(key, hset, done){}
+        set: function(key, hset, done){},
+        sadd: function(key, hset, done){},
+        smembers: function(key, done){},
+        srem: function(key, done){}
     },
     redisClient: {
         getShopAsync: async function () {},
+        /**
+         * @deprecated use getAllShopDomainsByDopplerApiKey or getAllShopDomainsByDopplerAccountName in place
+         */
+        getShopsAsync: async function () {},
+        getAllShopDomainsByDopplerApiKeyAsync: async function () {},
+        getAllShopDomainsByDopplerAccountNameAsync: async function () {},
         storeShopAsync: async function () {},
-        removeShopAsync: async function () {}
+        removeShopAsync: async function () {},
+        quitAsync: async function(){}
     },
     dopplerClient: {
         AreCredentialsValidAsync: async function () {},
@@ -18,14 +28,23 @@ module.exports = {
         createListAsync: async function () {},
         getFieldsAsync: async function () {},
         importSubscribersAsync: async function () {},
-        createSubscriberAsync: async function () {}
+        createSubscriberAsync: async function () {},
+        disassociateSubscribersFromList: async function () {},
+        getListAsync: async function () {}
     },
     shopifyClient: {
         webhook: {
             create: async function () {}
         },
         customer: {
-            list: async function () {}
-        }
+            list: async function () {},
+            count: async function () {}
+        },
+        scriptTag: {
+            create: async function () {}
+        },
+    },
+    appController: {
+        synchronizeCustomers: async function (request, response) {}
     }
 }

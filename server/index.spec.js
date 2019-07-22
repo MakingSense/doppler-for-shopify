@@ -45,7 +45,7 @@ const app = proxyquire('./', {
   'node-fetch': fetchStub, // Fake the http requests made by Doppler and others.
   redis: redisStub, // Fake the database.
   got: gotStub, //  Fake the http requests made by Shopify API client.
-  'connect-redis': session => {
+  'connect-redis': () => {
     return undefined;
   },
 });
@@ -65,6 +65,16 @@ describe('Server integration tests', function() {
     this.sandbox
       .stub(mocks.wrappedRedisClient, 'hmset')
       .callsFake((key, obj, cb) => {
+        cb();
+      });
+    this.sandbox
+      .stub(mocks.wrappedRedisClient, 'sadd')
+      .callsFake((key, obj, cb) => {
+        cb();
+      });
+    this.sandbox
+      .stub(mocks.wrappedRedisClient, 'smembers')
+      .callsFake((key, cb) => {
         cb();
       });
     this.sandbox.stub(mocks.wrappedRedisClient, 'del').callsFake((key, cb) => {
@@ -281,7 +291,7 @@ describe('Server integration tests', function() {
       this.sandbox
         .stub(mocks.wrappedRedisClient, 'hgetall')
         .callsFake((key, cb) => {
-          cb(null, { accessToken, dopplerAccountName, dopplerApiKey });
+          cb(null, { accessToken, dopplerAccountName, dopplerApiKey, dopplerListId });
         });
 
       fetchStub
@@ -475,7 +485,7 @@ describe('Server integration tests', function() {
           {
             body: expectedRequestBody,
             method: 'POST',
-            headers: { Authorization: `token ${dopplerApiKey}` },
+            headers: { Authorization: `token ${dopplerApiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
           }
         )
         .returns(
@@ -634,6 +644,123 @@ describe('Server integration tests', function() {
         .post(`/hooks/doppler-import-completed?shop=${shopDomain}`)
         .expect(function(res) {
           expect(200).to.be.eql(res.statusCode);
+        });
+    });
+  });
+
+  describe('GET /me/shops', function() {
+    it('Should return 401 status code when there is not authorization header present', async function() {
+      await request(app)
+        .get('/me/shops')
+        .expect(function(res) {
+          expect(401).to.be.eql(res.statusCode);
+          expect('Missing `Authorization` header').to.be.eql(res.text);
+        });
+    });
+
+    it('Should return 401 status code when invalid token format (1)', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', 'INVALID HEADER')
+        .expect(function(res) {
+          expect(401).to.be.eql(res.statusCode);
+          expect('Invalid `Authorization` token format').to.be.eql(res.text);
+        });
+    });
+
+    it('Should return 401 status code when invalid token format (2)', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', 'token')
+        .expect(function(res) {
+          expect(401).to.be.eql(res.statusCode);
+          expect('Invalid `Authorization` token format').to.be.eql(res.text);
+        });
+    });
+
+    it('Should return 200 status code when a token is passed as authorization header', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', 'token fjdlskfjds8fu2jlskdfj')
+        .expect(function(res) {
+          expect(200).to.be.eql(res.statusCode);
+        });
+    });
+  });
+
+  describe('POST /me/synchronize-customers', function() {
+    it('Should return 201 status code on success', async function() {
+      this.sandbox
+        .stub(mocks.wrappedRedisClient, 'hgetall')
+        .callsFake((key, cb) => {
+          cb(null, {
+            shop: shopDomain,
+            accessToken,
+            dopplerAccountName,
+            dopplerApiKey,
+            fieldsMapping,
+            dopplerListId,
+          });
+        });
+
+      const expectedRequestBody = JSON.stringify(
+        dopplerApiPayloads.IMPORT_SUBSCRIBERS_PAYLOAD
+      );
+
+      fetchStub
+        .withArgs(
+          `https://restapi.fromdoppler.com/accounts/${querystring.escape(
+            dopplerAccountName
+          )}/lists/${dopplerListId}/subscribers/import`,
+          {
+            body: expectedRequestBody,
+            method: 'POST',
+            headers: { Authorization: `token ${dopplerApiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
+          }
+        )
+        .returns(
+          Promise.resolve({
+            status: 202,
+            json: async function() {
+              return dopplerApiResponses.IMPORT_TASK_CREATED_202;
+            },
+          })
+        );
+
+      gotStub.returns(
+        Promise.resolve({
+          headers: { 'x-shopify-shop-api-call-limit': '1/9999' },
+          body: {
+            customers: [
+              {
+                id: 623558295613,
+                email: 'jonsnow@example.com',
+                first_name: 'Jon',
+                last_name: 'Snow',
+                default_address: {
+                  company: 'Winterfell',
+                },
+              },
+              {
+                id: 546813203473,
+                email: 'nickrivers@example.com',
+                first_name: 'Nick',
+                last_name: 'Rivers',
+                default_address: {
+                  company: 'Top Secret',
+                },
+              },
+            ],
+          },
+        })
+      );
+
+      await request(app)
+        .post('/me/synchronize-customers')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .send({ shop: shopDomain })
+        .expect(function(res) {
+          expect(201).to.be.eql(res.statusCode);
         });
     });
   });

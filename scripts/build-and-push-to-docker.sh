@@ -20,6 +20,7 @@ fi
 
 sh ./build-w-docker.sh
 
-docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+# TODO: It could break concurrent deployments with different docker accounts 
+docker login -u="$DOCKER_SHOPIFY_USERNAME" -p="$DOCKER_SHOPIFY_PASSWORD"
 docker build -t dopplerdev/doppler-for-shopify$ENV_SUFFIX ../
 docker push dopplerdev/doppler-for-shopify$ENV_SUFFIX

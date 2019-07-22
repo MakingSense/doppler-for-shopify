@@ -5,7 +5,7 @@ COPY ./bin ./bin
 COPY ./config ./config
 COPY ./server ./server
 COPY ./assets ./assets
+COPY ./node_modules ./node_modules
 RUN npm install -g pm2
-RUN yarn install
 CMD [ "pm2-runtime", "start", "./bin/www.js"]
 EXPOSE 3000

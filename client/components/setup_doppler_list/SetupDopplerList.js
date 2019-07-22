@@ -11,9 +11,8 @@ import {
   ButtonGroup,
   FooterHelp,
   Link,
-  SkeletonPage,
-  SkeletonBodyText,
-  Spinner,
+  Tooltip,
+  Banner
 } from '@shopify/polaris';
 import Modal from 'react-responsive-modal';
 import CreateListModal from './CreateListModal';
@@ -31,6 +30,7 @@ class SetupDopplerList extends Component {
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.handleCancelButtonClick = this.handleCancelButtonClick.bind(this);
     this.getCancelAction = this.getCancelAction.bind(this);
+    this.getListsDropdown = this.getListsDropdown.bind(this);
   }
 
   componentDidMount() {
@@ -77,6 +77,24 @@ class SetupDopplerList extends Component {
     ) : null;
   }
 
+  getListsDropdown() {
+    var selectComponent = <Select
+        options={this.props.dopplerLists}
+        value={this.props.selectedListId}
+        onChange={this.handleSelectedListChange}
+        disabled={
+          !this.props.dopplerLists.length ||
+          this.props.retrievingDopplerLists ||
+          this.props.settingDopplerList
+        }
+      />;
+    
+      if (this.props.selectedListId === -1 && !this.props.setupCompleted)
+        selectComponent = <Tooltip content="This list will be created" preferredPosition="above">{selectComponent}</Tooltip>
+      
+      return selectComponent;
+  }
+
   render() {
     return this.props.retrievingDopplerLists ? (
       <LoadingSkeleton />
@@ -87,22 +105,15 @@ class SetupDopplerList extends Component {
             <Card sectioned title="Sync your store to a Doppler List">
               <TextContainer spacing="loose">
                 <p>
-                  Your Doppler account is now connected. By associating your contacts to your Doppler Lists, 
-                  you can trigger customized and targeted Automation Emails based on a specific date, event, 
-                  or Subscriber activity. This will allow you to send personalized messages that will maximize 
-                  your business conversions, improve your consumer shopping experience and increase your profits.
+                  <strong>Your Doppler account is now connected.</strong> Start by associating your customers to your Lists, 
+                  so you can trigger customized and targeted Automation Emails based on a specific date, event, 
+                  or their activity on your Campaigns or Website.
                 </p>
+                <Banner status="warning">
+                  <p>All existing subscribers in the selected List will be desassociated from it.</p>
+                </Banner>
                 <p>Select a Subscribers List to sync to your store:</p>
-                <Select
-                  options={this.props.dopplerLists}
-                  value={this.props.selectedListId}
-                  onChange={this.handleSelectedListChange}
-                  disabled={
-                    !this.props.dopplerLists.length ||
-                    this.props.retrievingDopplerLists ||
-                    this.props.settingDopplerList
-                  }
-                />
+                {this.getListsDropdown()}
               </TextContainer>
             </Card>
             <div style={{ marginTop: '2rem' }}>
@@ -145,8 +156,7 @@ class SetupDopplerList extends Component {
           Check{' '}
           <Link
             external={true}
-            url="https://help.fromdoppler.com/en/guide-to-managing-your-subscribers-lists/"
-          >
+            url="https://help.fromdoppler.com/en/guide-to-managing-your-subscribers-lists/?utm_source=integracion&utm_medium=integracion&utm_campaign=shopify">
             these tips
           </Link>{' '}
           for managing your Lists.

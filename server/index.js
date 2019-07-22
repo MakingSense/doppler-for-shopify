@@ -23,9 +23,11 @@ const redisClientFactory = require('./modules/redis-client')(redis);
 
 const AppController = require('./controllers/app.controller');
 const HooksController = require('./controllers/hooks.controller');
+const DopplerController = require('./controllers/doppler.controller');
 
 const addAppRoutes = require('./routes/app');
 const addHooksRoutes = require('./routes/hooks');
+const addDopplerRoutes = require('./routes/doppler');
 
 const appController = new AppController(
   redisClientFactory,
@@ -36,6 +38,10 @@ const hooksController = new HooksController(
   redisClientFactory,
   dopplerClientFactory,
   shopifyClientFactory.shopifyAPIClientFactory
+);
+const dopplerController = new DopplerController(
+  redisClientFactory,
+  appController
 );
 
 const {
@@ -124,6 +130,9 @@ addAppRoutes(app, withShop, appController);
 
 // Mount Webhooks Routes
 addHooksRoutes(app, withWebhook, hooksController);
+
+// Mount Doppler Routes
+addDopplerRoutes(app, dopplerController);
 
 // Error Handlers
 app.get('/*', (req, res) => {

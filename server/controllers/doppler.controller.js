@@ -40,8 +40,8 @@ class DopplerController {
     async migrateShop({ body }, response) {
       const redis = this.redisClientFactory.createClient();
       try {
-        const shopInstance = await redis.getShopAsync(body.shopDomain, true);
-        await redis.storeShopAsync(shopDomain, shopInstance);
+        const shopInstance = await redis.getShopAsync(body.shopDomain);
+        await redis.storeShopAsync(body.shopDomain, shopInstance);
         response.json(!!shopInstance);
       } finally {
         await redis.quitAsync();

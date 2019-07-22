@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const keyShopsByShopDomain = ({ shopDomain }) => `shopsByShopDomain:${shopDomain}`;
+const keyShopsByShopDomain = ({ shopDomain }) => `${shopDomain}`;
 const keyShopDomainsByDopplerAccountName = ({ dopplerAccountName }) => `shopDomainsByDopplerAccountName:${dopplerAccountName}`;
 const keyShopDomainsByDopplerApikey = ({ dopplerApiKey }) => `shopDomainsByDopplerApikey:${dopplerApiKey}`;
 
@@ -30,8 +30,6 @@ class Redis {
 
   async storeShopAsync(shopDomain, shop, closeConnection) {
     try {
-      // I am storing in the hash with the new key, so, in weird cases, 
-      // storing status related to not migrated shops is possible.
       await this.client.hmsetAsync(keyShopsByShopDomain({ shopDomain }), shop);
       if (shop.dopplerApiKey) {
         await this.client.saddAsync(keyShopDomainsByDopplerApikey(shop), shopDomain);
@@ -47,20 +45,21 @@ class Redis {
   }
 
   async _migrateAndGetShopIfExists(shopDomain) {
-    const shop = await this.client.hgetallAsync(shopDomain);
+    const shop = await this.client.hgetallAsync(`shopsByShopDomain:${shopDomain}`);
     if (!shop) {
       return null;
     }
     await this.storeShopAsync(shopDomain, shop);
-    await this.client.delAsync(shopDomain);
-    await this.client.sremAsync(`doppler:${shop.dopplerApiKey}`, shopDomain);
+    // Since I changed the key format two times, it is not easy to know what to delete them automatically
+    // await this.client.delAsync(shopDomain);
+    // await this.client.sremAsync(`doppler:${shop.dopplerApiKey}`, shopDomain);
     return shop;
   }
 
   async getShopAsync(shopDomain, closeConnection) {
     try {
       return (await this.client.hgetallAsync(keyShopsByShopDomain({shopDomain})))
-        // Temporal workaround to migrate old shops:
+        // Temporal workaround to migrate _new old_ shops:
         || (await this._migrateAndGetShopIfExists(shopDomain));
     } catch (error) {
       throw new Error(
@@ -76,15 +75,10 @@ class Redis {
       const shop = await this.client.hgetallAsync(keyShopsByShopDomain({ shopDomain }));
       if (shop) {
         await this.client.delAsync(keyShopsByShopDomain({ shopDomain }));
-        await this.client.sremAsync(keyShopDomainsByDopplerApikey(shop), shopDomain)
-        await this.client.sremAsync(keyShopDomainsByDopplerAccountName(shop), shopDomain)
-      } else {
-         // Temporal workaround to also delete old shops
-        const oldShop = await this.client.hgetallAsync(shopDomain);
-        if (oldShop) {
-          await this.client.delAsync(shopDomain);
-          await this.client.sremAsync(`doppler:${oldShop.dopplerApiKey}`, shopDomain);
-        } 
+        await this.client.delAsync(`shopsByShopDomain:${shopDomain}`);
+        await this.client.sremAsync(keyShopDomainsByDopplerApikey(shop), shopDomain);
+        await this.client.sremAsync(keyShopDomainsByDopplerAccountName(shop), shopDomain);
+        await this.client.sremAsync(`doppler:${shop.dopplerApiKey}`, shopDomain);
       }
     } catch (error) {
       throw new Error(`Error removing shop ${shopDomain}. ${error.toString()}`);

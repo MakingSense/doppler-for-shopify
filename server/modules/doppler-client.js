@@ -266,6 +266,18 @@ class Doppler {
 
     return responseBody.importDetails;
   }
+
+  async putShopifyIntegrationAsync(shopDomain, accessToken) {
+    const url = `${baseUrl}/accounts/${this.accountName}/integrations/shopify`;
+    await sendRequestAsync(this.fetch, url, {
+      method: 'POST',
+      body: JSON.stringify({
+        accessToken: accessToken,
+        accountName: shopDomain
+      }),
+      headers: { Authorization: `token ${this.apiKey}` },
+    });
+  }
 }
 
 class DopplerFactory {

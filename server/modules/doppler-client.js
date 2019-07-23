@@ -268,15 +268,21 @@ class Doppler {
   }
 
   async putShopifyIntegrationAsync(shopDomain, accessToken) {
-    const url = `${baseUrl}/accounts/${this.accountName}/integrations/shopify`;
-    await sendRequestAsync(this.fetch, url, {
-      method: 'POST',
-      body: JSON.stringify({
-        accessToken: accessToken,
-        accountName: shopDomain
-      }),
-      headers: { Authorization: `token ${this.apiKey}` },
-    });
+    try {
+      const url = `${baseUrl}/accounts/${this.accountName}/integrations/shopify`;
+      await sendRequestAsync(this.fetch, url, {
+        method: 'POST',
+        body: JSON.stringify({
+          accessToken: accessToken,
+          accountName: shopDomain
+        }),
+        headers: { Authorization: `token ${this.apiKey}` },
+      });
+    } catch (error) {
+      // TODO: remove this try/catch, it is here to keep Shopify
+      // plugin working before adding this endpoint in Doppler API.
+      console.error('Error creating integration in Doppler API', error);
+    }
   }
 }
 

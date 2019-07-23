@@ -712,6 +712,62 @@ describe('Server integration tests', function() {
           expect(res.statusCode).to.be.eql(200);
         });
     });
+
+    it('Should accept GET CORS request from https://app.fromdoppler.com', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'https://app.fromdoppler.com/')
+        .set('Origin', 'https://app.fromdoppler.com')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Allow-Origin')).to.be.eql('https://app.fromdoppler.com');
+          expect(res.get('Access-Control-Allow-Credentials')).to.be.eql('true');
+        });
+    });
+
+    it('Should accept OPTIONS CORS request from https://app.fromdoppler.com', async function() {
+      await request(app)
+        .options('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'https://app.fromdoppler.com/')
+        .set('Origin', 'https://app.fromdoppler.com')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Allow-Origin')).to.be.eql('https://app.fromdoppler.com');
+          expect(res.get('Access-Control-Allow-Methods')).to.be.eql('GET,HEAD,PUT,PATCH,POST,DELETE');
+          expect(res.get('Access-Control-Allow-Headers')).to.be.eql('Content-Type,Authorization,Accept');
+          expect(res.get('Access-Control-Allow-Credentials')).to.be.eql('true');
+        });
+    });
+
+    it('Should not accept GET CORS request from arbitrary origin', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'https://wrong.fromdoppler.com/')
+        .set('Origin', 'https://wrong.fromdoppler.com')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Allow-Origin')).to.be.undefined;
+        });
+    });
+
+    it('Should not accept OPTIONS CORS request from arbitrary origin', async function() {
+      await request(app)
+        .options('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'https://wrong.fromdoppler.com/')
+        .set('Origin', 'https://wrong.fromdoppler.com')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Allow-Origin')).to.be.undefined;
+        });
+    });
   });
 
   describe('POST /me/synchronize-customers', function() {

@@ -43,12 +43,12 @@ describe('The doppler controller', function() {
     .onCall(0)
     .returns(
       Promise.resolve(
-        { accessToken: "fmdklsf893rnj3nrfd", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
+        { accessToken: "fmdklsf893rnj3nrfd", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, dopplerListName: 'List 321', synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
     )
     .onCall(1)
     .returns(
       Promise.resolve(
-        { accessToken: "fdsf3rwefsdcsdv", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-10-01T01:43:06.976Z", dopplerListId: 123, synchronizationInProgress: true, synchronizedCustomersCount: 0, importTaskId: undefined })
+        { accessToken: "fdsf3rwefsdcsdv", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-10-01T01:43:06.976Z", dopplerListId: 123, dopplerListName: 'List 123', synchronizationInProgress: true, synchronizedCustomersCount: 0, importTaskId: undefined })
     );
 
     const dopplerController = new DopplerController(
@@ -64,6 +64,7 @@ describe('The doppler controller', function() {
         shopifyAccessToken: "fmdklsf893rnj3nrfd", 
         connectedOn: "2018-11-01T01:43:06.976Z", 
         dopplerListId: 321, 
+        dopplerListName: 'List 321',
         syncProcessInProgress: false, 
         importedCustomersCount: 33, 
         syncProcessDopplerImportSubscribersTaskId: "task-321",
@@ -74,6 +75,7 @@ describe('The doppler controller', function() {
         shopifyAccessToken: "fdsf3rwefsdcsdv", 
         connectedOn: "2018-10-01T01:43:06.976Z", 
         dopplerListId: 123, 
+        dopplerListName: 'List 123',
         syncProcessInProgress: true,
         importedCustomersCount: 0, 
         syncProcessDopplerImportSubscribersTaskId: undefined,
@@ -96,7 +98,7 @@ describe('The doppler controller', function() {
     this.sandbox.stub(modulesMocks.redisClient, "getShopAsync")
     .returns(
       Promise.resolve(
-        { accessToken: "fmdklsf893rnj3nrfd", dopplerApiKey:"fb5d67a5bd67ab5d67ab5d", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
+        { accessToken: "fmdklsf893rnj3nrfd", dopplerApiKey:"fb5d67a5bd67ab5d67ab5d", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, dopplerListName: 'List 321', synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
     );
     this.sandbox.stub(modulesMocks.appController, 'synchronizeCustomers');
 
@@ -123,7 +125,7 @@ describe('The doppler controller', function() {
     this.sandbox.stub(modulesMocks.redisClient, "getShopAsync")
     .returns(
       Promise.resolve(
-        { accessToken: "fmdklsf893rnj3nrfd", dopplerApiKey:"aaaaaaaaaaaaaaaaaa", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
+        { accessToken: "fmdklsf893rnj3nrfd", dopplerApiKey:"aaaaaaaaaaaaaaaaaa", lastSynchronizationDate: "2018-11-01T01:43:05.976Z", connectedOn: "2018-11-01T01:43:06.976Z", dopplerListId: 321, dopplerListName: 'List 321', synchronizationInProgress: false, synchronizedCustomersCount: 33, importTaskId: "task-321" })
     );
 
     this.sandbox.stub(modulesMocks.appController, 'synchronizeCustomers');

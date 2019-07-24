@@ -14,6 +14,7 @@ class DopplerController {
                 shopifyAccessToken: (shop && shop.accessToken),
                 connectedOn: (shop && shop.connectedOn),
                 dopplerListId: (shop && shop.dopplerListId),
+                dopplerListName: (shop && shop.dopplerListName),
                 importedCustomersCount: (shop && shop.synchronizedCustomersCount),
                 syncProcessDopplerImportSubscribersTaskId: (shop && shop.importTaskId),
                 syncProcessInProgress: (shop && shop.synchronizationInProgress),

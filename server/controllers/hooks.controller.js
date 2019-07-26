@@ -7,6 +7,7 @@ class HooksController {
 
   async appUninstalled(error, request) {
     if (error) {
+      console.error(error);
       return;
     }
 
@@ -16,8 +17,9 @@ class HooksController {
 
       const redis = this.redisClientFactory.createClient();
       await redis.removeShopAsync(shopDomain, true);
+    } catch (err) {
+      console.error(err);
     }
-    catch (err){}
   }
 
   async customerCreated(error, request) {

@@ -264,7 +264,7 @@ describe('Server integration tests', function() {
               accessToken: accessToken,
               accountName: shopDomain
             }),
-            method: 'POST',
+            method: 'PUT',
             headers: { Authorization: `token ${dopplerApiKey}` },
           }
         )

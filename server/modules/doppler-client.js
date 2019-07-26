@@ -271,7 +271,7 @@ class Doppler {
     try {
       const url = `${baseUrl}/accounts/${this.accountName}/integrations/shopify`;
       await sendRequestAsync(this.fetch, url, {
-        method: 'POST',
+        method: 'PUT',
         body: JSON.stringify({
           accessToken: accessToken,
           accountName: shopDomain

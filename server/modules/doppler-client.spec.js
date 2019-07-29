@@ -671,7 +671,7 @@ describe('The doppler-client module', function() {
           accessToken: '127424ab9aa0ebce26dfdc786bc7fba4',
           accountName: 'dopplertest.myshopify.com'
         }),
-        method: 'POST',
+        method: 'PUT',
         headers: { "Authorization": 'token C22CADA13759DB9BBDF93B9D87C14D5A' },
       }
     );

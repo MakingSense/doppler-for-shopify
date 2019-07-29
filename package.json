@@ -76,7 +76,7 @@
     "proxyquire": "^2.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-hot-loader": "^4.12.9",
+    "react-hot-loader": "^4.12.10",
     "react-object-inspector": "^0.2.1",
     "react-redux": "^7.1.0",
     "react-responsive-modal": "^4.0.1",

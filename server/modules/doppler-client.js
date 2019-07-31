@@ -278,6 +278,14 @@ class Doppler {
         headers: { Authorization: `token ${this.apiKey}` },
     });
   }
+
+  async deleteShopifyIntegrationAsync() {
+    const url = `${baseUrl}/accounts/${this.accountName}/integrations/shopify`;
+    await sendRequestAsync(this.fetch, url, {
+        method: 'DELETE',
+        headers: { Authorization: `token ${this.apiKey}` },
+    });
+  }
 }
 
 class DopplerFactory {

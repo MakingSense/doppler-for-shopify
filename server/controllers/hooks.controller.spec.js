@@ -35,40 +35,6 @@ describe('The hooks controller', function() {
     this.sandbox.restore();
   });
 
-  it('appUninstalled should remove the data of the application', async function() {
-    const request = sinonMock.mockReq({
-      webhook: { shopDomain: 'store.myshopify.com' },
-    });
-
-    this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
-
-    const hooksController = new HookController(
-      redisClientFactoryStub,
-      dopplerClientFactoryStub,
-      shopifyClientFactoryStub
-    );
-    await hooksController.appUninstalled(undefined, request);
-
-    expect(modulesMocks.redisClient.removeShopAsync).to.be.calledWithExactly(
-      'store.myshopify.com',
-      true
-    );
-  });
-
-  it('appUninstalled should not perform any operation when there is an error', async function() {
-    const request = sinonMock.mockReq();
-    this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
-
-    const hooksController = new HookController(
-      redisClientFactoryStub,
-      dopplerClientFactoryStub,
-      shopifyClientFactoryStub
-    );
-    await hooksController.appUninstalled(new Error('Forced Error'), request);
-
-    expect(modulesMocks.redisClient.removeShopAsync).to.have.been.callCount(0);
-  });
-
   it('customerCreated create a subscriber in Doppler (1)', async function() {
     const request = sinonMock.mockReq({
       webhook: { shopDomain: 'store.myshopify.com' },

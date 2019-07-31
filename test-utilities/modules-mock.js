@@ -70,6 +70,7 @@ const stubFactories = Object.keys(factories).reduce((resultFactories, factoryNam
 module.exports = {
   factories,
   stubFactories,
+  stubObject,
   wrappedRedisClient: factories.wrappedRedisClient(),
   redisClient: factories.redisClient(),
   dopplerClient: factories.dopplerClient(),

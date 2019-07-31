@@ -1,48 +1,59 @@
-module.exports = {
-    wrappedRedisClient: {
-        hmset: function(key, hset, done){},
-        quit: function(done){},
-        hgetall: function(key, done){},
-        del: function(key, done){},
-        on: function(done){},
-        set: function(key, hset, done){},
-        sadd: function(key, hset, done){},
-        smembers: function(key, done){},
-        srem: function(key, done){}
+const factories = {
+  wrappedRedisClient: () => ({
+    hmset: () => {},
+    quit: () => {},
+    hgetall: () => {},
+    del: () => {},
+    on: () => {},
+    set: () => {},
+    sadd: () => {},
+    smembers: () => {},
+    srem: () => {},
+  }),
+  redisClient: () => ({
+    getShopAsync: function() {},
+    getAllShopDomainsByDopplerDataAsync: () => {},
+    getAllShopDomainsByDopplerApiKeyAsync: () => {},
+    getAllShopDomainsByDopplerAccountNameAsync: () => {},
+    storeShopAsync: () => {},
+    removeShopAsync: () => {},
+    quitAsync: () => {},
+  }),
+  dopplerClient: () => ({
+    AreCredentialsValidAsync: () => {},
+    getListsAsync: () => {},
+    createListAsync: () => {},
+    getFieldsAsync: () => {},
+    importSubscribersAsync: () => {},
+    createSubscriberAsync: () => {},
+    disassociateSubscribersFromList: () => {},
+    getListAsync: () => {},
+    putShopifyIntegrationAsync: () => {},
+    deleteShopifyIntegrationAsync: () => {},
+  }),
+  shopifyClient: () => ({
+    webhook: {
+      create: () => {},
     },
-    redisClient: {
-        getShopAsync: async function () {},
-        getAllShopDomainsByDopplerDataAsync: async function () {},
-        getAllShopDomainsByDopplerApiKeyAsync: async function () {},
-        getAllShopDomainsByDopplerAccountNameAsync: async function () {},
-        storeShopAsync: async function () {},
-        removeShopAsync: async function () {},
-        quitAsync: async function(){}
+    customer: {
+      list: () => {},
+      count: () => {},
     },
-    dopplerClient: {
-        AreCredentialsValidAsync: async function () {},
-        getListsAsync: async function () {},
-        createListAsync: async function () {},
-        getFieldsAsync: async function () {},
-        importSubscribersAsync: async function () {},
-        createSubscriberAsync: async function () {},
-        disassociateSubscribersFromList: async function () {},
-        getListAsync: async function () {},
-        putShopifyIntegrationAsync: async function () {}
+    scriptTag: {
+      create: () => {},
     },
-    shopifyClient: {
-        webhook: {
-            create: async function () {}
-        },
-        customer: {
-            list: async function () {},
-            count: async function () {}
-        },
-        scriptTag: {
-            create: async function () {}
-        },
-    },
-    appController: {
-        synchronizeCustomers: async function (request, response) {}
+  }),
+  appController: () => ({
+    synchronizeCustomers: () => {},
+  })
+};
     }
+}
+module.exports = {
+  factories,
+  wrappedRedisClient: factories.wrappedRedisClient(),
+  redisClient: factories.redisClient(),
+  dopplerClient: factories.dopplerClient(),
+  shopifyClient: factories.shopifyClient(),
+  appController: factories.appController(),
 }

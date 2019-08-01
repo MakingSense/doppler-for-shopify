@@ -671,7 +671,33 @@ describe('The doppler-client module', function() {
           accessToken: '127424ab9aa0ebce26dfdc786bc7fba4',
           accountName: 'dopplertest.myshopify.com'
         }),
-        method: 'POST',
+        method: 'PUT',
+        headers: { "Authorization": 'token C22CADA13759DB9BBDF93B9D87C14D5A' },
+      }
+    );
+  });
+
+  it('deleteShopifyIntegrationAsync should call Doppler API with the right URL', async function() {
+    fetchStub.returns(
+      Promise.resolve({
+        status: 200,
+        json: async function() {
+          return dopplerApiResponses.INTEGRATION_UPDATED_200
+        },
+      })
+    );
+
+    const doppler = Doppler.createClient(
+      'user@example.com',
+      'C22CADA13759DB9BBDF93B9D87C14D5A'
+    );
+
+    await doppler.deleteShopifyIntegrationAsync();
+
+    expect(fetchStub).to.be.calledWithExactly(
+      'https://restapi.fromdoppler.com/accounts/user%40example.com/integrations/shopify',
+      {
+        method: 'DELETE',
         headers: { "Authorization": 'token C22CADA13759DB9BBDF93B9D87C14D5A' },
       }
     );

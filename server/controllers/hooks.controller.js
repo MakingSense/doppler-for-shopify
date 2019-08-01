@@ -5,20 +5,58 @@ class HooksController {
     this.shopifyClientFactory = shopifyClientFactory;
   }
 
-  async appUninstalled(error, request) {
-    if (error) {
-      console.error(error);
+  async safeGetShopAsync(redis, shopDomain) {
+    try {
+      return await redis.getShopAsync(shopDomain);
+    } catch (error) {
+      console.error(`Error loading shop ${shopDomain} from Redis DB`, error);
+      return null;
+    }
+  }
+
+  async safeRemoveShopAsync(redis, shopDomain) {
+    try {
+      await redis.removeShopAsync(shopDomain);
+    } catch (error) {
+      console.error(`Error removing shop ${shopDomain} from Redis DB`, error);
+    }
+  }
+
+  async safeRemoveDopplerIntegrationAsync(shop) {
+    if (!shop || !shop.dopplerAccountName || !shop.dopplerApiKey) {
+      console.error('No enough data to remove Doppler integration.', { shop });
       return;
     }
 
-    try
-    {
-      const shopDomain = request.webhook.shopDomain;
+    try {
+      const doppler = this.dopplerClientFactory.createClient(shop.dopplerAccountName, shop.dopplerApiKey);
+      await doppler.deleteShopifyIntegrationAsync();
+    } catch (error) {
+      console.error('Error removing integration from Doppler', error);
+    }
+  }
 
-      const redis = this.redisClientFactory.createClient();
-      await redis.removeShopAsync(shopDomain, true);
-    } catch (err) {
-      console.error(err);
+  async appUninstalled(error, request) {
+    if (error) {
+      console.error('appUninstalled hook', error);
+      return;
+    }
+
+    const shopDomain = request.webhook && request.webhook.shopDomain;
+
+    if (!shopDomain) {
+      console.error('Shop domain not found in the request, cannot cleanup our data.')
+      return;
+    }
+
+    const redis = this.redisClientFactory.createClient();
+
+    try { 
+      const shop = await this.safeGetShopAsync(redis, shopDomain);
+      await this.safeRemoveShopAsync(redis, shopDomain);
+      await this.safeRemoveDopplerIntegrationAsync(shop);
+    } finally {
+      await redis.quitAsync();
     }
   }
 

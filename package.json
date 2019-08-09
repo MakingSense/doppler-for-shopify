@@ -73,7 +73,7 @@
     "knex": "^0.19.1",
     "morgan": "^1.9.1",
     "nodemon": "^1.19.1",
-    "proxyquire": "^2.1.1",
+    "proxyquire": "^2.1.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-hot-loader": "^4.12.10",

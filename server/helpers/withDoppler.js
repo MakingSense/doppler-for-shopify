@@ -61,7 +61,10 @@ function withDoppler(configuration) {
     } else if (/^ey[\w-]+\.ey[\w-]+\.[\w-]+$/.test(token)) {
       // JWT TOKEN
       return verifyJwtWithOldPublicKeyFallback(token, configuration.publicKey, jwtOptions, (err, decoded) => {
-        if (err) {
+        if (err && err.name == 'TokenExpiredError' && err.expiredAt) {
+          res.status(401).send(`Expired \`Authorization\` token. Expired at: ${err.expiredAt.toISOString()}. JWT Error: ${err.message}`);
+          return;
+        } else if (err) {
           res.status(401).send(`Invalid \`Authorization\` token. JWT Error: ${err.message}`);
           return;
         } else {

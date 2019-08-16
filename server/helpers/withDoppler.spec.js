@@ -111,7 +111,7 @@ describe('withDoppler middleware', () => {
     // Assert
     expect(res.statusCode).to.be.equal(401);
     expect(res._getData()).to.be.equal(
-      'Invalid `Authorization` token. JWT Error: jwt expired');
+      'Expired `Authorization` token. Expired at: 2019-05-08T15:19:16.000Z. JWT Error: jwt expired');
     expect(next.notCalled).to.be.true;
   });
 
@@ -133,7 +133,7 @@ describe('withDoppler middleware', () => {
     // Assert
     expect(res.statusCode).to.be.equal(401);
     expect(res._getData()).to.be.equal(
-      'Invalid `Authorization` token. JWT Error: jwt expired');
+      'Expired `Authorization` token. Expired at: 2019-07-12T15:41:14.000Z. JWT Error: jwt expired');
     expect(next.notCalled).to.be.true;
   });
 

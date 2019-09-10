@@ -459,6 +459,122 @@ describe('Server integration tests', function() {
           expect(res.statusCode).to.be.eql(200);
         });
     });
+
+    it('Should return the same ETag when the content does not change and different when the content changes', async function() {
+      const dopplerApiResponse = {
+        items: [
+            {
+              name: "presupuesto",
+              predefined: false,
+              private: true,
+              readonly: false,
+              type: "number",
+              sample: "",
+              _links: []
+            },
+            {
+              name: "NroCliente",
+              predefined: false,
+              private: true,
+              readonly: false,
+              type: "string",
+              sample: "",
+              _links: []
+            },
+            {
+              name: "FIRSTNAME",
+              predefined: true,
+              private: false,
+              readonly: false,
+              type: "string",
+              sample: "FIRST_NAME",
+              _links: []
+            },
+            {
+              name: "LASTNAME",
+              predefined: true,
+              private: false,
+              readonly: false,
+              type: "string",
+              sample: "LAST_NAME",
+              _links: []
+            },
+            {
+              name: "EMAIL",
+              predefined: true,
+              private: false,
+              readonly: true,
+              type: "email",
+              sample: "EMAIL",
+              _links: []
+            }
+          ],
+        _links: []
+      };
+
+      fetchStub
+        .withArgs(
+          `https://restapi.fromdoppler.com/accounts/${querystring.escape(
+            dopplerAccountName
+          )}/fields`,
+          { headers: { Authorization: `token ${dopplerApiKey}` } }
+        )
+        .returns(
+          Promise.resolve({
+            status: 201,
+            json: async function() {
+              return dopplerApiResponse;
+            },
+          })
+        );
+
+      this.sandbox
+        .stub(mocks.wrappedRedisClient, 'hgetall')
+        .callsFake((_key, cb) => {
+          cb(null, { accessToken, dopplerAccountName, dopplerApiKey });
+        });
+
+      let firstEtag;
+      await request(app)
+        .get('/fields')
+        .set('cookie', cookie)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(200);
+          firstEtag = res.get('etag');
+        });
+
+      // Add new field to Doppler response
+      dopplerApiResponse.items.push({
+        name: "NEW-FIELD",
+        predefined: false,
+        private: true,
+        readonly: false,
+        type: "number",
+        sample: "",
+        _links: []
+      });
+
+      await request(app)
+        .get('/fields')
+        .set('cookie', cookie)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(200);
+          // ETag should be different because there are a new field in Doppler response
+          expect(res.get('etag')).not.to.be.eql(firstEtag);
+        });
+
+        // Remove the new field from Doppler response
+        dopplerApiResponse.items.pop();
+
+        await request(app)
+        .get('/fields')
+        .set('cookie', cookie)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(200);
+          // ETag should be the same as the beginning because the new field in Doppler response has been removed
+          expect(res.get('etag')).to.be.eql(firstEtag);
+        });
+    });
   });
 
   describe('POST /fields-mapping', function() {

@@ -872,6 +872,22 @@ describe('Server integration tests', function() {
         });
     });
 
+    it('Should accept OPTIONS CORS request from localhost', async function() {
+      await request(app)
+        .options('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'http://localhost:3000/')
+        .set('Origin', 'http://localhost:3000')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Allow-Origin')).to.be.eql('http://localhost:3000');
+          expect(res.get('Access-Control-Allow-Methods')).to.be.eql('GET,HEAD,PUT,PATCH,POST,DELETE');
+          expect(res.get('Access-Control-Allow-Headers')).to.be.eql('Content-Type,Authorization,Accept');
+          expect(res.get('Access-Control-Allow-Credentials')).to.be.eql('true');
+        });
+    });
+
     it('Should not accept GET CORS request from arbitrary origin', async function() {
       await request(app)
         .get('/me/shops')

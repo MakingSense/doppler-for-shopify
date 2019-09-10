@@ -11,7 +11,8 @@ const corsHandler = cors({
     'http://cdn.fromdoppler.com',
     'https://cdn.fromdoppler.com',
     'https://app.fromdoppler.com:4443',
-    'https://app.fromdoppler.com:4444'
+    'https://app.fromdoppler.com:4444',
+    /^http(s)?:\/\/localhost(:\d+)?$/
   ],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   exposedHeaders: ['ETag']

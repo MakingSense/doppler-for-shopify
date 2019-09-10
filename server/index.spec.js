@@ -727,6 +727,19 @@ describe('Server integration tests', function() {
         });
     });
 
+    it('Should include ETag in Access-Control-Expose-Headers in response', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'https://app.fromdoppler.com/')
+        .set('Origin', 'https://app.fromdoppler.com')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Expose-Headers')).to.be.eql('ETag');
+        });
+    });
+
     it('Should accept OPTIONS CORS request from https://app.fromdoppler.com', async function() {
       await request(app)
         .options('/me/shops')

@@ -13,7 +13,8 @@ const corsHandler = cors({
     'https://app.fromdoppler.com:4443',
     'https://app.fromdoppler.com:4444'
   ],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  exposedHeaders: ['ETag']
 });
 module.exports = function(dopplerController) {
   // TODO: deprecate `/me/...` routes and use `/doppler/{accountName}/...` ones

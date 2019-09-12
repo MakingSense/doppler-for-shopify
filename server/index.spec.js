@@ -459,6 +459,122 @@ describe('Server integration tests', function() {
           expect(res.statusCode).to.be.eql(200);
         });
     });
+
+    it('Should return the same ETag when the content does not change and different when the content changes', async function() {
+      const dopplerApiResponse = {
+        items: [
+            {
+              name: "presupuesto",
+              predefined: false,
+              private: true,
+              readonly: false,
+              type: "number",
+              sample: "",
+              _links: []
+            },
+            {
+              name: "NroCliente",
+              predefined: false,
+              private: true,
+              readonly: false,
+              type: "string",
+              sample: "",
+              _links: []
+            },
+            {
+              name: "FIRSTNAME",
+              predefined: true,
+              private: false,
+              readonly: false,
+              type: "string",
+              sample: "FIRST_NAME",
+              _links: []
+            },
+            {
+              name: "LASTNAME",
+              predefined: true,
+              private: false,
+              readonly: false,
+              type: "string",
+              sample: "LAST_NAME",
+              _links: []
+            },
+            {
+              name: "EMAIL",
+              predefined: true,
+              private: false,
+              readonly: true,
+              type: "email",
+              sample: "EMAIL",
+              _links: []
+            }
+          ],
+        _links: []
+      };
+
+      fetchStub
+        .withArgs(
+          `https://restapi.fromdoppler.com/accounts/${querystring.escape(
+            dopplerAccountName
+          )}/fields`,
+          { headers: { Authorization: `token ${dopplerApiKey}` } }
+        )
+        .returns(
+          Promise.resolve({
+            status: 201,
+            json: async function() {
+              return dopplerApiResponse;
+            },
+          })
+        );
+
+      this.sandbox
+        .stub(mocks.wrappedRedisClient, 'hgetall')
+        .callsFake((_key, cb) => {
+          cb(null, { accessToken, dopplerAccountName, dopplerApiKey });
+        });
+
+      let firstEtag;
+      await request(app)
+        .get('/fields')
+        .set('cookie', cookie)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(200);
+          firstEtag = res.get('etag');
+        });
+
+      // Add new field to Doppler response
+      dopplerApiResponse.items.push({
+        name: "NEW-FIELD",
+        predefined: false,
+        private: true,
+        readonly: false,
+        type: "number",
+        sample: "",
+        _links: []
+      });
+
+      await request(app)
+        .get('/fields')
+        .set('cookie', cookie)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(200);
+          // ETag should be different because there are a new field in Doppler response
+          expect(res.get('etag')).not.to.be.eql(firstEtag);
+        });
+
+        // Remove the new field from Doppler response
+        dopplerApiResponse.items.pop();
+
+        await request(app)
+        .get('/fields')
+        .set('cookie', cookie)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(200);
+          // ETag should be the same as the beginning because the new field in Doppler response has been removed
+          expect(res.get('etag')).to.be.eql(firstEtag);
+        });
+    });
   });
 
   describe('POST /fields-mapping', function() {
@@ -727,6 +843,19 @@ describe('Server integration tests', function() {
         });
     });
 
+    it('Should include ETag in Access-Control-Expose-Headers in response', async function() {
+      await request(app)
+        .get('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'https://app.fromdoppler.com/')
+        .set('Origin', 'https://app.fromdoppler.com')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Expose-Headers')).to.be.eql('ETag');
+        });
+    });
+
     it('Should accept OPTIONS CORS request from https://app.fromdoppler.com', async function() {
       await request(app)
         .options('/me/shops')
@@ -737,6 +866,22 @@ describe('Server integration tests', function() {
         .set('Origin', 'https://app.fromdoppler.com')
         .expect(function(res) {
           expect(res.get('Access-Control-Allow-Origin')).to.be.eql('https://app.fromdoppler.com');
+          expect(res.get('Access-Control-Allow-Methods')).to.be.eql('GET,HEAD,PUT,PATCH,POST,DELETE');
+          expect(res.get('Access-Control-Allow-Headers')).to.be.eql('Content-Type,Authorization,Accept');
+          expect(res.get('Access-Control-Allow-Credentials')).to.be.eql('true');
+        });
+    });
+
+    it('Should accept OPTIONS CORS request from localhost', async function() {
+      await request(app)
+        .options('/me/shops')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0')
+        .set('Accept', '*/*')
+        .set('Referer', 'http://localhost:3000/')
+        .set('Origin', 'http://localhost:3000')
+        .expect(function(res) {
+          expect(res.get('Access-Control-Allow-Origin')).to.be.eql('http://localhost:3000');
           expect(res.get('Access-Control-Allow-Methods')).to.be.eql('GET,HEAD,PUT,PATCH,POST,DELETE');
           expect(res.get('Access-Control-Allow-Headers')).to.be.eql('Content-Type,Authorization,Accept');
           expect(res.get('Access-Control-Allow-Credentials')).to.be.eql('true');

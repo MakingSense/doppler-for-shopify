@@ -229,8 +229,7 @@ class Doppler {
   
       return responseBody.createdResourceId;
     } catch (error) {
-
-      log.error({ action: `POST ${url}`, error, requestBody });
+      console.error({ action: `POST ${url}`, error, requestBody });
       throw new Error(`Error sending subscribers to ${url}: ${error.message}`);
     }
   }

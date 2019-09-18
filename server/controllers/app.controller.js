@@ -256,7 +256,8 @@ class AppController {
         let customers = [];
         for (let pageNumber = 1; pageNumber <= totalCustomers/shopifyCustomersPageSize + 1; pageNumber++)
         {
-          customers = customers.concat(await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }));
+          customers = customers.concat((await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }))
+            .filter(customer => !!customer.email));
         }
 
         lastStep = 'send-data-to-doppler';

@@ -218,16 +218,19 @@ class Doppler {
       enableEmailNotification: true,
     };
 
+    const requestBody = JSON.stringify(subscribers);
     try
     {
       const responseBody = await sendRequestAsync(this.fetch, url, {
         method: 'POST',
-        body: JSON.stringify(subscribers),
+        body: requestBody,
         headers: { Authorization: `token ${this.apiKey}`, "X-Doppler-Subscriber-Origin": "Shopify" },
       });
   
       return responseBody.createdResourceId;
     } catch (error) {
+
+      log.error({ action: `POST ${url}`, error, requestBody });
       throw new Error(`Error sending subscribers to ${url}: ${error.message}`);
     }
   }

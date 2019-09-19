@@ -87,7 +87,7 @@
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
-    "shopify-api-node": "^2.23.0",
+    "shopify-api-node": "^2.23.1",
     "sqlite3": "^4.1.0",
     "style-loader": "~0.23.1",
     "url": "^0.11.0",

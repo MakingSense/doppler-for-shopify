@@ -926,4 +926,146 @@ describe('The app controller', function() {
     );
   });
 
+  it('synchronizeCustomers should perform the synchronization process avoiding null fields', async function() {
+    const request = sinonMock.mockReq({
+      session: {
+        accessToken: 'fb5d67a5bd67ab5d67ab5d',
+        shop: 'store.myshopify.com',
+      },
+    });
+    const response = sinonMock.mockRes();
+    this.sandbox.stub(modulesMocks.shopifyClient.customer, 'list').returns(
+      Promise.resolve([
+        {
+          id: 623558295613,
+          email: 'jonsnow@example.com',
+          first_name: 'Jon',
+          last_name: 'Snow',
+          default_address: {
+            company: 'Winterfell',
+          },
+        },
+        {
+          id: 623558295619,
+          email: 'jon@example.com',
+          first_name: null,
+          last_name: 'Snow',
+          default_address: {
+            company: 'Winterfell',
+          },
+        },
+        {
+          id: 546813203473,
+          email: 'nickrivers@example.com',
+          first_name: 'Nick',
+          last_name: '',
+          default_address: {
+            company: 'Top Secret',
+          },
+        },
+        {
+          id: 546813203474,
+          email: 'jhondoe@example.com',
+          first_name: 'Jhon',
+          last_name: 'Doe',
+          default_address: {
+            company: '',
+          },
+        },
+        {
+          id: 546813203476,
+          email: 'dsw@example.com',
+          first_name: 'D',
+          last_name: 'SW',
+          default_address: {
+            company: null,
+          },
+        },
+      ])
+    );
+    this.sandbox.stub(modulesMocks.shopifyClient.customer, 'count').returns(
+      Promise.resolve(5)
+    );
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync').returns(
+      Promise.resolve({
+        accessToken: 'ae768b8c78d68a54565434',
+        dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
+        dopplerAccountName: 'user@example.com',
+        dopplerListId: 1456877,
+        fieldsMapping:
+          '[{"shopify":"first_name","doppler":"FIRSTNAME"},{"shopify":"last_name","doppler":"LASTNAME"}]',
+      })
+    );
+    this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
+
+    this.sandbox
+      .stub(modulesMocks.dopplerClient, 'importSubscribersAsync')
+      .returns(Promise.resolve('importTask-123456'));
+
+    const appController = new AppController(
+      redisClientFactoryStub,
+      dopplerClientFactoryStub,
+      shopifyClientFactoryStub
+    );
+    await appController.synchronizeCustomers(request, response);
+
+    expect(
+      modulesMocks.dopplerClient.importSubscribersAsync
+    ).to.be.called.calledWithExactly(
+      [
+        {
+          id: 623558295613,
+          email: 'jonsnow@example.com',
+          first_name: 'Jon',
+          last_name: 'Snow',
+          default_address: {
+            company: 'Winterfell',
+          },
+        },
+        {
+          id: 623558295619,
+          email: 'jon@example.com',
+          first_name: null,
+          last_name: 'Snow',
+          default_address: {
+            company: 'Winterfell',
+          },
+        },
+        {
+          id: 546813203473,
+          email: 'nickrivers@example.com',
+          first_name: 'Nick',
+          last_name: '',
+          default_address: {
+            company: 'Top Secret',
+          },
+        },
+        {
+          id: 546813203474,
+          email: 'jhondoe@example.com',
+          first_name: 'Jhon',
+          last_name: 'Doe',
+          default_address: {
+            company: '',
+          },
+        },
+        {
+          id: 546813203476,
+          email: 'dsw@example.com',
+          first_name: 'D',
+          last_name: 'SW',
+          default_address: {
+            company: null,
+          },
+        },
+      ],
+      1456877,
+      'store.myshopify.com',
+      [
+        { shopify: 'first_name', doppler: 'FIRSTNAME' },
+        { shopify: 'last_name', doppler: 'LASTNAME' },
+      ]
+    );
+  });
 });

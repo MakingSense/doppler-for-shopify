@@ -65,7 +65,7 @@
     "css-loader": "^1.0.1",
     "debug": "^4.1.1",
     "dotenv": "^8.1.0",
-    "ejs": "^2.6.2",
+    "ejs": "^2.7.1",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "file-loader": "^4.2.0",

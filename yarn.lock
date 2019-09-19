@@ -1934,13 +1934,18 @@ connect-history-api-fallback@^1.6.0:
   resolved "https://registry.yarnpkg.com/connect-history-api-fallback/-/connect-history-api-fallback-1.6.0.tgz#8b32089359308d111115d81cad3fceab888f97bc"
   integrity sha512-e54B99q/OUoH64zYYRf3HBP5z24G38h5D3qXu23JGRoigpX5Ss4r9ZnDk3g0Z8uQC2x2lPaJ+UlWBc1ZWBWdLg==
 
-connect-redis@^3.3.0, connect-redis@^3.4.2:
+connect-redis@^3.3.0:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/connect-redis/-/connect-redis-3.4.2.tgz#e339fd0b00e1381e130101556657669cc855417e"
   integrity sha512-ozA1Z0GDnsCJECfNyNJOqPuW3Fk43fUbKC65Sa/V9hkCBNtXsFU2xtTOVsQGUsflpywuJMgGOV4xrnKzIPFqvA==
   dependencies:
     debug "^4.1.1"
     redis "^2.8.0"
+
+connect-redis@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/connect-redis/-/connect-redis-4.0.2.tgz#b3ea8c6a92e9c6c04cf9ec957c193558ddad0bbc"
+  integrity sha512-SuOGp/2dgpH738SYj0rZfoeKpuV/C4W0APGWrvyC3ijgXkKq/LKdgyCfW2oSxIPE1ndeOgmuei2bh3wIU50ZLw==
 
 console-browserify@^1.1.0:
   version "1.1.0"

@@ -783,7 +783,7 @@ describe('The app controller', function() {
     expect(response.json).to.be.called.calledWithExactly({ synchronizationInProgress: false });
   });
 
-  it('synchronizeCustomers should perform the synchronization process avoiding null emails ', async function() {
+  it('synchronizeCustomers should perform the synchronization process avoiding null emails', async function() {
     const request = sinonMock.mockReq({
       session: {
         accessToken: 'fb5d67a5bd67ab5d67ab5d',

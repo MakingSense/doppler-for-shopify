@@ -85,6 +85,8 @@ app.use(
     secret: SHOPIFY_APP_SECRET,
     resave: true,
     saveUninitialized: false,
+    secure: true, 
+    sameSite: 'none',
   })
 );
 

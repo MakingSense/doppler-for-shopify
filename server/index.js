@@ -74,6 +74,7 @@ const shopifyConfig = {
 };
 
 const app = express();
+app.set('trust proxy', 1) // trust first proxy
 const isDevelopment = NODE_ENV !== 'production' && NODE_ENV !== 'test';
 
 app.set('views', path.join(__dirname, 'views'));
@@ -85,8 +86,10 @@ app.use(
     secret: SHOPIFY_APP_SECRET,
     resave: true,
     saveUninitialized: false,
-    secure: true, 
-    sameSite: 'none',
+    cookie: {
+      secure: true, 
+      sameSite: 'none',
+    },
   })
 );
 

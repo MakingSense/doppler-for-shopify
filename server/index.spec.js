@@ -142,6 +142,7 @@ describe('Server integration tests', function() {
           expect(res.headers.location).to.be.eql('/');
           cookie = res.get('set-cookie');
           expect(cookie.length).to.be.eql(1);
+          expect(cookie[0]).to.match(/connect\.sid=[^;]+; Path=\/; HttpOnly; Secure; SameSite=None/);
         });
     });
   });

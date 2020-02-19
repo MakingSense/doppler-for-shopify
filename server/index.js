@@ -79,14 +79,24 @@ const isDevelopment = NODE_ENV !== 'production' && NODE_ENV !== 'test';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
+
+app.use(function (req, res, next) {
+  // Ugly patch to disable secure connection validation in express-session issecure
+  req.connection.encrypted = true;
+  req.secure = true;
+  next();
+});
+      
 app.use(
   session({
     store: RedisStore ? new RedisStore(redisConfig) : undefined,
     secret: SHOPIFY_APP_SECRET,
     resave: true,
     saveUninitialized: false,
-    secure: true, 
-    sameSite: 'none',
+    cookie: {
+      secure: true, 
+      sameSite: 'none'
+    }
   })
 );
 

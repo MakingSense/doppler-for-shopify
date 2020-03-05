@@ -179,7 +179,7 @@ describe('The app controller', function() {
     const storedAccessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
     const sessionAccessToken = 'WRONG123456';
     const request = sinonMock.mockReq({
-      session: { shop, accessToken : sessionAccessToken },
+      session: { shop, accessToken: sessionAccessToken },
       body: {
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
         dopplerAccountName: 'user@example.com',
@@ -221,7 +221,7 @@ describe('The app controller', function() {
     const storedAccessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
     const sessionAccessToken = 'WRONG123456';
     const request = sinonMock.mockReq({
-      session: { shop, accessToken : sessionAccessToken },
+      session: { shop, accessToken: sessionAccessToken },
       body: {
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
         dopplerAccountName: 'user@example.com',

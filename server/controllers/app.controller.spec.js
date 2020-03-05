@@ -176,9 +176,10 @@ describe('The app controller', function() {
 
   it('connectToDoppler should call put Doppler integration using Doppler Client', async function() {
     const shop = 'store.myshopify.com';
-    const accessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
+    const storedAccessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
+    const sessionAccessToken = 'WRONG123456';
     const request = sinonMock.mockReq({
-      session: { shop, accessToken },
+      session: { shop, accessToken : sessionAccessToken },
       body: {
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
         dopplerAccountName: 'user@example.com',
@@ -189,7 +190,7 @@ describe('The app controller', function() {
     this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
-    .returns(Promise.resolve({ accessToken: '127424ab9aa0ebce26dfdc786bc7fba4'}));
+    .returns(Promise.resolve({ accessToken: storedAccessToken}));
     
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
@@ -210,16 +211,17 @@ describe('The app controller', function() {
     expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
       .to.have.been.callCount(1);
     expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
-      .to.be.called.calledWithMatch(shop, accessToken);
+      .to.be.called.calledWithMatch(shop, storedAccessToken);
     expect(response.sendStatus)
       .to.be.called.calledWithExactly(200);
   });
 
   it('connectToDoppler remove the shop when putShopifyIntegrationAsync fails', async function() {
     const shop = 'store.myshopify.com';
-    const accessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
+    const storedAccessToken = '127424ab9aa0ebce26dfdc786bc7fba4';
+    const sessionAccessToken = 'WRONG123456';
     const request = sinonMock.mockReq({
-      session: { shop, accessToken },
+      session: { shop, accessToken : sessionAccessToken },
       body: {
         dopplerApiKey: 'C22CADA13759DB9BBDF93B9D87C14D5A',
         dopplerAccountName: 'user@example.com',
@@ -231,7 +233,7 @@ describe('The app controller', function() {
     this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
-    .returns(Promise.resolve({ accessToken: '127424ab9aa0ebce26dfdc786bc7fba4'}));
+    .returns(Promise.resolve({ accessToken: storedAccessToken}));
     
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
@@ -254,7 +256,7 @@ describe('The app controller', function() {
       expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
         .to.have.been.callCount(1);
       expect(modulesMocks.dopplerClient.putShopifyIntegrationAsync)
-        .to.be.called.calledWithMatch(shop, accessToken);    
+        .to.be.called.calledWithMatch(shop, storedAccessToken);    
       expect(modulesMocks.redisClient.removeShopAsync)
         .to.be.called.calledWithMatch(shop);
       expect(modulesMocks.redisClient.quitAsync)

@@ -105,7 +105,7 @@ class AppController {
       await redis.storeShopAsync(
         shop,
         { dopplerAccountName, dopplerApiKey, connectedOn: new Date().toISOString(), synchronizedCustomersCount: 0 });
-        const shopInstance = await redis.getShopAsync(shop, true);
+      const shopInstance = await redis.getShopAsync(shop, true);
       await doppler.putShopifyIntegrationAsync(shop, shopInstance.accessToken);
     } catch (error) {
       await redis.removeShopAsync(shop);
@@ -226,7 +226,7 @@ class AppController {
   }
 
   //TODO: this is a heavyweight process, maybe we should do it all asynchronous
-  async synchronizeCustomers({ query: { force }, session: { shop, accessToken } }, response) {
+  async synchronizeCustomers({ query: { force }, session: { shop } }, response) {
     // undefined and null will be false
     // '', 0, 'false', 'true', another string, number or object will be true
     // POST /synchronize-customers?force => true
@@ -250,7 +250,7 @@ class AppController {
           });
 
         lastStep = 'count-customers';
-        const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
+        const shopify = this.shopifyClientFactory.createClient(shop, shopInstance.accessToken);
         const totalCustomers = await shopify.customer.count();
 
         lastStep = 'prepare-customers-list';

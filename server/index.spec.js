@@ -238,6 +238,14 @@ describe('Server integration tests', function() {
     });
 
     it('Should return 200 status code when valid Doppler credentials', async function() {
+      this.sandbox
+      .stub(mocks.wrappedRedisClient, 'hgetall')
+      .callsFake((_key, cb) => {
+        cb(null, {
+          accessToken: accessToken,
+          dopplerAccountName: dopplerAccountName,
+        });
+      });
       fetchStub
         .withArgs(
           `https://restapi.fromdoppler.com/accounts/${querystring.escape(
@@ -278,7 +286,7 @@ describe('Server integration tests', function() {
           })
         );
 
-      await request(app)
+        await request(app)
         .post('/connect-to-doppler')
         .send({ dopplerAccountName, dopplerApiKey })
         .set('cookie', cookie)

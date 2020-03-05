@@ -139,9 +139,13 @@ describe('The app controller', function() {
         dopplerAccountName: 'user@example.com',
       },
     });
+
     const response = sinonMock.mockRes();
+
     this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
+    .returns(Promise.resolve({ accessToken: 'ae768b8c78d68a54565434'}));
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
       .returns(Promise.resolve(true));
@@ -184,6 +188,8 @@ describe('The app controller', function() {
 
     this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
+    .returns(Promise.resolve({ accessToken: '127424ab9aa0ebce26dfdc786bc7fba4'}));
     
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')
@@ -224,6 +230,8 @@ describe('The app controller', function() {
     this.sandbox.stub(modulesMocks.redisClient, 'storeShopAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'removeShopAsync');
     this.sandbox.stub(modulesMocks.redisClient, 'quitAsync');
+    this.sandbox.stub(modulesMocks.redisClient, 'getShopAsync')
+    .returns(Promise.resolve({ accessToken: '127424ab9aa0ebce26dfdc786bc7fba4'}));
     
     this.sandbox
       .stub(modulesMocks.dopplerClient, 'AreCredentialsValidAsync')

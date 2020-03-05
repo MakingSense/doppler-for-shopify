@@ -13,7 +13,7 @@ const factories = {
     srem: () => {},
   }),
   redisClient: () => ({
-    getShopAsync: function() {},
+    getShopAsync: () => {},
     getAllShopDomainsByDopplerDataAsync: () => {},
     getAllShopDomainsByDopplerApiKeyAsync: () => {},
     getAllShopDomainsByDopplerAccountNameAsync: () => {},

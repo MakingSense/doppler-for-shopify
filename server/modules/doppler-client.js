@@ -271,6 +271,9 @@ class Doppler {
 
   async putShopifyIntegrationAsync(shopDomain, accessToken) {
     const url = `${baseUrl}/accounts/${this.accountName}/integrations/shopify`;
+    // TODO: Remove logs
+    console.info(shopDomain);
+    console.info(accessToken);
     await sendRequestAsync(this.fetch, url, {
         method: 'PUT',
         body: JSON.stringify({

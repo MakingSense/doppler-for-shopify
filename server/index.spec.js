@@ -286,7 +286,7 @@ describe('Server integration tests', function() {
           })
         );
 
-        await request(app)
+      await request(app)
         .post('/connect-to-doppler')
         .send({ dopplerAccountName, dopplerApiKey })
         .set('cookie', cookie)

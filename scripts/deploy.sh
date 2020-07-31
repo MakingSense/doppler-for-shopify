@@ -5,9 +5,9 @@ set -e
 
 # Lines added to get the script running in the script path shell context
 # reference: http://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
-if [ "$#" -eq 0 ] || ( [ "$1" != "dev" ] && [ "$1" != "qa" ] && [ "$1" != "prod" ] ) ; then
+if [ "$#" -eq 0 ] || { [ "$1" != "dev" ] && [ "$1" != "qa" ] && [ "$1" != "prod" ]; } ; then
     echo "Invalid or missing environment. Usage: $0 dev|qa|prod [dest_dir] [dest_systemd_dir]"
     echo "Example: $0 qa /root/doppler-for-shopify-qa /etc/systemd/system"
     exit 1;
@@ -18,7 +18,8 @@ NC='\033[0m' # No Color
 
 export DOLLAR='$'
 export SSL_CERT_PATH=$SSL_CERT_PATH # Define this as an environment variable in Docker in host
-export DEST_DIR=$(pwd)
+DEST_DIR=$(pwd)
+export DEST_DIR
 export DEST_SYSTEMD_DIR='/etc/systemd/system'
 
 if [ "$#" -gt 1 ] #if the dest_dir parameter is present
@@ -34,7 +35,7 @@ fi
 echo -e " 🚀   ${COLOR}Deploying Doppler for Shopify to [$1] environment. Deployment dir: $DEST_DIR${NC}"
 
 # DEV ENVIRONMENT
-if [ $1 == "dev" ]
+if [ "$1" = "dev" ]
   then
     export ENV_SUFFIX='-dev'
     export ENV_PORT='4444'
@@ -44,7 +45,7 @@ if [ $1 == "dev" ]
 fi
 
 # QA ENVIRONMENT
-if [ $1 == "qa" ]
+if [ "$1" = "qa" ]
   then
     export ENV_SUFFIX='-qa'
     export ENV_PORT='4433'
@@ -54,7 +55,7 @@ if [ $1 == "qa" ]
 fi
 
 # PROD ENVIRONMENT
-if [ $1 == "prod" ]
+if [ "$1" = "prod" ]
   then
     export ENV_SUFFIX=''
     export ENV_PORT='443'

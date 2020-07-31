@@ -5,7 +5,7 @@ set -e
 
 # Lines added to get the script running in the script path shell context
 # reference: http://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 rm -rf ../assets
 mkdir ../assets

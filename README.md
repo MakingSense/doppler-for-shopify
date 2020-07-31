@@ -1,7 +1,8 @@
 # Shopify Node App
 
 **IMPORTANT:** It seems not be working with node versions greater than 8 (we
-need to fix it).
+need to fix it). Also, I had some issues if I try to run `yarn` after delete
+`yarn.lock`, we need to update all the dependencies.
 
 The goal of this example app is to provide a starting point for Shopify app developers so that they will be able to quickly
 spin up an embedded Shopify app using Node and Express.js and get started using the Polaris design system and React components.

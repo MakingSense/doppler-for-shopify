@@ -15,7 +15,7 @@
     "test-unit": "cross-env NODE_ENV=test nyc --reporter=text mocha --require co-mocha './server/**/*.spec.js'"
   },
   "engines": {
-    "node": ">= 8.1.0"
+    "node": ">= 8.17.0"
   },
   "browsers": [
     "last 3 chrome versions",

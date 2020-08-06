@@ -1,3 +1,4 @@
+# TODO: Obsolete. Replace this by Dockerfile.swarm
 FROM node:8-alpine
 WORKDIR /app
 COPY ./package*.json ./

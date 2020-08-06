@@ -1,0 +1,26 @@
+FROM node:8-alpine AS restore
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn
+
+FROM restore AS test
+COPY . .
+RUN yarn test
+
+FROM test AS build
+RUN yarn build
+
+FROM node:8-alpine AS final
+WORKDIR /app
+EXPOSE 3000
+# pm2 >= 4.3.0 requires node >= 10
+RUN yarn global add pm2@4.2.3
+COPY --from=build /app/package.json /app/yarn.lock ./
+COPY --from=build /app/bin ./bin/
+COPY --from=build /app/config ./config/
+COPY --from=build /app/server ./server/
+COPY --from=build /app/assets ./assets/
+COPY --from=build /app/node_modules ./node_modules/
+ARG version=unknown
+RUN echo $version > ./assets/version.txt
+CMD [ "pm2-runtime", "start", "./bin/www.js"]

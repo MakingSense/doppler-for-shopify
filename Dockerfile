@@ -1,5 +1,5 @@
 # TODO: Obsolete. Replace this by Dockerfile.swarm
-FROM node:8-alpine
+FROM node:10-alpine
 WORKDIR /app
 COPY ./package*.json ./
 COPY ./bin ./bin

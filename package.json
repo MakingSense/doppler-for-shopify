@@ -15,7 +15,7 @@
     "test-unit": "cross-env NODE_ENV=test nyc --reporter=text mocha --require co-mocha './server/**/*.spec.js'"
   },
   "engines": {
-    "node": ">= 8.17.0"
+    "node": ">= 10.22.0"
   },
   "browsers": [
     "last 3 chrome versions",
@@ -46,7 +46,11 @@
     {
       "style-loader": "~0.22.0",
       "note": "0.23.0 fails on build"
-    }
+		},
+		{
+			"resolutions": "@shopify/shopify-express@1.0.0-alpha.7 depends on sqlite3@3.1.13 but it is not supported by node >= 10, so, I forced a version in resolutions property",
+			"node@10.22.0": "By the moment, it is not working on Linux with Node 12 without Python, probably because there is no a sqlite binary available"
+		}
   ],
   "dependencies": {
     "@shopify/polaris": "^2.12.1",
@@ -88,7 +92,6 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "shopify-api-node": "^2.23.0",
-    "sqlite3": "^4.1.0",
     "style-loader": "~0.23.1",
     "url": "^0.11.0",
     "webpack": "^2.7.0",
@@ -112,5 +115,8 @@
     "sinon-chai": "^3.3.0",
     "sinon-express-mock": "^2.2.1",
     "supertest": "^4.0.2"
-  }
+	},
+	"resolutions": {
+		"@shopify/shopify-express/sqlite3": "^4.2.0"
+	}
 }

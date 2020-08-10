@@ -74,7 +74,7 @@
     "express-session": "^1.17.0",
     "file-loader": "^4.2.0",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.19.5",
+    "knex": "^0.21.4",
     "morgan": "^1.9.1",
     "nodemon": "^1.19.2",
     "proxyquire": "^2.1.3",

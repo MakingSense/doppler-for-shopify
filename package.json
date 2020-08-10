@@ -46,7 +46,11 @@
     {
       "style-loader": "~0.22.0",
       "note": "0.23.0 fails on build"
-		},
+    },
+    {
+       "connect-redis": "^3.4.2",
+       "note": "5.0.0 pass the tests but fails after deployment"
+    },
 		{
 			"resolutions": "@shopify/shopify-express@1.0.0-alpha.7 depends on sqlite3@3.1.13 but it is not supported by node >= 10, so, I forced a version in resolutions property",
 			"node@10.22.0": "By the moment, it is not working on Linux with Node 12 without Python, probably because there is no a sqlite binary available"
@@ -65,7 +69,7 @@
     "chalk": "^2.4.2",
     "connect-redis": "^3.4.2",
     "cors": "^2.8.5",
-    "cross-env": "^5.2.1",
+    "cross-env": "^7.0.2",
     "css-loader": "^1.0.1",
     "debug": "^4.1.1",
     "dotenv": "^8.1.0",
@@ -74,7 +78,7 @@
     "express-session": "^1.17.0",
     "file-loader": "^4.2.0",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.19.5",
+    "knex": "^0.21.4",
     "morgan": "^1.9.1",
     "nodemon": "^1.19.2",
     "proxyquire": "^2.1.3",
@@ -103,7 +107,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "co-mocha": "^1.2.2",
-    "eslint": "^6.3.0",
+    "eslint": "^7.6.0",
     "eslint-plugin-prettier": "^3.1.0",
     "global": "^4.4.0",
     "mocha": "^5.2.0",

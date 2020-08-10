@@ -1,8 +1,10 @@
 # Shopify Node App
 
-**IMPORTANT:** It seems not be working with node versions greater than 8 (we
-need to fix it). Also, I had some issues if I try to run `yarn` after delete
-`yarn.lock`, we need to update all the dependencies.
+node-pre-gyp ERR! Tried to download(403): https://mapbox-node-binary.s3.amazonaws.com/sqlite3/v3.1.13/node-v64-linux-x64.tar.gz
+estos tienen v64:
+  https://npm.taobao.org/mirrors/sqlite3/v4.0.0/
+  https://npm.taobao.org/mirrors/sqlite3/v4.2.0/
+ahora, como podré forzar una versión en particular?
 
 The goal of this example app is to provide a starting point for Shopify app developers so that they will be able to quickly
 spin up an embedded Shopify app using Node and Express.js and get started using the Polaris design system and React components.
@@ -29,7 +31,7 @@ This example app uses Node, Express, Webpack, React, Redux, and Shopify/polaris
 
 ### Build and run tests with Docker (without install dependencies)
 
-1. Run `./scripts/run-with-docker.sh`, in windows `sh ./scripts/run-with-docker.sh` 
+1. Run `./scripts/run-with-docker.sh`, in windows `sh ./scripts/run-with-docker.sh`
 
 ### Build and run tests locally
 
@@ -47,7 +49,7 @@ To try it inside Shopify, it will be necessary to create the tunnel and register
 
 ### Install project dependencies
 
-- Install Node.js version 8.1.0 or higher. We recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions.
+- Install Node.js version 10.0.0 or higher. We recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions.
 - Install the [Yarn.js](https://yarnpkg.com/en/docs/install) package manager. Yarn is an alternative to npm that is faster and more reliable.
 - Install project dependencies with `yarn install`
 

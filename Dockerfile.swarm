@@ -1,4 +1,4 @@
-FROM node:8-alpine AS restore
+FROM node:10-alpine AS restore
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn
@@ -10,7 +10,7 @@ RUN yarn test
 FROM test AS build
 RUN yarn build
 
-FROM node:8-alpine AS final
+FROM node:10-alpine AS final
 WORKDIR /app
 EXPOSE 3000
 # pm2 >= 4.3.0 requires node >= 10

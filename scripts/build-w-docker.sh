@@ -14,7 +14,7 @@ mkdir ../assets
 docker run --rm \
     --mount type=bind,source="$(pwd)/../",target=//work \
     -w //work \
-    node:8-alpine \
+    node:10-alpine \
     sh -c "\
         yarn install \
         && yarn test \

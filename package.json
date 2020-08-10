@@ -46,7 +46,11 @@
     {
       "style-loader": "~0.22.0",
       "note": "0.23.0 fails on build"
-		},
+    },
+    {
+       "connect-redis": "^3.4.2",
+       "note": "5.0.0 pass the tests but fails after deployment"
+    },
 		{
 			"resolutions": "@shopify/shopify-express@1.0.0-alpha.7 depends on sqlite3@3.1.13 but it is not supported by node >= 10, so, I forced a version in resolutions property",
 			"node@10.22.0": "By the moment, it is not working on Linux with Node 12 without Python, probably because there is no a sqlite binary available"

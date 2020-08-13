@@ -40,6 +40,15 @@ pipeline {
                 sh 'sh build-n-publish.sh --commit=${GIT_COMMIT} --name=INT'
             }
         }
+        stage('Publish pre-release images from PROD') {
+			// Temporal build for testing easily in production
+            when {
+                branch 'PROD'
+            }
+            steps {
+                sh 'sh build-n-publish.sh --commit=${GIT_COMMIT} --name=PROD'
+            }
+        }
         stage('Publish final version images') {
             when {
                 expression {

@@ -253,11 +253,9 @@ class AppController {
         let params = { limit: shopifyCustomersPageSize };
         let customers = [];
         do {
-          console.log('-> Query parameters before api shopify call: ' + params);
-          const responseCustomer = await shopify.customer.list(params);
-          customers = customers.concat(responseCustomer);
-          params = responseCustomer.nextPageParameters;
-          console.log('-> Query parameters after api shopify call: ' + params);
+          const customersPage = await shopify.customer.list(params);
+          customers = customers.concat(customersPage.filter(customer => !!customer.email));
+          params = customersPage.nextPageParameters;
         } while (params !== undefined);
 
         lastStep = 'send-data-to-doppler';

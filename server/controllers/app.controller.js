@@ -248,17 +248,17 @@ class AppController {
             lastSynchronizationDate: new Date().toISOString(),
           });
 
-        lastStep = 'count-customers';
-        const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
-        const totalCustomers = await shopify.customer.count();
-
         lastStep = 'prepare-customers-list';
+        const shopify = this.shopifyClientFactory.createClient(shop, accessToken);
+        let params = { limit: shopifyCustomersPageSize };
         let customers = [];
-        for (let pageNumber = 1; pageNumber <= totalCustomers/shopifyCustomersPageSize + 1; pageNumber++)
-        {
-          customers = customers.concat((await shopify.customer.list({ limit: shopifyCustomersPageSize, page: pageNumber }))
-            .filter(customer => !!customer.email));
-        }
+        do {
+          console.log('-> Query parameters before api shopify call: ' + params);
+          const responseCustomer = await shopify.customer.list(params);
+          customers = customers.concat(responseCustomer);
+          params = responseCustomer.nextPageParameters;
+          console.log('-> Query parameters after api shopify call: ' + params);
+        } while (params !== undefined);
 
         lastStep = 'send-data-to-doppler';
         const doppler = this.dopplerClientFactory.createClient(

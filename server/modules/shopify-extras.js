@@ -5,6 +5,7 @@ class ShopifyAPIClientFactory {
     return new ShopifyAPIClient({
       shopName: shopDomain,
       accessToken: accessToken,
+      apiVersion: '2020-10',
     });
   }
 }

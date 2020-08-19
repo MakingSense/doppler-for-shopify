@@ -13,8 +13,7 @@ RUN yarn build
 FROM node:10-alpine AS final
 WORKDIR /app
 EXPOSE 3000
-# pm2 >= 4.3.0 requires node >= 10
-RUN yarn global add pm2@4.2.3
+RUN yarn global add pm2
 COPY --from=build /app/package.json /app/yarn.lock ./
 COPY --from=build /app/bin ./bin/
 COPY --from=build /app/config ./config/

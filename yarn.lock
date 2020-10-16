@@ -6331,12 +6331,12 @@ pupa@^2.0.1:
   dependencies:
     escape-goat "^2.0.0"
 
-qs@6.7.0, qs@^6.5.2:
+qs@6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.9.4:
+qs@^6.5.2, qs@^6.9.4:
   version "6.9.4"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.4.tgz#9090b290d1f91728d3c22e54843ca44aea5ab687"
   integrity sha512-A1kFqHekCTM7cz0udomYUoYNWjBebHm/5wzU/XqrBRBNWectVH0QIiN+NEcZ0Dte5hvzHwbr8+XQmguPhJ6WdQ==
@@ -7142,10 +7142,10 @@ shebang-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
-shopify-api-node@^3.4.4:
-  version "3.4.4"
-  resolved "https://registry.yarnpkg.com/shopify-api-node/-/shopify-api-node-3.4.4.tgz#64b0331fd72a3e3a56725ac25f6676feb35907a4"
-  integrity sha512-tEhJzCyRd703015xQZQpYcuDRC+afrski4wL/xWvjos2TishFEfDbYbcJZG6Fu8WQhRceHa5T6tv36ULag+/Fw==
+shopify-api-node@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/shopify-api-node/-/shopify-api-node-3.5.0.tgz#3f02bed3d6fc87312c9c5940eb7e2fa1b31cae4b"
+  integrity sha512-TbQpglKoDRYg8NeKjATy9XTFzzOBNcr7IvXvkw1wTiXDIuGEB19EdyophEMDvA+L4JCb7xRnLe6LUn5URKmDvw==
   dependencies:
     got "^11.1.4"
     lodash "^4.17.10"

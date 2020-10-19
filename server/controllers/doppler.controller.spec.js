@@ -53,7 +53,8 @@ describe('The doppler controller', function() {
 
     const dopplerController = new DopplerController(
       redisClientFactoryStub,
-      modulesMocks.appController
+      modulesMocks.appController,
+      modulesMocks.factories.dopplerClient
     );
 
     await dopplerController.getShops(request, response);
@@ -104,7 +105,8 @@ describe('The doppler controller', function() {
 
     const dopplerController = new DopplerController(
       redisClientFactoryStub,
-      modulesMocks.appController
+      modulesMocks.appController,
+      modulesMocks.factories.dopplerClient
     );
 
     await dopplerController.synchronizeCustomers(request, response);
@@ -132,7 +134,8 @@ describe('The doppler controller', function() {
 
     const dopplerController = new DopplerController(
       redisClientFactoryStub,
-      modulesMocks.appController
+      modulesMocks.appController,
+      modulesMocks.factories.dopplerClient
     );
 
     // Act
@@ -143,4 +146,120 @@ describe('The doppler controller', function() {
     expect(modulesMocks.appController.synchronizeCustomers).to.be.callCount(0);
   });
 
+  describe('uninstallShop', function() {
+    it('should send 403 response when is not a superuser', async function() {
+      // Arrange
+      const request = sinonMock.mockReq({
+        body: { shop: "my-store.myshopify.com" },
+        dopplerData: { 
+          tokenJwt: 'METOKEN',
+          accountName: 'me@email.com',
+          isSuperUser: false }
+      });
+      const response = sinonMock.mockRes();
+
+      const redisClient = modulesMocks.stubFactories.redisClient();
+      const redisClientFactory = {
+        createClient: () => redisClient 
+      };
+      const dopplerClient = modulesMocks.stubFactories.dopplerClient();
+      const dopplerClientFactory = {
+        createClient: () => dopplerClient 
+      };
+      const dopplerController = new DopplerController(
+        redisClientFactory,
+        modulesMocks.appController,
+        dopplerClientFactory
+      );
+
+      // Act
+      await dopplerController.uninstallShop(request, response);
+
+      // Assert
+      expect(response.send).to.be.called.calledWithExactly(`Super user is required.`);
+      expect(response.status).to.be.called.calledWithExactly(403);
+      expect(redisClient.removeShopAsync).to.be.callCount(0);
+      expect(dopplerClient.deleteShopifyIntegrationAsync).to.be.callCount(0);
+    });
+
+    it('should return 404 when shop not exists', async function() {
+      // Arrange
+      const shop = "my-store.myshopify.com" ;
+      const request = sinonMock.mockReq({
+        body: { shop },
+        dopplerData: { 
+          tokenJwt: 'METOKEN',
+          isSuperUser: true }
+      });
+      const response = sinonMock.mockRes();
+
+      const redisClient = modulesMocks.stubFactories.redisClient();
+      redisClient.getShopAsync
+      .returns(
+        Promise.resolve(null)
+      );
+      const redisClientFactory = {
+        createClient: () => redisClient 
+      };
+      const dopplerClient = modulesMocks.stubFactories.dopplerClient();
+      const dopplerClientFactory = {
+        createClient: () => dopplerClient 
+      };
+      const dopplerController = new DopplerController(
+        redisClientFactory,
+        modulesMocks.appController,
+        dopplerClientFactory
+      );
+
+      // Act
+      await dopplerController.uninstallShop(request, response);
+
+      // Assert
+      expect(response.send).to.be.called.calledWithExactly(`Shop ${shop} not found.`);
+      expect(response.status).to.be.called.calledWithExactly(404);
+      expect(redisClient.removeShopAsync).to.be.callCount(0);
+      expect(dopplerClient.deleteShopifyIntegrationAsync).to.be.callCount(0);
+    });
+
+    it('should remove redis and Doppler entries', async function() {
+      // Arrange
+      const shop = "my-store.myshopify.com" ;
+      const dopplerAccountName = 'me@email.com';
+      const dopplerApiKey = 'aaaaaaaaaaaaaaaaaaaa';
+      const request = sinonMock.mockReq({
+        body: { shop },
+        dopplerData: { 
+          tokenJwt: 'METOKEN',
+          isSuperUser: true }
+      });
+      const response = sinonMock.mockRes();
+
+      const redisClient = modulesMocks.stubFactories.redisClient();
+      redisClient.getShopAsync
+        .withArgs(shop)
+        .returns(Promise.resolve({ dopplerApiKey, dopplerAccountName }));
+      const redisClientFactory = {
+        createClient: () => redisClient 
+      };
+      const dopplerClient = modulesMocks.stubFactories.dopplerClient();
+      const dopplerClientStub = sinon.stub();
+      dopplerClientStub.withArgs(dopplerAccountName, dopplerApiKey).returns(dopplerClient);
+      const dopplerClientFactory = {
+        createClient: dopplerClientStub
+      };
+      const dopplerController = new DopplerController(
+        redisClientFactory,
+        modulesMocks.appController,
+        dopplerClientFactory
+      );
+
+      // Act
+      await dopplerController.uninstallShop(request, response);
+
+      // Assert
+      expect(response.sendStatus).to.be.called.calledWithExactly(200);
+      expect(redisClient.removeShopAsync).to.be.calledOnceWith(shop);
+      expect(dopplerClient.deleteShopifyIntegrationAsync).to.be.callCount(1);
+    });
+  });
 });

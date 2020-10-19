@@ -40,5 +40,11 @@ module.exports = function(dopplerController) {
     json(),
     wrapAsync((req, res) => dopplerController.migrateShop(req, res))
   );
+  router.post(
+    '/me/uninstall',
+    withDoppler(),
+    json(),
+    wrapAsync((req, res) => dopplerController.uninstallShop(req, res))
+  );
   return router;
 };

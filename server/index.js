@@ -41,7 +41,8 @@ const hooksController = new HooksController(
 );
 const dopplerController = new DopplerController(
   redisClientFactory,
-  appController
+  appController,
+  dopplerClientFactory
 );
 
 const {

@@ -1,7 +1,8 @@
 class DopplerController {
-    constructor(redisClientFactory, appController) {
+    constructor(redisClientFactory, appController, dopplerClientFactory) {
       this.redisClientFactory = redisClientFactory;
       this.appController = appController;
+      this.dopplerClientFactory = dopplerClientFactory;
     }
 
     async getShops({ dopplerData }, response) {
@@ -44,6 +45,27 @@ class DopplerController {
         const shopInstance = await redis.getShopAsync(body.shopDomain);
         await redis.storeShopAsync(body.shopDomain, shopInstance);
         response.json(!!shopInstance);
+      } finally {
+        await redis.quitAsync();
+      }
+    }
+    
+    async uninstallShop({ dopplerData: { isSuperUser }, body: { shop } }, response) {
+      if (!isSuperUser) {
+          response.status(403).send(`Super user is required.`);
+          return;
+      }
+      const redis = this.redisClientFactory.createClient();
+      try { 
+          const shopInstance = await redis.getShopAsync(shop);
+          if (!shopInstance) {
+            response.status(404).send(`Shop ${shop} not found.`);
+            return;
+          }
+          await redis.removeShopAsync(shop);
+          const doppler = this.dopplerClientFactory.createClient(shopInstance.dopplerAccountName, shopInstance.dopplerApiKey);
+          await doppler.deleteShopifyIntegrationAsync();
+          response.sendStatus(200);
       } finally {
         await redis.quitAsync();
       }

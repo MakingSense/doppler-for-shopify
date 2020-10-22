@@ -781,6 +781,27 @@ describe('Server integration tests', function() {
     });
   });
 
+  describe('POST /me/uninstall', function() {
+    it('Should return 401 status code when there is not authorization header present', async function() {
+      await request(app)
+        .post('/me/uninstall')
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(401);
+          expect('Missing `Authorization` header').to.be.eql(res.text);
+        });
+    });
+
+    it('Should return 403 status code when token is an APIKEY', async function() {
+      await request(app)
+        .post('/me/uninstall')
+        .set('Authorization', `token ${dopplerApiKey}`)
+        .expect(function(res) {
+          expect(res.statusCode).to.be.eql(403);
+          expect(res.text).to.be.eql('Super user is required.');
+        });
+    });
+  });
+
   describe('GET /me/shops', function() {
     it('Should return 401 status code when there is not authorization header present', async function() {
       await request(app)

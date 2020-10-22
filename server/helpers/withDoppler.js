@@ -72,7 +72,7 @@ function withDoppler(configuration) {
           req.dopplerData = { 
             tokenJwt: token,
             accountName: decoded.sub,
-            isSuperUser: !!decoded.isSu,
+            isSuperUser: !!decoded.isSU,
           };
           return next();
         }

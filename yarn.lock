@@ -7113,10 +7113,10 @@ shebang-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
-shopify-api-node@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/shopify-api-node/-/shopify-api-node-3.5.1.tgz#1f388f66c1fff717caf94d5f2986b1e9fe9b89ec"
-  integrity sha512-VSC3HlIKcb0738xV6sJYuYJBMuT/FigMwDHux+gJayZVZgqElQ8r8HGeJweVra+PNTfvVrhWogKbvsMLxtniGQ==
+shopify-api-node@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/shopify-api-node/-/shopify-api-node-3.6.0.tgz#dece0fed40593a59211fd41e85b8addc7a6071ca"
+  integrity sha512-CdIjymp9aa1N/beqJmcq4rf+UZFncRq0V7NF14i8YYS37Nn/ugvKkNwmazFfcjRkmatNhYnzhU1i3NHwDI2Yfw==
   dependencies:
     got "^11.1.4"
     lodash "^4.17.10"

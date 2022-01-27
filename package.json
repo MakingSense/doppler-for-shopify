@@ -105,7 +105,7 @@
     "webpack-middleware": "^1.5.1"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
+    "chai": "^4.3.6",
     "co-mocha": "^1.2.2",
     "eslint": "^7.25.0",
     "eslint-plugin-prettier": "^3.4.0",
